@@ -3,9 +3,10 @@
  * @date        2012, July 18
  * @author      Guilherme A. de Santi <guidesanti@yahoo.com.br>
  * @copyright   Guilherme A. de Santi &copy; 2012
- * @brief       TODO: Add brief description
+ * @brief       Cortex-M3/IAR specific code.
  *
- * TODO: Add detailed description
+ * This file contains implementation code for the BR-RTOS kernel that is
+ * specific for Cortex-M3 CPUs and to be compiled using the IAR compiler.
  */
 
 
@@ -91,6 +92,15 @@
  * @{
  */
 
+/**
+ * @brief Initialize the task stack.
+ * @param [in] stackPointer The task stack pointer.
+ * @param [in] run A pointer to the task execution code.
+ * @param [in] param A pointer to the task execution code parameters.
+ * @return The new stack pointer afpter the initialization.
+ * @note This function is part of the internals of BR-RTOS kernel and must
+ * never be called from the user code.
+ */
 BR_StackPointer_t BR_PortInitStack(BR_StackPointer_t stackPointer, void (*run)(void), void* param)
 {
   /*
@@ -117,6 +127,13 @@ BR_StackPointer_t BR_PortInitStack(BR_StackPointer_t stackPointer, void (*run)(v
   return stackPointer;
 }
 
+/**
+ * @brief Start the task scheduler.
+ * @note This function is part of the internals of BR-RTOS kernel and must
+ * never be called from the user code.
+ *
+ * This function will execute CPU specific code to start the task scheduler.
+ */
 void BR_PortSchedulerStart(void)
 {
   /* Set the PendSV and SysTick interrupts priorities. */
@@ -131,16 +148,23 @@ void BR_PortSchedulerStart(void)
   BR_PortStartFirstTask();
 }
 
+/**
+ * @brief SysTick exception handler for Cortex-M3.
+ * @note This function is part of the internals of BR-RTOS kernel and must
+ * never be called from the user code.
+ *
+ * This is the exception handler for Cortex-M3 SysTick exception and must never
+ * be called directly.
+ * It will update the tasks tick counter and set the PendSV exception pending
+ * bit to force a context switch within the PendSV exception handler.
+ */
 void BR_PortSysTickHandler(void)
 {
-  /* Update the tick counter. */
-  //tickCounter++;
+  /* Call the task tick update function. */
+  BR_TaskTickUpdate();
 
   /* Set the PendSV exception to pending state, so a context switch can be executed. */
   __BR_SCB_ICSR |= SCB_ICSR_PENDSVSET;
-
-  /* Call the task tick increment. */
-  BR_TaskTickUpdate();
 }
 
 /**@}*/

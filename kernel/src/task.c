@@ -46,7 +46,7 @@ struct BR_Task_t
     uint32_t counter;
     uint8_t state;
     BR_Task_t* nextTask;
-    char name[__BR_MAX_TASK_NAME_LEN];
+    char name[__BR_MAX_TASK_NAME_LEN + 1U];
 };
 
 /**@}*/
@@ -71,6 +71,9 @@ struct BR_Task_t
  * @{
  */
 
+/**
+ * Store the number of created tasks.
+ */
 static uint8_t nTasks = 0U;
 
 /**@}*/
@@ -121,20 +124,58 @@ BR_Task_t* waitingTaskList = NULL;
  * @{
  */
 
+/**
+ * @brief Start the task scheduler.
+ *
+ * This function should be called from main() and will not return unless the
+ * scheduler is not able to be started.
+ * This function will start the task switching and must be called after
+ * all tasks has been successfully created.
+ */
 void BR_KernelStartScheduler(void)
 {
   BR_PortSchedulerStart();
 }
 
+/**
+ * @brief Create a new task.
+ * @param [in] name The task name. Should be at a maximum of __BR_MAX_TASK_NAME_LEN characters.
+ * @param [in] run A pointer to the task execution code.
+ * @param [in] stackLen The length of the task stack (specified in number of CPU words).
+ * @param [in] param A pointer to the parameters to be passed to the task.
+ * @param [out] taskID The task ID.
+ * @return Error code.
+ * @retval E_INVAL If any parameter is invalid.
+ * @retval E_NORES If there is no enough memory within the heap to allocate for the new task.
+ * @retval E_OK If the task has been created successfully.
+ *
+ * This function should be called once for each task before the scheduler is started.
+ * It creates a new task and put it on the ready list.
+ *
+ * E_INVAL
+ * If the parameters check are enabled (__BR_CHECK_FUNC_PARAMETERS == 1U) and any of
+ * the function parameters is invalid the operation will be aborted and the function
+ * will return E_INVAL.
+ *
+ * E_OK
+ * If the task is created successfully the task ID is returned within the taskID parameter
+ * if it is different from NULL and the function will return with error code E_OK.
+ *
+ * E_NORES
+ * If there is no memory space available to create the task, the function will
+ * abort the operation and return E_NORES.
+ */
 BR_Err_t BR_TaskCreate(const char* name, void (*run)(void), uint8_t stackLen, void* param, uint8_t* taskID)
 {
-  BR_Err_t ret = E_INVAL;
+  BR_Err_t ret = E_OK;
   BR_Task_t* task = NULL;
 
   /* Check the parameters. */
   __BR_ASSERT(NULL != run);
+#if (1U == __BR_CHECK_FUNC_PARAMETERS)
   if (NULL != run)
   {
+#endif
     /* Allocate space for the new task on the heap. */
     task = BR_MemAlloc(sizeof(BR_Task_t));
     if (NULL != task)
@@ -178,16 +219,22 @@ BR_Err_t BR_TaskCreate(const char* name, void (*run)(void), uint8_t stackLen, vo
       ret = E_NORES;
     }
   }
+#if (1U == __BR_CHECK_FUNC_PARAMETERS)
   else
   {
     ret = E_INVAL;
   }
+#endif
 
   return ret;
 }
 
 /**
- * @brief TODO
+ * @brief Select the next task to run.
+ * @note This function is part of the kernel and should never be called from the
+ * user code.
+ *
+ * This function selects the next task on the ready list to run.
  */
 void BR_TaskSwitch(void)
 {
@@ -201,6 +248,17 @@ void BR_TaskSwitch(void)
   }
 }
 
+
+/**
+ * @brief Update the task tick counter.
+ * @note This function is part of the kernel and should never be called from the
+ * user code.
+ *
+ * This function walk through the waiting list and decrements the tick counter
+ * for each task.
+ * If the counter expires the task is removed from the waiting list and inserted
+ * into the ready list.
+ */
 void BR_TaskTickUpdate(void)
 {
   BR_Task_t* prevTask = NULL;

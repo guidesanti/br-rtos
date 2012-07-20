@@ -1,0 +1,119 @@
+/**
+ * @file        heap.c
+ * @date        2012, July 20
+ * @author      Guilherme A. de Santi <guidesanti@yahoo.com.br>
+ * @copyright   Guilherme A. de Santi &copy; 2012
+ * @brief       TODO: Add brief description
+ *
+ * TODO: Add detailed description
+ */
+
+
+/******************************************************************************/
+/* I N C L U D E S                                                            */
+/******************************************************************************/
+
+/**
+ * @defgroup Includes Header File Include
+ * @{
+ */
+
+#include "BR-RTOS.h"
+#include "BR-RTOSConfig.h"
+
+/**@}*/
+
+/******************************************************************************/
+/* C O N S T A N T ,  M A C R O  A N D  T Y P E  D E F I N I T I O N S       */
+/******************************************************************************/
+
+/**
+ * @defgroup Defs Constant, Macro and Type Definitions
+ * @{
+ */
+
+/**@}*/
+
+/******************************************************************************/
+/* P R I V A T E  F U N C T I O N S  P R O T O T Y P E S                      */
+/******************************************************************************/
+
+/**
+ * @defgroup PrivateFuncProto Private Function Prototypes
+ * @{
+ */
+
+/**@}*/
+
+/******************************************************************************/
+/* P R I V A T E  V A R I A B L E S                                           */
+/******************************************************************************/
+
+/**
+ * @defgroup PrivateVar Private Variables
+ * @{
+ */
+
+static uint8_t heap[__BR_HEAP_SIZE];
+
+static uint8_t* nextFreeByte = heap;
+
+static uint32_t bytesFree = __BR_HEAP_SIZE;
+
+/**@}*/
+
+/******************************************************************************/
+/* P U B L I C  V A R I A B L E S                                             */
+/******************************************************************************/
+
+/**
+ * @defgroup PublicVar Public Variables
+ * @{
+ */
+
+/**@}*/
+
+/******************************************************************************/
+/* P R I V A T E  F U N C T I O N S                                           */
+/******************************************************************************/
+
+/**
+ * @defgroup PrivateFunc Private Functions
+ * @{
+ */
+
+void* BR_MemAlloc(BR_Size_t nBytes)
+{
+  uint8_t* ptr = BR_NULL;
+  uint32_t index = 0U;
+
+  /* Check if there is enough memory to allocate. */
+  if (bytesFree >= nBytes)
+  {
+    ptr = nextFreeByte;
+    nextFreeByte += nBytes;
+    bytesFree -= nBytes;
+    /* Clear all bytes within the allocated memory. */
+    for (index = 0U; index < nBytes; index++)
+    {
+      *(ptr + index) = 0x00U;
+    }
+  }
+
+  return ptr;
+}
+
+/**@}*/
+
+/******************************************************************************/
+/* P U B L I C  F U N C T I O N S                                             */
+/******************************************************************************/
+
+/**
+ * @defgroup PublicFunc Public Functions
+ * @{
+ */
+
+
+
+/**@}*/

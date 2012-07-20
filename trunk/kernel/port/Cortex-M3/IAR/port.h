@@ -3,9 +3,10 @@
  * @date        2012, July 18
  * @author      Guilherme A. de Santi <guidesanti@yahoo.com.br>
  * @copyright   Guilherme A. de Santi &copy; 2012
- * @brief       TODO: add brief description
+ * @brief       Cortex-M3/IAR port header file.
  *
- * TODO: add detailed description
+ * This is the port.h header file specific for the Cortex-M3 CPU and to be
+ * compiled by the IAR compiler.
  */
 
 
@@ -40,9 +41,19 @@
  * @{
  */
 
+/**
+ * The initial value to be set for the xPSR register when the task is created.
+ */
 #define __BR_INITIAL_XPSR (0x01000000U)
+
+/**
+ * The Cortex-M3 CPU word length.
+ */
 #define __BR_WORD_LEN     (4U)
 
+/**
+ * Definition of the assert macro.
+ */
 #if (1U == __BR_USE_ASSERT)
 
 #define __BR_ASSERT(EXPRESSION)     \
@@ -56,6 +67,9 @@
 
 #endif
 
+/**
+ * A new type to represent the stack pointer.
+ */
 typedef uint32_t* BR_StackPointer_t;
 
 /**@}*/

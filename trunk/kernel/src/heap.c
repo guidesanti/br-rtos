@@ -82,9 +82,24 @@ static uint32_t bytesFree = __BR_HEAP_SIZE;
  * @{
  */
 
+/**
+ * @brief Allocate an amount of memory.
+ * @param [in] nBytes The number of bytes to allocate.
+ * @return A pointer to the first byte of the allocated block or NULL if there
+ *         is no enough free memory.
+ *
+ * This function will allocate a contiguous block of memory with size specified
+ * by the nBytes parameter and on success will return a pointer to the first
+ * byte of the allocated block.
+ * If there is no enough free memory NULL will be returned.
+ * It is responsibility of the user code to not overrun the allocated memory,
+ * otherwise unpredictable events may occur like the system crash or freeze, or
+ * any other dynamic allocated memory me be corrupted.
+ * Use this function sparingly.
+ */
 void* BR_MemAlloc(BR_Size_t nBytes)
 {
-  uint8_t* ptr = BR_NULL;
+  uint8_t* ptr = NULL;
   uint32_t index = 0U;
 
   /* Check if there is enough memory to allocate. */

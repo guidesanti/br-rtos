@@ -56,9 +56,9 @@
  */
 #if (1U == __BR_USE_ASSERT)
 
-#define __BR_ASSERT(EXPRESSION)     \
-{                                   \
-  if (!(EXPRESSION)) asm("bkpt #0"); \
+#define __BR_ASSERT(EXPRESSION)       \
+{                                     \
+  if (!(EXPRESSION)) asm("bkpt #0");  \
 }
 
 #else

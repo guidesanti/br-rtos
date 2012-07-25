@@ -65,6 +65,7 @@
 
 void BR_KernelStartScheduler(void);
 BR_Err_t BR_TaskCreate(const char* name, void (*run)(void), uint8_t stackLen, void* param, uint8_t* taskID);
+void BR_TaskWait(uint32_t ms);
 void BR_TaskSwitch(void);
 void BR_TaskTickUpdate(void);
 

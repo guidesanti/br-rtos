@@ -4,6 +4,7 @@
  * @author      Guilherme A. de Santi <guidesanti@yahoo.com.br>
  * @copyright   Guilherme A. de Santi &copy; 2012
  * @brief       BR-RTOS configuration header file.
+ * @details
  *
  * This file contains the static configuration to be used by the BR-RTOS.
  * The keys defined within this file may be modified by the user to customize
@@ -15,27 +16,16 @@
 #define _BR_RTOS_CONFIG_H_
 
 /**
- * @defgroup ModuleName The Module Name
+ * @addtogroup BR-RTOSConfig BR-RTOS Configuration Parameters
  * @{
  */
 
 /******************************************************************************/
-/* I N C L U D E S                                                            */
+/* U S E R  C O N F I G U R A T I O N  P A R A M E T E R S                    */
 /******************************************************************************/
 
 /**
- * @defgroup Includes Header File Include
- * @{
- */
-
-/**@}*/
-
-/******************************************************************************/
-/* C O N S T A N T ,  M A C R O  A N D  T Y P E  D E F I N I T I O N S       */
-/******************************************************************************/
-
-/**
- * @defgroup Defs Constant, Macro and Type Definitions
+ * @addtogroup UserConfig User Configuration Parameters
  * @{
  */
 
@@ -92,6 +82,12 @@
  */
 #define __BR_CHECK_FUNC_PARAMETERS  (0U)
 
+/** @} */
+
+/******************************************************************************/
+/* D E V E L O P E R  C O N F I G U R A T I O N  P A R A M E T E R S          */
+/******************************************************************************/
+
 /* -------------------------------------------------------------------------- */
 /* WARNING:                                                                   */
 /*                                                                            */
@@ -99,6 +95,11 @@
 /* only and must not be enabled and/or changed by the user unless the user    */
 /* intends to debug the kernel and its features.                              */
 /* -------------------------------------------------------------------------- */
+
+/**
+ * @addtogroup DevConfig Developer Configuration Parameters
+ * @{
+ */
 
 /**
  * Enable/disable debugging of the BR-RTOS kernel.
@@ -121,34 +122,8 @@
  */
 #define __BR_MAX_OBJ_LIST_DEBUG (10U)
 
+/** @} */
 
-
-/**@}*/
-
-/******************************************************************************/
-/* P U B L I C  V A R I A B L E S                                             */
-/******************************************************************************/
-
-/**
- * @defgroup PublicVar Public Variables
- * @{
- */
-
-/**@}*/
-
-
-/******************************************************************************/
-/* P U B L I C  F U N C T I O N S                                             */
-/******************************************************************************/
-
-/**
- * @defgroup PublicFunc Public Functions
- * @{
- */
-
-/**@}*/
-
-/**@}*/
-
+/** @} */
 
 #endif /* _BR_RTOS_CONFIG_H_ */

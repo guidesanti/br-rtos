@@ -44,5 +44,4 @@ void __BR_TimerTask(void);
 
 /** @} */
 
-
 #endif /* _TIMER_H_ */

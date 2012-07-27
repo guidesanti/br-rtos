@@ -26,7 +26,7 @@
  * @{
  */
 
-#include "port.h"
+#include "BR-RTOS.h"
 
 /**@}*/
 
@@ -39,11 +39,15 @@
  * @{
  */
 
-typedef struct BR_ListNode
+#define __BR_LIST_DECLARE(NAME) BR_ListNode_t NAME = { &NAME, &NAME }
+#define __BR_LIST_ENTRY(NODE, TYPE, FIELD) ((TYPE*)(((uint8_t*)NODE) - ((uint8_t*)&(((TYPE*)0U)->FIELD))))
+
+typedef struct BR_ListNode BR_ListNode_t;
+struct BR_ListNode
 {
-    struct BR_ListNode* prev;
-    struct BR_ListNode* next;
-} BR_ListNode_t;
+    BR_ListNode_t* prev;
+    BR_ListNode_t* next;
+};
 
 /**@}*/
 
@@ -68,90 +72,11 @@ typedef struct BR_ListNode
  * @{
  */
 
-BR_Err_t BR_ListInit(BR_ListNode_t* list)
-{
-  BR_Err_t ret = E_INVAL;
-
-  __BR_ASSERT(NULL != list);
-
-#if (1U == __BR_CHECK_FUNC_PARAMETERS)
-  if (NULL != list)
-  {
-#endif
-  list->prev = list;
-  list->next = list;
-#if (1U == __BR_CHECK_FUNC_PARAMETERS)
-  }
-#endif
-
-  return ret;
-}
-
-BR_Err_t BR_ListInsertAfter(BR_ListNode_t* list, BR_ListNode_t* node)
-{
-  BR_Err_t ret = E_INVAL;
-
-  __BR_ASSERT(NULL != list);
-  __BR_ASSERT(NULL != node);
-
-#if (1U == __BR_CHECK_FUNC_PARAMETERS)
-  if ((NULL != list) && (NULL != node))
-  {
-#endif
-  node->next = list->next;
-  node->prev = list;
-  list->next->prev = node;
-  list->next = node;
-#if (1U == __BR_CHECK_FUNC_PARAMETERS)
-  }
-#endif
-
-  return ret;
-}
-
-BR_Err_t BR_ListInsertBefore(BR_ListNode_t* list, BR_ListNode_t* node)
-{
-  BR_Err_t ret = E_INVAL;
-
-  __BR_ASSERT(NULL != list);
-  __BR_ASSERT(NULL != node);
-
-#if (1U == __BR_CHECK_FUNC_PARAMETERS)
-  if ((NULL != list) && (NULL != node))
-  {
-#endif
-  node->prev = list->prev;
-  node->next = list;
-  list->prev->next = node;
-  list->prev = node;
-#if (1U == __BR_CHECK_FUNC_PARAMETERS)
-  }
-#endif
-
-  return ret;
-}
-
-BR_Err_t BR_ListRemove(BR_ListNode_t* node)
-{
-  BR_Err_t ret = E_INVAL;
-
-  __BR_ASSERT(NULL != node);
-
-#if (1U == __BR_CHECK_FUNC_PARAMETERS)
-  if (NULL != node)
-  {
-#endif
-    node->prev->next = node->next;
-    node->next->prev = node->prev;
-    node->next = node;
-    node->prev = node;
-    ret = E_OK;
-#if (1U == __BR_CHECK_FUNC_PARAMETERS)
-  }
-#endif
-
-  return ret;
-}
+void __BR_ListInit( BR_ListNode_t* list );
+void __BR_ListInsertAfter( BR_ListNode_t* list, BR_ListNode_t* node );
+void __BR_ListInsertBefore( BR_ListNode_t* list, BR_ListNode_t* node );
+void __BR_ListRemove( BR_ListNode_t* node );
+BR_Boolean_t __BR_ListIsEmpty( BR_ListNode_t* node );
 
 /**@}*/
 

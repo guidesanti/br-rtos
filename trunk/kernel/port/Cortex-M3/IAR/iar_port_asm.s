@@ -2,17 +2,17 @@
 	thumb
 
 	EXTERN runningTask
-	EXTERN BR_TaskSwitch
+	EXTERN __BR_TaskSwitch
 
-	PUBLIC BR_PortPendSVCHandler
-	PUBLIC BR_PortEnableIRQ
-	PUBLIC BR_PortDisableIRQ
-	PUBLIC BR_PortSVCHandler
-	PUBLIC BR_PortSetBasePriorityMask
-	PUBLIC BR_PortStartFirstTask
+	PUBLIC __BR_PortPendSVCHandler
+	PUBLIC __BR_PortEnableIRQ
+	PUBLIC __BR_PortDisableIRQ
+	PUBLIC __BR_PortSVCHandler
+	PUBLIC __BR_PortSetBasePriorityMask
+	PUBLIC __BR_PortStartFirstTask
 
-BR_PortPendSVCHandler:
-	/* Get the process stack pointer. */
+__BR_PortPendSVCHandler:
+	/* Get the running task stack pointer. */
 	mrs r0, psp
 	/* Get the current running task.
 	 * The first element of the task is the task stack pointer.
@@ -28,7 +28,7 @@ BR_PortPendSVCHandler:
 	stmdb sp!, { r3, r14 }
 	mov r0, #15
 	msr basepri, r0
-	bl BR_TaskSwitch
+	bl __BR_TaskSwitch
 	mov r0, #0
 	msr basepri, r0
 	/* Restore R3 to R14. */
@@ -45,14 +45,14 @@ BR_PortPendSVCHandler:
 /*
  * void BR_PortEnableIRQ(void)
  */
-BR_PortEnableIRQ:
+__BR_PortEnableIRQ:
 	cpsie i
 	bx r14
 
 /*
  * void BR_PortDisableIRQ(void)
  */
-BR_PortDisableIRQ:
+__BR_PortDisableIRQ:
 	cpsid i
 	bx r14
 
@@ -60,7 +60,7 @@ BR_PortDisableIRQ:
  * void BR_PortSetBasePriorityMask(uint8_t basePriMask)
  * R0 -> basePriMask
  */
-BR_PortSetBasePriorityMask:
+__BR_PortSetBasePriorityMask:
 	msr primask, r0
 
 	bx lr
@@ -73,7 +73,7 @@ BR_PortSetBasePriorityMask:
  * Get the first tast to run from runningTask pointer and put it to run
  * using the process stack (psp).
  */
-BR_PortSVCHandler:
+__BR_PortSVCHandler:
 	ldr	r3, =runningTask
 	ldr r1, [r3]
 	ldr r0, [r1]
@@ -88,7 +88,7 @@ BR_PortSVCHandler:
 /*
  * void BR_PortStartFirstTask(void)
  */
-BR_PortStartFirstTask:
+__BR_PortStartFirstTask:
 	/* Set the msp back to the start of the stack. */
 	ldr r0, =0xE000ED08
 	ldr r0, [r0]

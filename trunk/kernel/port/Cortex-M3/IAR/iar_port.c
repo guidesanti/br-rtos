@@ -101,7 +101,7 @@
  * @note This function is part of the internals of BR-RTOS kernel and must
  * never be called from the user code.
  */
-BR_StackPointer_t BR_PortInitStack(BR_StackPointer_t stackPointer, void (*run)(void), void* param)
+BR_StackPointer_t __BR_PortInitStack(BR_StackPointer_t stackPointer, void (*run)(void), void* param)
 {
   /*
    * We are simulating as the task was already running and has been
@@ -134,7 +134,7 @@ BR_StackPointer_t BR_PortInitStack(BR_StackPointer_t stackPointer, void (*run)(v
  *
  * This function will execute CPU specific code to start the task scheduler.
  */
-void BR_PortSchedulerStart(void)
+void __BR_PortSchedulerStart(void)
 {
   /* Set the PendSV and SysTick interrupts priorities. */
   SCB->SHP[10U] = 0xF0U;
@@ -145,7 +145,16 @@ void BR_PortSchedulerStart(void)
   SysTick_Config(__BR_CPU_CLOCK_HZ);
 
   /* Start the first task. */
-  BR_PortStartFirstTask();
+  __BR_PortStartFirstTask();
+}
+
+/**
+ * @brief TODO
+ */
+void __BR_PortYield(void)
+{
+  /* Set the PendSV exception to pending state, so a context switch can be executed. */
+  __BR_SCB_ICSR |= SCB_ICSR_PENDSVSET;
 }
 
 /**
@@ -158,10 +167,10 @@ void BR_PortSchedulerStart(void)
  * It will update the tasks tick counter and set the PendSV exception pending
  * bit to force a context switch within the PendSV exception handler.
  */
-void BR_PortSysTickHandler(void)
+void __BR_PortSysTickHandler(void)
 {
   /* Call the task tick update function. */
-  BR_TaskTickUpdate();
+  __BR_TaskTickUpdate();
 
   /* Set the PendSV exception to pending state, so a context switch can be executed. */
   __BR_SCB_ICSR |= SCB_ICSR_PENDSVSET;

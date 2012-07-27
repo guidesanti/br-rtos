@@ -1,6 +1,6 @@
 /**
- * @file        task.h
- * @date        2012, July 20
+ * @file        object.h
+ * @date        2012, July 26
  * @author      Guilherme A. de Santi <guidesanti@yahoo.com.br>
  * @copyright   Guilherme A. de Santi &copy; 2012
  * @brief       TODO: add brief description
@@ -9,8 +9,8 @@
  */
 
 
-#ifndef _TASK_H_
-#define _TASK_H_
+#ifndef _OBJECT_H_
+#define _OBJECT_H_
 
 /**
  * @defgroup ModuleName The Module Name
@@ -26,9 +26,7 @@
  * @{
  */
 
-#include "BR-RTOS.h"
 #include "BR-RTOSConfig.h"
-#include "port.h"
 #include "list.h"
 #include <stdint.h>
 
@@ -43,21 +41,22 @@
  * @{
  */
 
-#define __BR_TASK_ST_READY      (0U)
-#define __BR_TASK_ST_RUNNING    (1U)
-#define __BR_TASK_ST_WAITING    (2U)
-#define __BR_TASK_ST_SUSPENDED  (3U)
+typedef enum
+{
+  BR_OBJ_TYPE_TASK = 0U,
+  BR_OBJ_TYPE_DEVICE,
+  BR_OBJ_TYPE_TIMER,
+  BR_N_OBJ_TYPES,
+} BR_ObjectType_t;
 
 typedef struct
 {
-    volatile BR_StackPointer_t stackPointer;  /**< This MUST be the first structure field. */
-    BR_Object_t* parent;
-    uint32_t counter;
-    uint8_t state;
-    uint8_t priority;
-    BR_ListNode_t list;
-    char name[__BR_MAX_TASK_NAME_LEN + 1U];
-} BR_Task_t;
+    uint16_t        id;
+    BR_ObjectType_t type;
+    void*           child;
+    BR_ListNode_t   node;
+    char            name[__BR_MAX_OBJ_NAME_LEN];
+} BR_Object_t;
 
 /**@}*/
 
@@ -82,12 +81,14 @@ typedef struct
  * @{
  */
 
-void __BR_TaskSwitch(void);
-void __BR_TaskTickUpdate(void);
+void __BR_ObjectInit(void);
+BR_Object_t* __BR_ObjectCreate(char* name, BR_ObjectType_t type, void* child);
+BR_Object_t* __BR_ObjectFind(uint16_t id);
+BR_Object_t* __BR_ObjectFindByName(char* name);
 
 /**@}*/
 
 /**@}*/
 
 
-#endif /* _TASK_H_ */
+#endif /* _OBJECT_H_ */

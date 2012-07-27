@@ -1854,6 +1854,9 @@
   <file>
     <name>$PROJ_DIR$\..\kernel\src\task.c</name>
   </file>
+  <file>
+    <name>$PROJ_DIR$\..\kernel\src\timer.c</name>
+  </file>
 </project>
 
 

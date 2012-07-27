@@ -72,6 +72,7 @@ void MyTask2(void);
 
 uint32_t tickCounter = 0U;
 GPIO_InitTypeDef gpioInit;
+BR_Timer_t* timer1 = NULL;
 
 /**@}*/
 
@@ -83,6 +84,17 @@ GPIO_InitTypeDef gpioInit;
  * @defgroup PrivateFunc Private Functions
  * @{
  */
+void Task1OnTimeout(void* param)
+{
+  if (GPIO_ReadOutputDataBit(GPIOC, GPIO_Pin_8))
+  {
+    GPIO_ResetBits(GPIOC, GPIO_Pin_8);
+  }
+  else
+  {
+    GPIO_SetBits(GPIOC, GPIO_Pin_8);
+  }
+}
 
 void MyTask1(void)
 {
@@ -92,12 +104,13 @@ void MyTask1(void)
   gpioInit.GPIO_Mode = GPIO_Mode_Out_PP;
   GPIO_Init(GPIOC, &gpioInit);
 
+  BR_TimerCreate("Timer1", 2U, Task1OnTimeout, NULL, 0U, &timer1);
+  BR_TimerControl(timer1, BR_TIMER_CMD_SET_CONT, NULL);
+  BR_TimerStart(timer1);
+
   while (1U)
   {
-    GPIO_SetBits(GPIOC, GPIO_Pin_8);
-    BR_TaskWait(2U);
-    GPIO_ResetBits(GPIOC, GPIO_Pin_8);
-    BR_TaskWait(2U);
+    // TODO
   }
 }
 

@@ -32,7 +32,8 @@
  * @{
  */
 
-#include "BR-RTOSConfig.h"
+#include "BR-RTOSDefs.h"
+#include "list.h"
 #include <stdint.h>
 #include <stdlib.h>
 
@@ -46,42 +47,6 @@
  * @defgroup Defs Constant, Macro and Type Definitions
  * @{
  */
-
-/* The available task priorities. */
-#define BR_TASK_PRIORITY_TRIVIAL    (0U)
-#define BR_TASK_PRIORITY_LOW        (1U)
-#define BR_TASK_PRIORITY_MEDIUM     (2U)
-#define BR_TASK_PRIORITY_HIGH       (3U)
-#define BR_TASK_PRIORITY_CRITICAL   (4U)
-/* The number of task priorities. */
-#define BR_N_TASK_PRIORITIES        (5U)
-
-typedef uint32_t BR_Size_t;
-
-/**
- * @brief Error code list.
- *
- * This is the list of error codes that may be returned by the BR-RTOS API
- * functions.
- */
-typedef enum
-{
-  E_OK,
-  E_ERROR,
-  E_INVAL,
-  E_NORES,
-  E_ENOSYS,
-} BR_Err_t;
-
-#ifndef TRUE
-#define TRUE (1U)
-#endif
-
-#ifndef FALSE
-#define FALSE (0U)
-#endif
-
-typedef uint8_t BR_Boolean_t;
 
 /**@}*/
 
@@ -121,11 +86,24 @@ void BR_KernelStartScheduler(void);
  * @{
  */
 
-BR_Err_t BR_TaskCreate(const char* name, void (*run)(void), uint8_t stackLen, void* param, uint8_t priority, uint16_t* taskID);
+BR_Err_t BR_TaskCreate(const char* name, void (*run)(void), uint8_t stackLen, void* param, uint8_t priority, BR_Task_t** taskArg);
 void BR_TaskYield(void);
-void BR_TaskSuspend(uint16_t taskID);
-void BR_TaskResume(uint16_t taskID);
+void BR_TaskSuspend(BR_Task_t* task);
+void BR_TaskResume(BR_Task_t* task);
 void BR_TaskWait(uint32_t ticks);
+
+/**@}*/
+
+/**
+ * @defgroup TimerCtrl Timer Control API
+ * @{
+ */
+
+BR_Err_t BR_TimerCreate(const char* name, uint32_t time, BR_TimerCallback_t callback, void* param, uint8_t flags, BR_Timer_t** timerArg);
+BR_Err_t BR_TimerControl(BR_Timer_t* timer, BR_TimerCmd_t cmd, void* param);
+BR_Err_t BR_TimerStart(BR_Timer_t* timer);
+BR_Err_t BR_TimerStop(BR_Timer_t* timer);
+BR_Err_t BR_TimerRestart(BR_Timer_t* timer);
 
 /**@}*/
 

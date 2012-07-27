@@ -18,7 +18,9 @@
  * @{
  */
 
+#include "BR-RTOS.h"
 #include "object.h"
+#include "list.h"
 #include "port.h"
 #include <string.h>
 
@@ -58,6 +60,10 @@
 static uint16_t nextId = 0U;
 
 static BR_ListNode_t objList;
+
+#if (1U == __BR_DEBUG)
+static BR_Object_t* objListDebug[__BR_MAX_OBJ_LIST_DEBUG];
+#endif
 
 /**@}*/
 
@@ -109,6 +115,9 @@ BR_Object_t* __BR_ObjectCreate(char* name, BR_ObjectType_t type, void* child)
   obj = BR_MemAlloc(sizeof(BR_Object_t));
   if (NULL != obj)
   {
+#if (1U == __BR_DEBUG)
+    objListDebug[nextId] = obj;
+#endif
     /* Set the object ID and update the nextId value. */
     obj->id = nextId++;
     /* Set the object type. */

@@ -20,6 +20,7 @@
 
 #include "BR-RTOS.h"
 #include "BR-RTOSConfig.h"
+#include "port.h"
 
 /**@}*/
 
@@ -113,6 +114,10 @@ void* BR_MemAlloc(BR_Size_t nBytes)
     {
       *(ptr + index) = 0x00U;
     }
+  }
+  else
+  {
+    __BR_ASSERT(FALSE);
   }
 
   return ptr;

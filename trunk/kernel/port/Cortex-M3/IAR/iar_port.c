@@ -20,6 +20,7 @@
  */
 
 #include "task.h"
+#include "timer.h"
 #include "port.h"
 #include "stm32f10x.h"
 
@@ -171,6 +172,9 @@ void __BR_PortSysTickHandler(void)
 {
   /* Call the task tick update function. */
   __BR_TaskTickUpdate();
+
+  /* Decrement the timers. */
+  __BR_TimerDecrement();
 
   /* Set the PendSV exception to pending state, so a context switch can be executed. */
   __BR_SCB_ICSR |= SCB_ICSR_PENDSVSET;

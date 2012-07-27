@@ -92,6 +92,37 @@
  */
 #define __BR_CHECK_FUNC_PARAMETERS  (0U)
 
+/* -------------------------------------------------------------------------- */
+/* WARNING:                                                                   */
+/*                                                                            */
+/* The configuration parameters bellow this point are for debugging purposes  */
+/* only and must not be enabled and/or changed by the user unless the user    */
+/* intends to debug the kernel and its features.                              */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Enable/disable debugging of the BR-RTOS kernel.
+ *
+ * This is used to debug the BR-RTOS internals and must be kept disabled unless
+ * the user is debugging the BR-RTOS features.
+ *
+ * The values allowed for this key are:
+ * 0U -> disable the kernel debugging
+ * 1U -> enable the kernel debugging
+ */
+#define __BR_DEBUG (1U)
+
+/**
+ * The maxim number of kernel objects within the debugging objects list.
+ *
+ * The debugging objects list is created just to facilitate the visualization
+ * of the kernel objects within the debugger.
+ * This list may be accessed by the symbol objListDebug.
+ */
+#define __BR_MAX_OBJ_LIST_DEBUG (10U)
+
+
+
 /**@}*/
 
 /******************************************************************************/

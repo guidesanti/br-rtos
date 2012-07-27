@@ -41,6 +41,9 @@
  * @{
  */
 
+#define __BR_ENTER_CRITICAL() __BR_PortDisableIRQ()
+#define __BR_EXIT_CRITICAL()  __BR_PortEnableIRQ()
+
 /**
  * The initial value to be set for the xPSR register when the task is created.
  */
@@ -95,15 +98,16 @@ typedef uint32_t* BR_StackPointer_t;
  * @{
  */
 
-BR_StackPointer_t BR_PortInitStack(BR_StackPointer_t stackPointer, void (*run)(void), void* param);
-void BR_PortSchedulerStart(void);
-void BR_PortSVCHandler(void);
-void BR_PortPendSVCHandler(void);
-void BR_PortSysTickHandler(void);
-void BR_PortEnableIRQ(void);
-void BR_PortDisableIRQ(void);
-void BR_PortSetBasePriorityMask(uint8_t basePriMask);
-void BR_PortStartFirstTask(void);
+BR_StackPointer_t __BR_PortInitStack(BR_StackPointer_t stackPointer, void (*run)(void), void* param);
+void __BR_PortSchedulerStart(void);
+void __BR_PortYield(void);
+void __BR_PortSVCHandler(void);
+void __BR_PortPendSVCHandler(void);
+void __BR_PortSysTickHandler(void);
+void __BR_PortEnableIRQ(void);
+void __BR_PortDisableIRQ(void);
+void __BR_PortSetBasePriorityMask(uint8_t basePriMask);
+void __BR_PortStartFirstTask(void);
 
 /**@}*/
 

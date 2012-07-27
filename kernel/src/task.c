@@ -18,9 +18,8 @@
  * @{
  */
 
+#include "object.h"
 #include "task.h"
-#include "port.h"
-#include "BR-RTOSConfig.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -35,20 +34,6 @@
  * @{
  */
 
-#define __BR_TASK_ST_READY__    (0U)
-#define __BR_TASK_ST_RUNNING__  (1U)
-#define __BR_TASK_ST_WAITING__  (2U)
-
-typedef struct BR_Task_t BR_Task_t;
-struct BR_Task_t
-{
-    volatile BR_StackPointer_t stackPointer;
-    uint32_t counter;
-    uint8_t state;
-    BR_Task_t* nextTask;
-    char name[__BR_MAX_TASK_NAME_LEN + 1U];
-};
-
 /**@}*/
 
 /******************************************************************************/
@@ -59,6 +44,7 @@ struct BR_Task_t
  * @defgroup PrivateFuncProto Private Function Prototypes
  * @{
  */
+static void __BR_IdleTask(void);
 
 /**@}*/
 
@@ -70,11 +56,6 @@ struct BR_Task_t
  * @defgroup PrivateVar Private Variables
  * @{
  */
-
-/**
- * Store the number of created tasks.
- */
-static uint8_t nTasks = 0U;
 
 /**@}*/
 
@@ -88,19 +69,31 @@ static uint8_t nTasks = 0U;
  */
 
 /**
- * Points to the only task within the running state.
+ * Points to the task within the running state.
  */
 BR_Task_t* runningTask = NULL;
 
 /**
- * Points to the first task within the ready state list.
+ * The list of tasks within suspended state.
  */
-BR_Task_t* readyTaskList = NULL;
+BR_ListNode_t suspendedTaskList;
 
 /**
- * Points to the first task within the waiting state list.
+ * The list of tasks within waiting state.
  */
-BR_Task_t* waitingTaskList = NULL;
+BR_ListNode_t waitingTaskList;
+
+/**
+ * The task priority table.
+ *
+ * All tasks within the priority table are in the ready state.
+ */
+BR_ListNode_t priorityTable[BR_N_TASK_PRIORITIES];
+
+/**
+ * The current priority level.
+ */
+uint8_t currentPriority = (BR_N_TASK_PRIORITIES - 1U);
 
 /**@}*/
 
@@ -112,6 +105,11 @@ BR_Task_t* waitingTaskList = NULL;
  * @defgroup PrivateFunc Private Functions
  * @{
  */
+
+static void __BR_IdleTask(void)
+{
+  while (TRUE) { }
+}
 
 /**@}*/
 
@@ -125,6 +123,26 @@ BR_Task_t* waitingTaskList = NULL;
  */
 
 /**
+ * @brief Initialize the kernel.
+ */
+void BR_KernelInit(void)
+{
+  uint8_t index = 0U;
+
+  __BR_ObjectInit();
+
+  __BR_ListInit(&waitingTaskList);
+  /* Initialize the priority table. */
+  for (index = 0U; index < BR_N_TASK_PRIORITIES; index++)
+  {
+    __BR_ListInit(&priorityTable[index]);
+  }
+
+  /* Create the idle task. */
+  BR_TaskCreate("Idle", __BR_IdleTask, 32U, NULL, BR_TASK_PRIORITY_TRIVIAL, NULL);
+}
+
+/**
  * @brief Start the task scheduler.
  *
  * This function should be called from main() and will not return unless the
@@ -134,7 +152,18 @@ BR_Task_t* waitingTaskList = NULL;
  */
 void BR_KernelStartScheduler(void)
 {
-  BR_PortSchedulerStart();
+  /* Set the first task to run. */
+  while (TRUE == __BR_ListIsEmpty(&(priorityTable[currentPriority])))
+  {
+    currentPriority--;
+  }
+  __BR_ASSERT(currentPriority < BR_N_TASK_PRIORITIES);
+  runningTask = __BR_LIST_ENTRY(priorityTable[currentPriority].next, BR_Task_t, list);
+  __BR_ListRemove(&(runningTask->list));
+  __BR_ListInsertBefore(&(priorityTable[currentPriority]), &(runningTask->list));
+
+  /* Start the scheduler. */
+  __BR_PortSchedulerStart();
 }
 
 /**
@@ -165,49 +194,61 @@ void BR_KernelStartScheduler(void)
  * If there is no memory space available to create the task, the function will
  * abort the operation and return E_NORES.
  */
-BR_Err_t BR_TaskCreate(const char* name, void (*run)(void), uint8_t stackLen, void* param, uint8_t* taskID)
+BR_Err_t BR_TaskCreate(const char* name, void (*run)(void), uint8_t stackLen, void* param, uint8_t priority, uint16_t* taskID)
 {
   BR_Err_t ret = E_OK;
   BR_Task_t* task = NULL;
+  BR_Object_t* obj = NULL;
 
   /* Check the parameters. */
   __BR_ASSERT(NULL != run);
+  __BR_ASSERT(priority < BR_N_TASK_PRIORITIES);
 #if (1U == __BR_CHECK_FUNC_PARAMETERS)
-  if (NULL != run)
+  if ((NULL != run) && (priority < BR_N_TASK_PRIORITIES))
   {
 #endif
+    __BR_ENTER_CRITICAL();
     /* Allocate space for the new task on the heap. */
     task = BR_MemAlloc(sizeof(BR_Task_t));
     if (NULL != task)
     {
-      /* Allocate space for the task stack. */
-      task->stackPointer = BR_MemAlloc(stackLen * __BR_WORD_LEN);
-      if (NULL != task->stackPointer)
+      /* Create the task parent object. */
+      obj = __BR_ObjectCreate((char*)name, BR_OBJ_TYPE_TASK, task);
+      if (NULL != obj)
       {
-        /* Fill the stack with default values for debugging. */
-        memset(task->stackPointer, 0xFFU, stackLen * __BR_WORD_LEN);
-        /* Set the stack pointer to the end of allocated memory. */
-        task->stackPointer += (stackLen - 1U);
-        /* Increment the created number of tasks.
-         * The number of the created task will be the task ID.
-         */
-        nTasks++;
-        if (NULL != taskID)
+        task->parent = obj;
+        /* Allocate space for the task stack. */
+        task->stackPointer = BR_MemAlloc(stackLen * __BR_WORD_LEN);
+        if (NULL != task->stackPointer)
         {
-          *taskID = nTasks;
+          /* Fill the stack with default values for debugging. */
+          memset(task->stackPointer, 0xFFU, stackLen * __BR_WORD_LEN);
+          /* Set the stack pointer to the end of allocated memory. */
+          task->stackPointer += (stackLen - 1U);
+          /* Increment the created number of tasks.
+           * The number of the created task will be the task ID.
+           */
+          if (NULL != taskID)
+          {
+            *taskID = obj->id;
+          }
+          /* Initialize the new task structure. */
+          task->counter = 0U;
+          task->state = __BR_TASK_ST_READY;
+          strncpy(task->name, name, __BR_MAX_TASK_NAME_LEN);
+          task->name[__BR_MAX_TASK_NAME_LEN - 1U] = '\0';
+          /* Set the task priority and initialize the task list. */
+          task->priority = priority;
+          __BR_ListInit(&(task->list));
+          __BR_ListInsertBefore(&(priorityTable[priority]), &(task->list));
+          /* Initialize the task stack. */
+          task->stackPointer = __BR_PortInitStack(task->stackPointer, run, param);
+          ret = E_OK;
         }
-        /* Initialize the new task structure. */
-        task->counter = 0U;
-        task->state = __BR_TASK_ST_READY__;
-        strncpy(task->name, name, __BR_MAX_TASK_NAME_LEN);
-        task->name[__BR_MAX_TASK_NAME_LEN - 1U] = '\0';
-        /* Insert the new task within the ready task list. */
-        task->nextTask = readyTaskList;
-        readyTaskList = task;
-        runningTask = readyTaskList;
-        /* Initialize the task stack. */
-        task->stackPointer = BR_PortInitStack(task->stackPointer, run, param);
-        ret = E_OK;
+        else
+        {
+          ret = E_NORES;
+        }
       }
       else
       {
@@ -218,8 +259,9 @@ BR_Err_t BR_TaskCreate(const char* name, void (*run)(void), uint8_t stackLen, vo
     {
       ret = E_NORES;
     }
-  }
+    __BR_EXIT_CRITICAL();
 #if (1U == __BR_CHECK_FUNC_PARAMETERS)
+  }
   else
   {
     ret = E_INVAL;
@@ -230,22 +272,145 @@ BR_Err_t BR_TaskCreate(const char* name, void (*run)(void), uint8_t stackLen, vo
 }
 
 /**
+ * @brief Provides the CPU to another task.
+ *
+ * This function will make the current running task to leave the CPU and
+ * another task will be schedule to run.
+ */
+void BR_TaskYield(void)
+{
+  __BR_PortYield();
+}
+
+/**
+ * @brief Put a task in suspended state.
+ * @param [in] taskID The ID of the task to be suspended.
+ *
+ * This function will put a task with ID taskID in suspended state.
+ * If the ID is not valid nothing will be done.
+ * If the ID is valid the task will be put in suspended state until a call
+ * to BR_TaskResume() is called for the same task ID. No matter the current
+ * state of the task it will be suspended and on resume it will be put in the ready state.
+ * If the task identified by taskID is the same task that is current running
+ * within the CPU it will be suspended and a new task will be immediately be
+ * scheduled to run.
+ */
+void BR_TaskSuspend(uint16_t taskID)
+{
+  BR_Object_t* obj = NULL;
+  BR_Task_t* task = NULL;
+
+  __BR_ENTER_CRITICAL();
+
+  /* Find the task. */
+  obj = __BR_ObjectFind(taskID);
+  if ((NULL != obj) && (BR_OBJ_TYPE_TASK == obj->type))
+  {
+    /* Remove the task from the priority table and insert it in suspended task list. */
+    task = (BR_Task_t)obj->child;
+    task->counter = 0U;
+    task->state = __BR_TASK_ST_SUSPENDED;
+    __BR_ListRemove(&(task->list));
+    __BR_ListInsertAfter(&suspendedTaskList, &(task->list));
+    if (task == runningTask)
+    {
+      __BR_PortYield();
+    }
+  }
+
+  __BR_EXIT_CRITICAL();
+}
+
+/**
+ * @brief Resume a previously suspended task.
+ * @param [in] taskID The ID of the task to be resumed.
+ *
+ * Put the task with ID taskID in ready state if it has been previously suspended.
+ * If the task is not within the suspended task list nothing will be done.
+ * No matter the state of the task when it was suspended, it will be resumed
+ * within the ready state and if the priority of the resumed task is greater
+ * than the current running task priority it will be immediately put on the
+ * CPU to run.
+ */
+void BR_TaskResume(uint16_t taskID)
+{
+  BR_Object_t* obj = NULL;
+  BR_Task_t* task = NULL;
+  BR_ListNode_t* node = NULL;
+
+  __BR_ENTER_CRITICAL();
+
+  /* Look at the suspended list to find the task. */
+  node = suspendedTaskList.next;
+  while (node != &suspendedTaskList)
+  {
+    task = __BR_LIST_ENTRY(node, BR_Task_t, list);
+    obj = task->parent;
+    if (taskID == obj->id)
+    {
+      /* Remove the task from suspended list. */
+      __BR_ListRemove(node);
+      /* Insert the task within the priority table. */
+      __BR_ListInsertAfter(&(priorityTable[task->priority]), node);
+      /* Set the task state. */
+      task->counter = 0U;
+      task->state = __BR_TASK_ST_READY;
+      /* Check the task priority. */
+      if (task->priority > currentPriority)
+      {
+        currentPriority = task->priority;
+        __BR_PortYield();
+      }
+      break;
+    }
+    node = node->next;
+  }
+
+  __BR_EXIT_CRITICAL();
+}
+
+/**
+ * @brief Put the running task in waiting state for a number of ticks.
+ * @param [in] ticks The number of ticks to wait.
+ */
+void BR_TaskWait(uint32_t ticks)
+{
+  /* Enter the critical section. */
+  __BR_ENTER_CRITICAL();
+
+  if (ticks > 0U)
+  {
+    /* Change the running task state to waiting and set its counter. */
+    runningTask->state = __BR_TASK_ST_WAITING;
+    runningTask->counter = ticks;
+    /* Remove the task from priority table and insert it in the waiting list. */
+    __BR_ListRemove(&(runningTask->list));
+    __BR_ListInsertAfter(&waitingTaskList, &(runningTask->list));
+  }
+
+  __BR_PortYield();
+
+  /* Exit the critical section. */
+  __BR_EXIT_CRITICAL();
+}
+
+/**
  * @brief Select the next task to run.
  * @note This function is part of the kernel and should never be called from the
  * user code.
  *
  * This function selects the next task on the ready list to run.
  */
-void BR_TaskSwitch(void)
+void __BR_TaskSwitch(void)
 {
-  if (runningTask->nextTask != NULL)
+  while (TRUE == __BR_ListIsEmpty(&(priorityTable[currentPriority])))
   {
-    runningTask = runningTask->nextTask;
+    currentPriority--;
   }
-  else
-  {
-    runningTask = readyTaskList;
-  }
+  __BR_ASSERT(currentPriority < BR_N_TASK_PRIORITIES);
+  runningTask = __BR_LIST_ENTRY(priorityTable[currentPriority].next, BR_Task_t, list);
+  __BR_ListRemove(&(runningTask->list));
+  __BR_ListInsertBefore(&(priorityTable[currentPriority]), &(runningTask->list));
 }
 
 
@@ -259,42 +424,35 @@ void BR_TaskSwitch(void)
  * If the counter expires the task is removed from the waiting list and inserted
  * into the ready list.
  */
-void BR_TaskTickUpdate(void)
+void __BR_TaskTickUpdate(void)
 {
-  BR_Task_t* prevTask = NULL;
-  BR_Task_t* currTask = waitingTaskList;
+  BR_Task_t* task = NULL;
+  BR_ListNode_t* node = NULL;
 
   /* Walk through the waiting list and update each task counter. */
-  while (currTask != NULL)
+  if (FALSE == __BR_ListIsEmpty(&waitingTaskList))
   {
-    /* Decrement the task tick counter. */
-    currTask->counter--;
-    if (0U == currTask->counter)
+    node = waitingTaskList.next;
+    while (node != &waitingTaskList)
     {
-      /* The task counter has been expired, so remove the task from waiting
-       * list and insert it on the ready list.
-       */
-      currTask->state = __BR_TASK_ST_READY__;
-      if (NULL == prevTask)
+      /* Get the task of the node. */
+      task = __BR_LIST_ENTRY(node, BR_Task_t, list);
+      /* Next node. */
+      node = node->next;
+      /* Decrement the task counter. */
+      task->counter--;
+      if (0U == task->counter)
       {
-        waitingTaskList = currTask->nextTask;
-        currTask->nextTask = readyTaskList;
-        readyTaskList = currTask;
-        currTask = waitingTaskList;
+        /* Change the task state to ready and add it to the correct list within the priority table. */
+        task->state = __BR_TASK_ST_READY;
+        __BR_ListRemove(&(task->list));
+        __BR_ListInsertAfter(&priorityTable[task->priority], &(task->list));
+        /* Set the current priority. */
+        if (task->priority > currentPriority)
+        {
+          currentPriority = task->priority;
+        }
       }
-      else
-      {
-        prevTask->nextTask = currTask->nextTask;
-        currTask->nextTask = readyTaskList;
-        readyTaskList = currTask;
-        currTask = prevTask->nextTask;
-      }
-    }
-    else
-    {
-      /* Next task. */
-      prevTask = currTask;
-      currTask = currTask->nextTask;
     }
   }
 }

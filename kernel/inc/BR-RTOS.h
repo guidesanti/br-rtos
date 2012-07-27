@@ -32,6 +32,7 @@
  * @{
  */
 
+#include "BR-RTOSConfig.h"
 #include <stdint.h>
 #include <stdlib.h>
 
@@ -45,6 +46,15 @@
  * @defgroup Defs Constant, Macro and Type Definitions
  * @{
  */
+
+/* The available task priorities. */
+#define BR_TASK_PRIORITY_TRIVIAL    (0U)
+#define BR_TASK_PRIORITY_LOW        (1U)
+#define BR_TASK_PRIORITY_MEDIUM     (2U)
+#define BR_TASK_PRIORITY_HIGH       (3U)
+#define BR_TASK_PRIORITY_CRITICAL   (4U)
+/* The number of task priorities. */
+#define BR_N_TASK_PRIORITIES        (5U)
 
 typedef uint32_t BR_Size_t;
 
@@ -60,7 +70,18 @@ typedef enum
   E_ERROR,
   E_INVAL,
   E_NORES,
+  E_ENOSYS,
 } BR_Err_t;
+
+#ifndef TRUE
+#define TRUE (1U)
+#endif
+
+#ifndef FALSE
+#define FALSE (0U)
+#endif
+
+typedef uint8_t BR_Boolean_t;
 
 /**@}*/
 
@@ -90,6 +111,7 @@ typedef enum
  * @{
  */
 
+void BR_KernelInit(void);
 void BR_KernelStartScheduler(void);
 
 /**@}*/
@@ -99,7 +121,11 @@ void BR_KernelStartScheduler(void);
  * @{
  */
 
-BR_Err_t BR_TaskCreate(const char* name, void (*run)(void), uint8_t stackLen, void* param, uint8_t* taskID);
+BR_Err_t BR_TaskCreate(const char* name, void (*run)(void), uint8_t stackLen, void* param, uint8_t priority, uint16_t* taskID);
+void BR_TaskYield(void);
+void BR_TaskSuspend(uint16_t taskID);
+void BR_TaskResume(uint16_t taskID);
+void BR_TaskWait(uint32_t ticks);
 
 /**@}*/
 

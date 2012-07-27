@@ -18,7 +18,9 @@
  * @{
  */
 
+#include "BR-RTOS.h"
 #include "object.h"
+#include "timer.h"
 #include "task.h"
 #include <stdlib.h>
 #include <string.h>
@@ -131,12 +133,16 @@ void BR_KernelInit(void)
 
   __BR_ObjectInit();
 
+  __BR_ListInit(&suspendedTaskList);
   __BR_ListInit(&waitingTaskList);
   /* Initialize the priority table. */
   for (index = 0U; index < BR_N_TASK_PRIORITIES; index++)
   {
     __BR_ListInit(&priorityTable[index]);
   }
+
+  /* Initialize the timers sub-system. */
+  __BR_TimerInit();
 
   /* Create the idle task. */
   BR_TaskCreate("Idle", __BR_IdleTask, 32U, NULL, BR_TASK_PRIORITY_TRIVIAL, NULL);
@@ -172,7 +178,7 @@ void BR_KernelStartScheduler(void)
  * @param [in] run A pointer to the task execution code.
  * @param [in] stackLen The length of the task stack (specified in number of CPU words).
  * @param [in] param A pointer to the parameters to be passed to the task.
- * @param [out] taskID The task ID.
+ * @param [out] task The task structure.
  * @return Error code.
  * @retval E_INVAL If any parameter is invalid.
  * @retval E_NORES If there is no enough memory within the heap to allocate for the new task.
@@ -194,7 +200,7 @@ void BR_KernelStartScheduler(void)
  * If there is no memory space available to create the task, the function will
  * abort the operation and return E_NORES.
  */
-BR_Err_t BR_TaskCreate(const char* name, void (*run)(void), uint8_t stackLen, void* param, uint8_t priority, uint16_t* taskID)
+BR_Err_t BR_TaskCreate(const char* name, void (*run)(void), uint8_t stackLen, void* param, uint8_t priority, BR_Task_t** taskArg)
 {
   BR_Err_t ret = E_OK;
   BR_Task_t* task = NULL;
@@ -228,9 +234,9 @@ BR_Err_t BR_TaskCreate(const char* name, void (*run)(void), uint8_t stackLen, vo
           /* Increment the created number of tasks.
            * The number of the created task will be the task ID.
            */
-          if (NULL != taskID)
+          if (NULL != taskArg)
           {
-            *taskID = obj->id;
+            *(taskArg) = task;
           }
           /* Initialize the new task structure. */
           task->counter = 0U;
@@ -295,27 +301,17 @@ void BR_TaskYield(void)
  * within the CPU it will be suspended and a new task will be immediately be
  * scheduled to run.
  */
-void BR_TaskSuspend(uint16_t taskID)
+void BR_TaskSuspend(BR_Task_t* task)
 {
-  BR_Object_t* obj = NULL;
-  BR_Task_t* task = NULL;
-
   __BR_ENTER_CRITICAL();
 
-  /* Find the task. */
-  obj = __BR_ObjectFind(taskID);
-  if ((NULL != obj) && (BR_OBJ_TYPE_TASK == obj->type))
+  task->counter = 0U;
+  task->state = __BR_TASK_ST_SUSPENDED;
+  __BR_ListRemove(&(task->list));
+  __BR_ListInsertAfter(&suspendedTaskList, &(task->list));
+  if (task == runningTask)
   {
-    /* Remove the task from the priority table and insert it in suspended task list. */
-    task = (BR_Task_t)obj->child;
-    task->counter = 0U;
-    task->state = __BR_TASK_ST_SUSPENDED;
-    __BR_ListRemove(&(task->list));
-    __BR_ListInsertAfter(&suspendedTaskList, &(task->list));
-    if (task == runningTask)
-    {
-      __BR_PortYield();
-    }
+    __BR_PortYield();
   }
 
   __BR_EXIT_CRITICAL();
@@ -332,10 +328,9 @@ void BR_TaskSuspend(uint16_t taskID)
  * than the current running task priority it will be immediately put on the
  * CPU to run.
  */
-void BR_TaskResume(uint16_t taskID)
+void BR_TaskResume(BR_Task_t* task)
 {
-  BR_Object_t* obj = NULL;
-  BR_Task_t* task = NULL;
+  BR_Task_t* taskAux = NULL;
   BR_ListNode_t* node = NULL;
 
   __BR_ENTER_CRITICAL();
@@ -344,14 +339,14 @@ void BR_TaskResume(uint16_t taskID)
   node = suspendedTaskList.next;
   while (node != &suspendedTaskList)
   {
-    task = __BR_LIST_ENTRY(node, BR_Task_t, list);
-    obj = task->parent;
-    if (taskID == obj->id)
+    taskAux = __BR_LIST_ENTRY(node, BR_Task_t, list);
+    node = node->next;
+    if (task == taskAux)
     {
       /* Remove the task from suspended list. */
-      __BR_ListRemove(node);
+      __BR_ListRemove(&(task->list));
       /* Insert the task within the priority table. */
-      __BR_ListInsertAfter(&(priorityTable[task->priority]), node);
+      __BR_ListInsertAfter(&(priorityTable[task->priority]), &(task->list));
       /* Set the task state. */
       task->counter = 0U;
       task->state = __BR_TASK_ST_READY;
@@ -363,7 +358,6 @@ void BR_TaskResume(uint16_t taskID)
       }
       break;
     }
-    node = node->next;
   }
 
   __BR_EXIT_CRITICAL();

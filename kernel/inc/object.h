@@ -26,9 +26,7 @@
  * @{
  */
 
-#include "BR-RTOSConfig.h"
-#include "list.h"
-#include <stdint.h>
+#include "BR-RTOSDefs.h"
 
 /**@}*/
 
@@ -40,23 +38,6 @@
  * @defgroup Defs Constant, Macro and Type Definitions
  * @{
  */
-
-typedef enum
-{
-  BR_OBJ_TYPE_TASK = 0U,
-  BR_OBJ_TYPE_DEVICE,
-  BR_OBJ_TYPE_TIMER,
-  BR_N_OBJ_TYPES,
-} BR_ObjectType_t;
-
-typedef struct
-{
-    uint16_t        id;
-    BR_ObjectType_t type;
-    void*           child;
-    BR_ListNode_t   node;
-    char            name[__BR_MAX_OBJ_NAME_LEN];
-} BR_Object_t;
 
 /**@}*/
 

@@ -1,6 +1,6 @@
 /**
- * @file        task.h
- * @date        2012, July 20
+ * @file        timer.h
+ * @date        2012, July 27
  * @author      Guilherme A. de Santi <guidesanti@yahoo.com.br>
  * @copyright   Guilherme A. de Santi &copy; 2012
  * @brief       TODO: add brief description
@@ -9,8 +9,8 @@
  */
 
 
-#ifndef _TASK_H_
-#define _TASK_H_
+#ifndef _TIMER_H_
+#define _TIMER_H_
 
 /**
  * @defgroup ModuleName The Module Name
@@ -25,11 +25,6 @@
  * @defgroup Includes Header File Include
  * @{
  */
-
-#include "BR-RTOSDefs.h"
-#include "port.h"
-#include "list.h"
-#include <stdint.h>
 
 /**@}*/
 
@@ -65,12 +60,13 @@
  * @{
  */
 
-void __BR_TaskSwitch(void);
-void __BR_TaskTickUpdate(void);
+void __BR_TimerInit(void);
+void __BR_TimerDecrement(void);
+void __BR_TimerTask(void);
 
 /**@}*/
 
 /**@}*/
 
 
-#endif /* _TASK_H_ */
+#endif /* _TIMER_H_ */

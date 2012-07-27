@@ -27,8 +27,7 @@
  * @{
  */
 
-#include "BR-RTOS.h"
-#include "BR-RTOSConfig.h"
+#include "BR-RTOSDefs.h"
 
 /**@}*/
 
@@ -69,11 +68,6 @@
 #define __BR_ASSERT(EXPRESSION) ((void)0U)
 
 #endif
-
-/**
- * A new type to represent the stack pointer.
- */
-typedef uint32_t* BR_StackPointer_t;
 
 /**@}*/
 

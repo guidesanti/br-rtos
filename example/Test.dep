@@ -2,7 +2,7 @@
 
 <project>
   <fileVersion>2</fileVersion>
-  <fileChecksum>2820382388</fileChecksum>
+  <fileChecksum>478509785</fileChecksum>
   <configuration>
     <name>Debug</name>
     <outputs>
@@ -99,6 +99,11 @@
       <file>$TOOLKIT_DIR$\inc\c\yvals.h</file>
       <file>$PROJ_DIR$\stm32f10x.h</file>
       <file>$PROJ_DIR$\Debug\List\example.map</file>
+      <file>$PROJ_DIR$\..\kernel\src\timer.c</file>
+      <file>$PROJ_DIR$\..\kernel\inc\BR-RTOSDefs.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\timer.o</file>
+      <file>$PROJ_DIR$\..\kernel\inc\timer.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\timer.pbi</file>
     </outputs>
     <file>
       <name>$PROJ_DIR$\..\kernel\src\task.c</name>
@@ -115,11 +120,11 @@
       <inputs>
         <tool>
           <name>ICCARM</name>
-          <file> 15 49 73 54 86 74 90 56 39 44 43 71 85 64 77 59 53 65</file>
+          <file> 54 94 49 86 74 90 56 39 44 43 71 85 64 73 15 96 77 59 53 65</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 15 49 73 54 86 74 90 56 44 43 71 85 64 77 59 53 65</file>
+          <file> 54 94 49 86 74 90 56 44 43 71 85 64 73 15 96 77 59 53 65</file>
         </tool>
       </inputs>
     </file>
@@ -184,11 +189,11 @@
       <inputs>
         <tool>
           <name>ICCARM</name>
-          <file> 72 91 48 86 74 90 56 39 44 43 71 57 58 46 45 23 19 29 22 18 89 34 24 31 28 26 11 25 13 63 37 80 60 32 35 21 76 30 27 20 59 54 49 85 64</file>
+          <file> 72 91 48 86 74 90 56 39 44 43 71 57 58 46 45 23 19 29 22 18 89 34 24 31 28 26 11 25 13 63 37 80 60 32 35 21 76 30 27 20 59 94 49 85 64</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 72 91 48 86 74 90 56 44 43 71 57 58 46 45 23 19 29 22 18 89 34 24 31 28 26 11 25 13 63 37 80 60 32 35 21 76 30 27 20 59 54 49 85 64</file>
+          <file> 72 91 48 86 74 90 56 44 43 71 57 58 46 45 23 19 29 22 18 89 34 24 31 28 26 11 25 13 63 37 80 60 32 35 21 76 30 27 20 59 94 49 85 64</file>
         </tool>
       </inputs>
     </file>
@@ -207,11 +212,7 @@
       <inputs>
         <tool>
           <name>ICCARM</name>
-          <file> 54 49 86 74 90 56 39 44 43 71 85 64 91 48 57 58 46 45 23 19 29 22 18 89 34 24 31 28 26 11 25 13 63 37 80 60 32 35 21 76 30 27 20</file>
-        </tool>
-        <tool>
-          <name>BICOMP</name>
-          <file> 54 49 86 74 90 56 44 43 71 85 64 91 48 57 58 46 45 23 19 29 22 18 89 34 24 31 28 26 11 25 13 63 37 80 60 32 35 21 76 30 27 20</file>
+          <file> 54 94 49 86 74 90 56 39 44 43 71 85 64 73 91 48 57 58 46 45 23 19 29 22 18 89 34 24 31 28 26 11 25 13 63 37 80 60 32 35 21 76 30 27 20</file>
         </tool>
       </inputs>
     </file>
@@ -230,11 +231,11 @@
       <inputs>
         <tool>
           <name>ICCARM</name>
-          <file> 15 49 73 54 86 74 90 56 39 44 43 71 85 64 59 53 65</file>
+          <file> 54 94 49 86 74 90 56 39 44 43 71 85 64 73 15 59 53 65</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 15 49 73 54 86 74 90 56 44 43 71 85 64 59 53 65</file>
+          <file> 54 94 49 86 74 90 56 44 43 71 85 64 73 15 59 53 65</file>
         </tool>
       </inputs>
     </file>
@@ -253,11 +254,11 @@
       <inputs>
         <tool>
           <name>ICCARM</name>
-          <file> 73 54 49 86 74 90 56 39 44 43 71 85 64 59</file>
+          <file> 73 94 49 86 74 90 56 39 44 43 71 85 64 59</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 73 54 49 86 74 90 56 44 43 71 85 64 59</file>
+          <file> 73 94 49 86 74 90 56 44 43 71 85 64 59</file>
         </tool>
       </inputs>
     </file>
@@ -276,11 +277,11 @@
       <inputs>
         <tool>
           <name>ICCARM</name>
-          <file> 77 54 49 86 74 90 56 39 44 43 71 85 64 59 73 91 48 57 58 46 45 23 19 29 22 18 89 34 24 31 28 26 11 25 13 63 37 80 60 32 35 21 76 30 27 20</file>
+          <file> 77 94 49 86 74 90 56 39 44 43 71 85 64 59 73 96 91 48 57 58 46 45 23 19 29 22 18 89 34 24 31 28 26 11 25 13 63 37 80 60 32 35 21 76 30 27 20</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 77 54 49 86 74 90 56 44 43 71 85 64 59 73 91 48 57 58 46 45 23 19 29 22 18 89 34 24 31 28 26 11 25 13 63 37 80 60 32 35 21 76 30 27 20</file>
+          <file> 77 94 49 86 74 90 56 44 43 71 85 64 59 73 96 91 48 57 58 46 45 23 19 29 22 18 89 34 24 31 28 26 11 25 13 63 37 80 60 32 35 21 76 30 27 20</file>
         </tool>
       </inputs>
     </file>
@@ -299,11 +300,11 @@
       <inputs>
         <tool>
           <name>ICCARM</name>
-          <file> 54 49 86 74 90 56 39 44 43 71 85 64</file>
+          <file> 54 94 49 86 74 90 56 39 44 43 71 85 64 73 59</file>
         </tool>
         <tool>
           <name>BICOMP</name>
-          <file> 54 49 86 74 90 56 44 43 71 85 64</file>
+          <file> 54 94 49 86 74 90 56 44 43 71 85 64 73 59</file>
         </tool>
       </inputs>
     </file>
@@ -350,7 +351,7 @@
       <inputs>
         <tool>
           <name>ILINK</name>
-          <file> 82 52 61 87 50 69 14 67 68 62 66 88 84 47 36 16</file>
+          <file> 82 52 61 87 50 69 14 67 68 62 66 88 95 84 47 36 16</file>
         </tool>
       </inputs>
     </file>
@@ -359,7 +360,7 @@
       <inputs>
         <tool>
           <name>BILINK</name>
-          <file> 75 38 70 83 17 79 55 33 51 81</file>
+          <file> 75 38 70 83 17 79 55 33 51 81 97</file>
         </tool>
       </inputs>
     </file>
@@ -378,6 +379,29 @@
         <tool>
           <name>ILINK</name>
           <file> 82 52 61 87 50 69 14 67 68 62 66 88 84 47 36 16</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\kernel\src\timer.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 95</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 97</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 54 94 49 86 74 90 56 39 44 43 71 85 64 73 59 96 15</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 54 94 49 86 74 90 56 44 43 71 85 64 73 59 96 15</file>
         </tool>
       </inputs>
     </file>

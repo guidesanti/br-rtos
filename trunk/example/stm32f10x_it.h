@@ -7,8 +7,6 @@
 
 #include "stm32f10x.h"
 
-#define SVC_Handler BR_PortSVCHandler
-
 void NMI_Handler(void);
 void HardFault_Handler(void);
 void MemManage_Handler(void);

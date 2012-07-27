@@ -18,48 +18,24 @@
 #ifndef _BR_RTOS_H_
 #define _BR_RTOS_H_
 
-/**
- * @defgroup ModuleName The Module Name
- * @{
- */
 
 /******************************************************************************/
 /* I N C L U D E S                                                            */
 /******************************************************************************/
-
-/**
- * @defgroup Includes Header File Include
- * @{
- */
-
 #include "BR-RTOSDefs.h"
 #include "list.h"
 #include <stdint.h>
 #include <stdlib.h>
 
-/**@}*/
 
 /******************************************************************************/
 /* C O N S T A N T ,  M A C R O  A N D  T Y P E  D E F I N I T I O N S       */
 /******************************************************************************/
 
-/**
- * @defgroup Defs Constant, Macro and Type Definitions
- * @{
- */
-
-/**@}*/
 
 /******************************************************************************/
 /* P U B L I C  V A R I A B L E S                                             */
 /******************************************************************************/
-
-/**
- * @defgroup PublicVar Public Variables
- * @{
- */
-
-/**@}*/
 
 
 /******************************************************************************/
@@ -67,12 +43,7 @@
 /******************************************************************************/
 
 /**
- * @defgroup PublicFunc Public Functions
- * @{
- */
-
-/**
- * @defgroup KernelCtrl Kernel Control API
+ * @addtogroup KernelCtrl Kernel Control
  * @{
  */
 
@@ -82,7 +53,7 @@ void BR_KernelStartScheduler(void);
 /**@}*/
 
 /**
- * @defgroup TaskCtrl Task Control API
+ * @addtogroup PublicAPIFunc Public API Functions
  * @{
  */
 
@@ -95,7 +66,7 @@ void BR_TaskWait(uint32_t ticks);
 /**@}*/
 
 /**
- * @defgroup TimerCtrl Timer Control API
+ * @addtogroup TimerCtrl Timer Control
  * @{
  */
 
@@ -108,15 +79,11 @@ BR_Err_t BR_TimerRestart(BR_Timer_t* timer);
 /**@}*/
 
 /**
- * @defgroup MemCtrl Memory Control API
+ * @addtogroup MemCtrl Memory Control
  * @{
  */
 
 void* BR_MemAlloc(BR_Size_t nBytes);
-
-/**@}*/
-
-/**@}*/
 
 /**@}*/
 

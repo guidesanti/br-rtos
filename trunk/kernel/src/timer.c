@@ -8,56 +8,50 @@
  * TODO: Add detailed description
  */
 
+/**
+ * @addtogroup TimerCtrl
+ * @{
+ */
+
 
 /******************************************************************************/
 /* I N C L U D E S                                                            */
 /******************************************************************************/
-
-/**
- * @defgroup Includes Header File Include
- * @{
- */
-
 #include "BR-RTOS.h"
 #include "port.h"
 #include "list.h"
 #include "timer.h"
 #include "object.h"
 
-/**@}*/
 
 /******************************************************************************/
-/* C O N S T A N T ,  M A C R O  A N D  T Y P E  D E F I N I T I O N S       */
+/* C O N S T A N T ,  M A C R O  A N D  T Y P E  D E F I N I T I O N S        */
 /******************************************************************************/
+
+/* @{ */
 
 /**
- * @defgroup Defs Constant, Macro and Type Definitions
- * @{
+ * @name Timer flags
+ * Definition of timer flags.
  */
-
 #define __BR_TIMER_FLAG_SHOT  (BIT_MASK_0)
 #define __BR_TIMER_FLAG_BASE  (BIT_MASK_1)
 #define __BR_TIMER_FLAG_TYPE  (BIT_MASK_2)
 
-/**@}*/
+/** @} */
+
 
 /******************************************************************************/
 /* P R I V A T E  F U N C T I O N S  P R O T O T Y P E S                      */
 /******************************************************************************/
 
-/**
- * @defgroup PrivateFuncProto Private Function Prototypes
- * @{
- */
-
-/**@}*/
 
 /******************************************************************************/
-/* P R I V A T E  V A R I A B L E S                                           */
+/* K E R N E L  I N T E R N A L  V A R I A B L E S                            */
 /******************************************************************************/
 
 /**
- * @defgroup PrivateVar Private Variables
+ * @defgroup TimerKernelIntVar Kernel Internal Variables
  * @{
  */
 
@@ -76,25 +70,14 @@ static BR_ListNode_t runningTimers;
  */
 static BR_ListNode_t expiredTimers;
 
-/**@}*/
+/** @} */
 
 /******************************************************************************/
-/* P U B L I C  V A R I A B L E S                                             */
-/******************************************************************************/
-
-/**
- * @defgroup PublicVar Public Variables
- * @{
- */
-
-/**@}*/
-
-/******************************************************************************/
-/* P R I V A T E  F U N C T I O N S                                           */
+/* K E R N E L  I N T E R N A L  F U N C T I O N S                            */
 /******************************************************************************/
 
 /**
- * @defgroup PrivateFunc Private Functions
+ * @defgroup TimerKernelIntFunc Kernel Internal Functions
  * @{
  */
 
@@ -175,14 +158,14 @@ void __BR_TimerTask(void)
   }
 }
 
-/**@}*/
+/** @} */
 
 /******************************************************************************/
-/* P U B L I C  F U N C T I O N S                                             */
+/* P U B L I C  A P I  F U N C T I O N S                                      */
 /******************************************************************************/
 
 /**
- * @defgroup PublicFunc Public Functions
+ * @defgroup TimerPublicAPIFunc Public API Functions
  * @{
  */
 
@@ -452,4 +435,6 @@ BR_Err_t BR_TimerRestart(BR_Timer_t* timer)
   return ret;
 }
 
-/**@}*/
+/** @} */
+
+/** @} */

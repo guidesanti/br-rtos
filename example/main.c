@@ -20,6 +20,8 @@
 
 #include "BR-RTOS.h"
 #include "stm32f10x.h"
+#include "stm32f10x_rcc.h"
+#include "stm32f10x_gpio.h"
 
 /**@}*/
 
@@ -45,7 +47,6 @@
 
 void MyTask1(void);
 void MyTask2(void);
-void Func1(void);
 
 /**@}*/
 
@@ -70,7 +71,7 @@ void Func1(void);
  */
 
 uint32_t tickCounter = 0U;
-uint32_t task = 0U;
+GPIO_InitTypeDef gpioInit;
 
 /**@}*/
 
@@ -85,39 +86,36 @@ uint32_t task = 0U;
 
 void MyTask1(void)
 {
-  Func1();
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
+  gpioInit.GPIO_Pin = GPIO_Pin_8;
+  gpioInit.GPIO_Speed = GPIO_Speed_50MHz;
+  gpioInit.GPIO_Mode = GPIO_Mode_Out_PP;
+  GPIO_Init(GPIOC, &gpioInit);
 
   while (1U)
   {
-    task = 1;
+    GPIO_SetBits(GPIOC, GPIO_Pin_8);
+    BR_TaskWait(2U);
+    GPIO_ResetBits(GPIOC, GPIO_Pin_8);
+    BR_TaskWait(2U);
   }
 }
 
 void MyTask2(void)
 {
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
+  gpioInit.GPIO_Pin = GPIO_Pin_9;
+  gpioInit.GPIO_Speed = GPIO_Speed_50MHz;
+  gpioInit.GPIO_Mode = GPIO_Mode_Out_PP;
+  GPIO_Init(GPIOC, &gpioInit);
+
   while (1U)
   {
-    task = 2;
+    GPIO_SetBits(GPIOC, GPIO_Pin_9);
+    BR_TaskWait(1U);
+    GPIO_ResetBits(GPIOC, GPIO_Pin_9);
+    BR_TaskWait(1U);
   }
-}
-
-void Func1(void)
-{
-  uint32_t aux = 1000;
-
-  while (aux--) { }
-
-  aux = 1000;
-
-  while (aux--) { }
-
-  aux = 1000;
-
-  while (aux--) { }
-
-  aux = 1000;
-
-  while (aux--) { }
 }
 
 /**@}*/
@@ -133,8 +131,10 @@ void Func1(void)
 
 int main(void)
 {
-  BR_TaskCreate("My Task 1", MyTask1, 30U, NULL, NULL);
-  BR_TaskCreate("My Task 2", MyTask2, 30U, NULL, NULL);
+  BR_KernelInit();
+
+  BR_TaskCreate("My Task 1", MyTask1, 30U, NULL, BR_TASK_PRIORITY_CRITICAL, NULL);
+  BR_TaskCreate("My Task 2", MyTask2, 30U, NULL, BR_TASK_PRIORITY_CRITICAL, NULL);
 
   BR_KernelStartScheduler();
 

@@ -8,16 +8,14 @@
  * TODO: Add detailed description
  */
 
+/**
+ * @addtogroup TaskCtrl
+ * @{
+ */
 
 /******************************************************************************/
 /* I N C L U D E S                                                            */
 /******************************************************************************/
-
-/**
- * @defgroup Includes Header File Include
- * @{
- */
-
 #include "BR-RTOS.h"
 #include "object.h"
 #include "timer.h"
@@ -25,102 +23,156 @@
 #include <stdlib.h>
 #include <string.h>
 
-/**@}*/
 
 /******************************************************************************/
 /* C O N S T A N T ,  M A C R O  A N D  T Y P E  D E F I N I T I O N S       */
 /******************************************************************************/
 
-/**
- * @defgroup Defs Constant, Macro and Type Definitions
- * @{
- */
-
-/**@}*/
 
 /******************************************************************************/
 /* P R I V A T E  F U N C T I O N S  P R O T O T Y P E S                      */
 /******************************************************************************/
 
 /**
- * @defgroup PrivateFuncProto Private Function Prototypes
- * @{
+ * The idle task.
  */
 static void __BR_IdleTask(void);
 
-/**@}*/
 
 /******************************************************************************/
-/* P R I V A T E  V A R I A B L E S                                           */
-/******************************************************************************/
-
-/**
- * @defgroup PrivateVar Private Variables
- * @{
- */
-
-/**@}*/
-
-/******************************************************************************/
-/* P U B L I C  V A R I A B L E S                                             */
+/* K E R N E L  I N T E R N A L  V A R I A B L E S                            */
 /******************************************************************************/
 
 /**
- * @defgroup PublicVar Public Variables
+ * @defgroup TaskKernelIntVar Kernel Internal Variables
  * @{
  */
 
 /**
  * Points to the task within the running state.
+ *
+ * This variable points to the current running task and is updated to the new
+ * running task on every time the kernel schedules a new task to run.
+ *
+ * @warning This is part of the kernel and MUST never be touched by the user code.
  */
 BR_Task_t* runningTask = NULL;
 
 /**
  * The list of tasks within suspended state.
  */
-BR_ListNode_t suspendedTaskList;
+static BR_ListNode_t suspendedTaskList;
 
 /**
  * The list of tasks within waiting state.
  */
-BR_ListNode_t waitingTaskList;
+static BR_ListNode_t waitingTaskList;
 
 /**
  * The task priority table.
  *
  * All tasks within the priority table are in the ready state.
  */
-BR_ListNode_t priorityTable[BR_N_TASK_PRIORITIES];
+static BR_ListNode_t priorityTable[BR_N_TASK_PRIORITIES];
 
 /**
  * The current priority level.
  */
-uint8_t currentPriority = (BR_N_TASK_PRIORITIES - 1U);
+static uint8_t currentPriority = (BR_N_TASK_PRIORITIES - 1U);
 
-/**@}*/
+/** @} */
+
 
 /******************************************************************************/
-/* P R I V A T E  F U N C T I O N S                                           */
+/* K E R N E L  I N T E R N A L  F U N C T I O N S                            */
 /******************************************************************************/
 
 /**
- * @defgroup PrivateFunc Private Functions
+ * @defgroup TaskKernelIntFunc Kernel Internal Functions
  * @{
  */
 
+/**
+ * @brief The idle task code.
+ *
+ * This function implements the code to be executed as the idle task.
+ */
 static void __BR_IdleTask(void)
 {
   while (TRUE) { }
 }
 
-/**@}*/
+/**
+ * @brief Select the next task to run.
+ * @note This function is part of the kernel and should never be called from the
+ * user code.
+ *
+ * This function selects the next task on the ready list to run.
+ */
+void __BR_TaskSwitch(void)
+{
+  while (TRUE == __BR_ListIsEmpty(&(priorityTable[currentPriority])))
+  {
+    currentPriority--;
+  }
+  __BR_ASSERT(currentPriority < BR_N_TASK_PRIORITIES);
+  runningTask = __BR_LIST_ENTRY(priorityTable[currentPriority].next, BR_Task_t, list);
+  __BR_ListRemove(&(runningTask->list));
+  __BR_ListInsertBefore(&(priorityTable[currentPriority]), &(runningTask->list));
+}
+
+
+/**
+ * @brief Update the task tick counter.
+ * @note This function is part of the kernel and should never be called from the
+ * user code.
+ *
+ * This function walk through the waiting list and decrements the tick counter
+ * for each task.
+ * If the counter expires the task is removed from the waiting list and inserted
+ * into the ready list.
+ */
+void __BR_TaskTickUpdate(void)
+{
+  BR_Task_t* task = NULL;
+  BR_ListNode_t* node = NULL;
+
+  /* Walk through the waiting list and update each task counter. */
+  if (FALSE == __BR_ListIsEmpty(&waitingTaskList))
+  {
+    node = waitingTaskList.next;
+    while (node != &waitingTaskList)
+    {
+      /* Get the task of the node. */
+      task = __BR_LIST_ENTRY(node, BR_Task_t, list);
+      /* Next node. */
+      node = node->next;
+      /* Decrement the task counter. */
+      task->counter--;
+      if (0U == task->counter)
+      {
+        /* Change the task state to ready and add it to the correct list within the priority table. */
+        task->state = __BR_TASK_ST_READY;
+        __BR_ListRemove(&(task->list));
+        __BR_ListInsertAfter(&priorityTable[task->priority], &(task->list));
+        /* Set the current priority. */
+        if (task->priority > currentPriority)
+        {
+          currentPriority = task->priority;
+        }
+      }
+    }
+  }
+}
+
+/** @} */
 
 /******************************************************************************/
-/* P U B L I C  F U N C T I O N S                                             */
+/* P U B L I C  A P I  F U N C T I O N S                                      */
 /******************************************************************************/
 
 /**
- * @defgroup PublicFunc Public Functions
+ * @defgroup TaskPublicAPIFunc Public API Functions
  * @{
  */
 
@@ -388,67 +440,6 @@ void BR_TaskWait(uint32_t ticks)
   __BR_EXIT_CRITICAL();
 }
 
-/**
- * @brief Select the next task to run.
- * @note This function is part of the kernel and should never be called from the
- * user code.
- *
- * This function selects the next task on the ready list to run.
- */
-void __BR_TaskSwitch(void)
-{
-  while (TRUE == __BR_ListIsEmpty(&(priorityTable[currentPriority])))
-  {
-    currentPriority--;
-  }
-  __BR_ASSERT(currentPriority < BR_N_TASK_PRIORITIES);
-  runningTask = __BR_LIST_ENTRY(priorityTable[currentPriority].next, BR_Task_t, list);
-  __BR_ListRemove(&(runningTask->list));
-  __BR_ListInsertBefore(&(priorityTable[currentPriority]), &(runningTask->list));
-}
+/** @} */
 
-
-/**
- * @brief Update the task tick counter.
- * @note This function is part of the kernel and should never be called from the
- * user code.
- *
- * This function walk through the waiting list and decrements the tick counter
- * for each task.
- * If the counter expires the task is removed from the waiting list and inserted
- * into the ready list.
- */
-void __BR_TaskTickUpdate(void)
-{
-  BR_Task_t* task = NULL;
-  BR_ListNode_t* node = NULL;
-
-  /* Walk through the waiting list and update each task counter. */
-  if (FALSE == __BR_ListIsEmpty(&waitingTaskList))
-  {
-    node = waitingTaskList.next;
-    while (node != &waitingTaskList)
-    {
-      /* Get the task of the node. */
-      task = __BR_LIST_ENTRY(node, BR_Task_t, list);
-      /* Next node. */
-      node = node->next;
-      /* Decrement the task counter. */
-      task->counter--;
-      if (0U == task->counter)
-      {
-        /* Change the task state to ready and add it to the correct list within the priority table. */
-        task->state = __BR_TASK_ST_READY;
-        __BR_ListRemove(&(task->list));
-        __BR_ListInsertAfter(&priorityTable[task->priority], &(task->list));
-        /* Set the current priority. */
-        if (task->priority > currentPriority)
-        {
-          currentPriority = task->priority;
-        }
-      }
-    }
-  }
-}
-
-/**@}*/
+/** @} */

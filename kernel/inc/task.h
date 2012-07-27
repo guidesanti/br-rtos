@@ -13,64 +13,39 @@
 #define _TASK_H_
 
 /**
- * @defgroup ModuleName The Module Name
+ * @addtogroup TaskCtrl
  * @{
  */
 
 /******************************************************************************/
 /* I N C L U D E S                                                            */
 /******************************************************************************/
-
-/**
- * @defgroup Includes Header File Include
- * @{
- */
-
 #include "BR-RTOSDefs.h"
 #include "port.h"
 #include "list.h"
 #include <stdint.h>
 
-/**@}*/
 
 /******************************************************************************/
-/* C O N S T A N T ,  M A C R O  A N D  T Y P E  D E F I N I T I O N S       */
+/* C O N S T A N T ,  M A C R O  A N D  T Y P E  D E F I N I T I O N S        */
 /******************************************************************************/
 
-/**
- * @defgroup Defs Constant, Macro and Type Definitions
- * @{
- */
-
-/**@}*/
 
 /******************************************************************************/
-/* P U B L I C  V A R I A B L E S                                             */
+/* K E R N E L  I N T E R N A L  F U N C T I O N S                            */
 /******************************************************************************/
 
 /**
- * @defgroup PublicVar Public Variables
- * @{
- */
-
-/**@}*/
-
-
-/******************************************************************************/
-/* P U B L I C  F U N C T I O N S                                             */
-/******************************************************************************/
-
-/**
- * @defgroup PublicFunc Public Functions
+ * @defgroup TaskKernelIntFunc Kernel Internal Functions
  * @{
  */
 
 void __BR_TaskSwitch(void);
 void __BR_TaskTickUpdate(void);
 
-/**@}*/
+/** @} */
 
-/**@}*/
+/** @} */
 
 
 #endif /* _TASK_H_ */

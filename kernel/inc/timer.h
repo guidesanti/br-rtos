@@ -13,7 +13,7 @@
 #define _TIMER_H_
 
 /**
- * @defgroup ModuleName The Module Name
+ * @addtogroup TimerCtrl
  * @{
  */
 
@@ -21,42 +21,18 @@
 /* I N C L U D E S                                                            */
 /******************************************************************************/
 
-/**
- * @defgroup Includes Header File Include
- * @{
- */
-
-/**@}*/
 
 /******************************************************************************/
-/* C O N S T A N T ,  M A C R O  A N D  T Y P E  D E F I N I T I O N S       */
+/* C O N S T A N T ,  M A C R O  A N D  T Y P E  D E F I N I T I O N S        */
 /******************************************************************************/
 
-/**
- * @defgroup Defs Constant, Macro and Type Definitions
- * @{
- */
-
-/**@}*/
 
 /******************************************************************************/
-/* P U B L I C  V A R I A B L E S                                             */
+/* K E R N E L  I N T E R N A L  F U N C T I O N S                            */
 /******************************************************************************/
 
 /**
- * @defgroup PublicVar Public Variables
- * @{
- */
-
-/**@}*/
-
-
-/******************************************************************************/
-/* P U B L I C  F U N C T I O N S                                             */
-/******************************************************************************/
-
-/**
- * @defgroup PublicFunc Public Functions
+ * @defgroup TimerKernelIntFunc Kernel Internal Functions
  * @{
  */
 
@@ -64,9 +40,9 @@ void __BR_TimerInit(void);
 void __BR_TimerDecrement(void);
 void __BR_TimerTask(void);
 
-/**@}*/
+/** @} */
 
-/**@}*/
+/** @} */
 
 
 #endif /* _TIMER_H_ */

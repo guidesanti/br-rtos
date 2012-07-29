@@ -2,10 +2,12 @@
  * @file        template.h
  * @date        TODO
  * @author      Guilherme A. de Santi <guidesanti@yahoo.com.br>
- * @copyright   Guilherme A. de Santi &copy; 2012
+ * @copyright   &copy; 2012, BR-RTOS Development Team
  * @brief       TODO: add brief description
  *
- * TODO: add detailed description
+ * This file is part of the BR-RTOS.
+ * The license distribution terms may found at COPYING or LICENSE file
+ * within the source directory tree.
  */
 
 
@@ -13,7 +15,7 @@
 #define _TEMPLATE_H_
 
 /**
- * @defgroup ModuleName The Module Name
+ * @addtogroup ModuleName
  * @{
  */
 
@@ -21,48 +23,37 @@
 /* I N C L U D E S                                                            */
 /******************************************************************************/
 
-/**
- * @defgroup Includes Header File Include
- * @{
- */
-
-/**@}*/
-
-/******************************************************************************/
-/* C O N S T A N T ,  M A C R O  A N D  T Y P E  D E F I N I T I O N S       */
-/******************************************************************************/
+/** @{ */
 
 /**
- * @defgroup Defs Constant, Macro and Type Definitions
- * @{
+ * Includes.
  */
 
-/**@}*/
+/** @} */
 
 /******************************************************************************/
-/* P U B L I C  V A R I A B L E S                                             */
+/* C O N S T A N T ,  M A C R O  A N D  T Y P E  D E F I N I T I O N S        */
 /******************************************************************************/
 
 /**
- * @defgroup PublicVar Public Variables
+ * @defgroup ModuleNameDefinitions Module Definitions
  * @{
  */
 
-/**@}*/
+/** @} */
 
 
 /******************************************************************************/
-/* P U B L I C  F U N C T I O N S                                             */
+/* K E R N E L  I N T E R N A L  F U N C T I O N S                            */
 /******************************************************************************/
 
 /**
- * @defgroup PublicFunc Public Functions
+ * @defgroup ModuleNameKernelIntFunc Kernel Internal Functions
  * @{
  */
 
-/**@}*/
+/** @} */
 
-/**@}*/
-
+/** @} */
 
 #endif /* _TEMPLATE_H_ */

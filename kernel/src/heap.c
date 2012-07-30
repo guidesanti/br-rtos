@@ -8,50 +8,42 @@
  * TODO: Add detailed description
  */
 
+/**
+ * @addtogroup MemMng Memory Management
+ * @{
+ */
 
 /******************************************************************************/
 /* I N C L U D E S                                                            */
 /******************************************************************************/
-
-/**
- * @defgroup Includes Header File Include
- * @{
- */
-
 #include "BR-RTOS.h"
 #include "BR-RTOSConfig.h"
 #include "port.h"
 
-/**@}*/
 
 /******************************************************************************/
-/* C O N S T A N T ,  M A C R O  A N D  T Y P E  D E F I N I T I O N S       */
+/* C O N S T A N T ,  M A C R O  A N D  T Y P E  D E F I N I T I O N S        */
 /******************************************************************************/
 
 /**
- * @defgroup Defs Constant, Macro and Type Definitions
+ * @name Constants, Macro and Type Definitions
  * @{
  */
 
-/**@}*/
+/** @} */
+
 
 /******************************************************************************/
 /* P R I V A T E  F U N C T I O N S  P R O T O T Y P E S                      */
 /******************************************************************************/
 
-/**
- * @defgroup PrivateFuncProto Private Function Prototypes
- * @{
- */
-
-/**@}*/
 
 /******************************************************************************/
-/* P R I V A T E  V A R I A B L E S                                           */
+/* K E R N E L  I N T E R N A L  V A R I A B L E S                            */
 /******************************************************************************/
 
 /**
- * @defgroup PrivateVar Private Variables
+ * @name Kernel Internal Variables
  * @{
  */
 
@@ -61,25 +53,25 @@ static uint8_t* nextFreeByte = heap;
 
 static uint32_t bytesFree = __BR_HEAP_SIZE;
 
-/**@}*/
+/** @} */
 
 /******************************************************************************/
-/* P U B L I C  V A R I A B L E S                                             */
+/* K E R N E L  I N T E R N A L  F U N C T I O N S                            */
 /******************************************************************************/
 
 /**
- * @defgroup PublicVar Public Variables
+ * @name Kernel Internal Functions
  * @{
  */
 
-/**@}*/
+/** @} */
 
 /******************************************************************************/
-/* P R I V A T E  F U N C T I O N S                                           */
+/* P U B L I C  A P I  F U N C T I O N S                                      */
 /******************************************************************************/
 
 /**
- * @defgroup PrivateFunc Private Functions
+ * @name Public API Functions
  * @{
  */
 
@@ -123,17 +115,6 @@ void* BR_MemAlloc(BR_Size_t nBytes)
   return ptr;
 }
 
-/**@}*/
+/** @} */
 
-/******************************************************************************/
-/* P U B L I C  F U N C T I O N S                                             */
-/******************************************************************************/
-
-/**
- * @defgroup PublicFunc Public Functions
- * @{
- */
-
-
-
-/**@}*/
+/** @} */

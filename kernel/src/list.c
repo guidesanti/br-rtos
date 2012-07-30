@@ -8,85 +8,68 @@
  * TODO: Add detailed description
  */
 
+/**
+ * @addtogroup ListCtrl Internal List Control API
+ * @{
+ */
 
 /******************************************************************************/
 /* I N C L U D E S                                                            */
 /******************************************************************************/
-
-/**
- * @defgroup Includes Header File Include
- * @{
- */
-
 #include "list.h"
 #include "port.h"
 
-/**@}*/
 
 /******************************************************************************/
 /* C O N S T A N T ,  M A C R O  A N D  T Y P E  D E F I N I T I O N S       */
 /******************************************************************************/
 
 /**
- * @defgroup Defs Constant, Macro and Type Definitions
+ * @name Constants, Macro and Type Definitions
  * @{
  */
 
-/**@}*/
+/** @} */
 
 /******************************************************************************/
 /* P R I V A T E  F U N C T I O N S  P R O T O T Y P E S                      */
 /******************************************************************************/
 
-/**
- * @defgroup PrivateFuncProto Private Function Prototypes
- * @{
- */
-
-/**@}*/
 
 /******************************************************************************/
-/* P R I V A T E  V A R I A B L E S                                           */
+/* K E R N E L  I N T E R N A L  V A R I A B L E S                            */
 /******************************************************************************/
 
 /**
- * @defgroup PrivateVar Private Variables
+ * @name Kernel Internal Variables
  * @{
  */
 
-/**@}*/
+/** @} */
 
 /******************************************************************************/
-/* P U B L I C  V A R I A B L E S                                             */
+/* K E R N E L  I N T E R N A L  F U N C T I O N S                            */
 /******************************************************************************/
 
 /**
- * @defgroup PublicVar Public Variables
+ * @name Kernel Internal Functions
  * @{
  */
 
-/**@}*/
+/** @} */
 
 /******************************************************************************/
-/* P R I V A T E  F U N C T I O N S                                           */
+/* P U B L I C  A P I  F U N C T I O N S                                      */
 /******************************************************************************/
 
 /**
- * @defgroup PrivateFunc Private Functions
+ * @name Public API Functions
  * @{
  */
-
-/**@}*/
-
-/******************************************************************************/
-/* P U B L I C  F U N C T I O N S                                             */
-/******************************************************************************/
 
 /**
- * @defgroup PublicFunc Public Functions
- * @{
+ * @brief TODO
  */
-
 void __BR_ListInit( BR_ListNode_t* list )
 {
   __BR_ASSERT(NULL != list);
@@ -94,6 +77,9 @@ void __BR_ListInit( BR_ListNode_t* list )
   list->next = list;
 }
 
+/**
+ * @brief TODO
+ */
 void __BR_ListInsertAfter( BR_ListNode_t* list, BR_ListNode_t* node )
 {
   __BR_ASSERT(NULL != list);
@@ -104,6 +90,9 @@ void __BR_ListInsertAfter( BR_ListNode_t* list, BR_ListNode_t* node )
   list->next = node;
 }
 
+/**
+ * @brief TODO
+ */
 void __BR_ListInsertBefore( BR_ListNode_t* list, BR_ListNode_t* node )
 {
   __BR_ASSERT(NULL != list);
@@ -114,6 +103,9 @@ void __BR_ListInsertBefore( BR_ListNode_t* list, BR_ListNode_t* node )
   list->prev = node;
 }
 
+/**
+ * @brief TODO
+ */
 void __BR_ListRemove( BR_ListNode_t* node )
 {
   __BR_ASSERT(NULL != node);
@@ -123,10 +115,15 @@ void __BR_ListRemove( BR_ListNode_t* node )
   node->prev = node;
 }
 
+/**
+ * @brief TODO
+ */
 BR_Boolean_t __BR_ListIsEmpty( BR_ListNode_t* node )
 {
   if (node->next == node) return TRUE;
   return FALSE;
 }
+
+/**@}*/
 
 /**@}*/

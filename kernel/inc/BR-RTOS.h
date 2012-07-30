@@ -23,44 +23,45 @@
 /* I N C L U D E S                                                            */
 /******************************************************************************/
 #include "BR-RTOSDefs.h"
-#include "list.h"
 #include <stdint.h>
 #include <stdlib.h>
 
 
 /******************************************************************************/
-/* C O N S T A N T ,  M A C R O  A N D  T Y P E  D E F I N I T I O N S       */
-/******************************************************************************/
-
-
-/******************************************************************************/
-/* P U B L I C  V A R I A B L E S                                             */
-/******************************************************************************/
-
-
-/******************************************************************************/
-/* P U B L I C  F U N C T I O N S                                             */
+/* SCHEDULER CONTROL API                                                      */
 /******************************************************************************/
 void BR_KernelInit(void);
 void BR_KernelStartScheduler(void);
 
+/******************************************************************************/
+/* TASK CONTROL API                                                           */
+/******************************************************************************/
 BR_Err_t BR_TaskCreate(const char* name, void (*run)(void), uint8_t stackLen, void* param, uint8_t priority, BR_Task_t** taskArg);
 void BR_TaskYield(void);
 void BR_TaskSuspend(BR_Task_t* task);
 void BR_TaskResume(BR_Task_t* task);
 void BR_TaskWait(uint32_t ticks);
 
+/******************************************************************************/
+/* TIMER CONTROL API                                                          */
+/******************************************************************************/
 BR_Err_t BR_TimerCreate(const char* name, uint32_t time, BR_TimerCallback_t callback, void* param, uint8_t flags, BR_Timer_t** timerArg);
 BR_Err_t BR_TimerControl(BR_Timer_t* timer, BR_TimerCmd_t cmd, void* param);
 BR_Err_t BR_TimerStart(BR_Timer_t* timer);
 BR_Err_t BR_TimerStop(BR_Timer_t* timer);
 BR_Err_t BR_TimerRestart(BR_Timer_t* timer);
 
+/******************************************************************************/
+/* INTER PROCESS COMMUNICATION API                                            */
+/******************************************************************************/
 BR_Mutex_t* BR_IpcMutexCreate(void);
 BR_Err_t BR_IpcMutexAcquire(BR_Mutex_t* mutex);
 BR_Err_t BR_IpcMutexRelease(BR_Mutex_t* mutex);
 BR_Err_t BR_IpcMutexControl(BR_Mutex_t* mutex, uint8_t cmd, void* param);
 
+/******************************************************************************/
+/* MEMORY ALLOCATION API                                                      */
+/******************************************************************************/
 void* BR_MemAlloc(BR_Size_t nBytes);
 
 #endif /* _BR_RTOS_H_ */

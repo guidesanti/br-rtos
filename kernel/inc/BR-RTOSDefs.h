@@ -12,34 +12,12 @@
 #ifndef _BR_RTOS_DEFS_H_
 #define _BR_RTOS_DEFS_H_
 
-/**
- * @defgroup ModuleName The Module Name
- * @{
- */
-
 /******************************************************************************/
 /* I N C L U D E S                                                            */
 /******************************************************************************/
-
-/**
- * @defgroup Includes Header File Include
- * @{
- */
-
 #include "BR-RTOSConfig.h"
 #include <stdint.h>
 #include <stdlib.h>
-
-/**@}*/
-
-/******************************************************************************/
-/* C O N S T A N T ,  M A C R O  A N D  T Y P E  D E F I N I T I O N S       */
-/******************************************************************************/
-
-/**
- * @defgroup Defs Constant, Macro and Type Definitions
- * @{
- */
 
 /* Define the mask of a bit within a variable. */
 #define BIT_MASK_0  (0x00000001U)
@@ -208,32 +186,22 @@ typedef struct
     uint8_t             flags;
 } BR_Timer_t;
 
-/**@}*/
-
-/******************************************************************************/
-/* P U B L I C  V A R I A B L E S                                             */
-/******************************************************************************/
-
 /**
- * @defgroup PublicVar Public Variables
+ * @addtogroup IPC
  * @{
  */
 
-/**@}*/
-
-
-/******************************************************************************/
-/* P U B L I C  F U N C T I O N S                                             */
-/******************************************************************************/
-
 /**
- * @defgroup PublicFunc Public Functions
- * @{
+ * The mutex structure.
  */
+typedef struct
+{
+    BR_Object_t*  parent;
+    BR_Task_t*    owner;
+    uint8_t       state;
+} BR_Mutex_t;
 
-/**@}*/
-
-/**@}*/
+/** @} */
 
 
 #endif /* _BR_RTOS_DEFS_H_ */

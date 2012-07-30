@@ -19,21 +19,13 @@
 /* I N C L U D E S                                                            */
 /******************************************************************************/
 
-/** @{ */
-
-/**
- * Includes.
- */
-
-/** @} */
-
 
 /******************************************************************************/
 /* C O N S T A N T ,  M A C R O  A N D  T Y P E  D E F I N I T I O N S        */
 /******************************************************************************/
 
 /**
- * @defgroup ModuleNameDefinitions Module Definitions
+ * @name Constants, Macro and Type Definitions
  * @{
  */
 
@@ -50,19 +42,18 @@
 /******************************************************************************/
 
 /**
- * @defgroup ModuleNameKernelIntVar Kernel Internal Variables
+ * @name Kernel Internal Variables
  * @{
  */
 
 /** @} */
-
 
 /******************************************************************************/
 /* K E R N E L  I N T E R N A L  F U N C T I O N S                            */
 /******************************************************************************/
 
 /**
- * @defgroup ModuleNameKernelIntFunc Kernel Internal Functions
+ * @name Kernel Internal Functions
  * @{
  */
 
@@ -73,7 +64,7 @@
 /******************************************************************************/
 
 /**
- * @defgroup ModuleNamePublicAPIFunc Public API Functions
+ * @name Public API Functions
  * @{
  */
 

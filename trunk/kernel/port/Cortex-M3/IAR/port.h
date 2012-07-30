@@ -9,34 +9,26 @@
  * compiled by the IAR compiler.
  */
 
-
 #ifndef _PORT_H_
 #define _PORT_H_
 
 /**
- * @defgroup ModuleName The Module Name
+ * @addtogroup PortLayer Port Layer
  * @{
  */
 
 /******************************************************************************/
 /* I N C L U D E S                                                            */
 /******************************************************************************/
-
-/**
- * @defgroup Includes Header File Include
- * @{
- */
-
 #include "BR-RTOSDefs.h"
 
-/**@}*/
 
 /******************************************************************************/
-/* C O N S T A N T ,  M A C R O  A N D  T Y P E  D E F I N I T I O N S       */
+/* C O N S T A N T ,  M A C R O  A N D  T Y P E  D E F I N I T I O N S        */
 /******************************************************************************/
 
 /**
- * @defgroup Defs Constant, Macro and Type Definitions
+ * @name Constants, Macros and Type definitions
  * @{
  */
 
@@ -69,29 +61,12 @@
 
 #endif
 
-/**@}*/
-
-/******************************************************************************/
-/* P U B L I C  V A R I A B L E S                                             */
-/******************************************************************************/
-
-/**
- * @defgroup PublicVar Public Variables
- * @{
- */
-
-/**@}*/
+/** @} */
 
 
 /******************************************************************************/
-/* P U B L I C  F U N C T I O N S                                             */
+/* K E R N E L  I N T E R N A L  F U N C T I O N S                            */
 /******************************************************************************/
-
-/**
- * @defgroup PublicFunc Public Functions
- * @{
- */
-
 BR_StackPointer_t __BR_PortInitStack(BR_StackPointer_t stackPointer, void (*run)(void), void* param);
 void __BR_PortSchedulerStart(void);
 void __BR_PortYield(void);
@@ -103,9 +78,7 @@ void __BR_PortDisableIRQ(void);
 void __BR_PortSetBasePriorityMask(uint8_t basePriMask);
 void __BR_PortStartFirstTask(void);
 
-/**@}*/
 
-/**@}*/
-
+/** @} */
 
 #endif /* _PORT_H_ */

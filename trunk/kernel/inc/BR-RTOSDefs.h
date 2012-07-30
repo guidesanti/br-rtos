@@ -123,6 +123,11 @@ typedef struct
     char            name[__BR_MAX_OBJ_NAME_LEN];
 } BR_Object_t;
 
+/**
+ * @addtogroup TaskCtrl
+ * @{
+ */
+
 #define __BR_TASK_ST_READY      (0U)
 #define __BR_TASK_ST_RUNNING    (1U)
 #define __BR_TASK_ST_WAITING    (2U)
@@ -143,6 +148,13 @@ typedef struct
     BR_ListNode_t list;
     char name[__BR_MAX_TASK_NAME_LEN + 1U];
 } BR_Task_t;
+
+/** @} */
+
+/**
+ * @addtogroup TimerCtrl
+ * @{
+ */
 
 /* Timer flags. */
 #define BR_TIMER_FLAG_SINGLE  (0x00U) /**< Single shot timer. */
@@ -186,6 +198,8 @@ typedef struct
     void*               param;
     uint8_t             flags;
 } BR_Timer_t;
+
+/** @} */
 
 /**
  * @addtogroup IPC

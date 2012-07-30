@@ -9,10 +9,9 @@
  */
 
 /**
- * @addtogroup TimerCtrl
+ * @addtogroup TimerCtrl Timer Control
  * @{
  */
-
 
 /******************************************************************************/
 /* I N C L U D E S                                                            */
@@ -28,6 +27,11 @@
 /* C O N S T A N T ,  M A C R O  A N D  T Y P E  D E F I N I T I O N S        */
 /******************************************************************************/
 
+/**
+ * @name Constants, Macro and Type Definitions
+ * @{
+ */
+
 /* @{ */
 
 /**
@@ -37,6 +41,8 @@
 #define __BR_TIMER_FLAG_SHOT  (BIT_MASK_0)
 #define __BR_TIMER_FLAG_BASE  (BIT_MASK_1)
 #define __BR_TIMER_FLAG_TYPE  (BIT_MASK_2)
+
+/** @} */
 
 /** @} */
 
@@ -51,7 +57,7 @@
 /******************************************************************************/
 
 /**
- * @defgroup TimerKernelIntVar Kernel Internal Variables
+ * @name Kernel Internal Variables
  * @{
  */
 
@@ -77,10 +83,13 @@ static BR_ListNode_t expiredTimers;
 /******************************************************************************/
 
 /**
- * @defgroup TimerKernelIntFunc Kernel Internal Functions
+ * @name Kernel Internal Functions
  * @{
  */
 
+/**
+ * @brief TODO
+ */
 void __BR_TimerInit(void)
 {
   /* Initialize the running timers list and the soft expired timers list. */
@@ -91,6 +100,9 @@ void __BR_TimerInit(void)
   BR_TaskCreate("Timer Task", __BR_TimerTask, 40U, NULL, BR_TASK_PRIORITY_CRITICAL, &timerTask);
 }
 
+/**
+ * @brief TODO
+ */
 void __BR_TimerDecrement(void)
 {
   BR_Timer_t* timer = NULL;
@@ -130,6 +142,9 @@ void __BR_TimerDecrement(void)
   }
 }
 
+/**
+ * @brief TODO
+ */
 void __BR_TimerTask(void)
 {
   BR_Timer_t* timer = NULL;
@@ -165,7 +180,7 @@ void __BR_TimerTask(void)
 /******************************************************************************/
 
 /**
- * @defgroup TimerPublicAPIFunc Public API Functions
+ * @name Public API Functions
  * @{
  */
 

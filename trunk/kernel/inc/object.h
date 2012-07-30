@@ -13,63 +13,37 @@
 #define _OBJECT_H_
 
 /**
- * @defgroup ModuleName The Module Name
+ * @addtogroup ObjectCtrl Object Control
  * @{
  */
 
 /******************************************************************************/
 /* I N C L U D E S                                                            */
 /******************************************************************************/
-
-/**
- * @defgroup Includes Header File Include
- * @{
- */
-
 #include "BR-RTOSDefs.h"
 
-/**@}*/
 
 /******************************************************************************/
-/* C O N S T A N T ,  M A C R O  A N D  T Y P E  D E F I N I T I O N S       */
-/******************************************************************************/
-
-/**
- * @defgroup Defs Constant, Macro and Type Definitions
- * @{
- */
-
-/**@}*/
-
-/******************************************************************************/
-/* P U B L I C  V A R I A B L E S                                             */
+/* C O N S T A N T ,  M A C R O  A N D  T Y P E  D E F I N I T I O N S        */
 /******************************************************************************/
 
 /**
- * @defgroup PublicVar Public Variables
+ * @name Constants, Macros and Type definitions
  * @{
  */
 
-/**@}*/
+/** @} */
 
 
 /******************************************************************************/
-/* P U B L I C  F U N C T I O N S                                             */
+/* K E R N E L  I N T E R N A L  F U N C T I O N S                            */
 /******************************************************************************/
-
-/**
- * @defgroup PublicFunc Public Functions
- * @{
- */
-
 void __BR_ObjectInit(void);
 BR_Object_t* __BR_ObjectCreate(char* name, BR_ObjectType_t type, void* child);
 BR_Object_t* __BR_ObjectFind(uint16_t id);
 BR_Object_t* __BR_ObjectFindByName(char* name);
 
-/**@}*/
-
-/**@}*/
+/** @} */
 
 
 #endif /* _OBJECT_H_ */

@@ -99,12 +99,11 @@ typedef uint8_t BR_Boolean_t;
 #define __BR_LIST_DECLARE(NAME) BR_ListNode_t NAME = { &NAME, &NAME }
 #define __BR_LIST_ENTRY(NODE, TYPE, FIELD) ((TYPE*)(((uint8_t*)NODE) - ((uint8_t*)&(((TYPE*)0U)->FIELD))))
 
-typedef struct BR_ListNode BR_ListNode_t;
-struct BR_ListNode
+typedef struct BR_ListNode
 {
-    BR_ListNode_t* prev;
-    BR_ListNode_t* next;
-};
+  struct BR_ListNode* prev;
+  struct BR_ListNode* next;
+} BR_ListNode_t;
 
 typedef enum
 {

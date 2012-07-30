@@ -83,6 +83,7 @@ typedef enum
   E_INVAL,
   E_NORES,
   E_ENOSYS,
+  E_TIMEOUT,
 } BR_Err_t;
 
 #ifndef TRUE

@@ -19,6 +19,7 @@
 /* I N C L U D E S                                                            */
 /******************************************************************************/
 #include "ipc.h"
+#include "port.h"
 
 
 /******************************************************************************/
@@ -77,12 +78,38 @@ void __BR_IpcInit(void)
  */
 
 /**
- * @brief TODO
+ * @brief Creates a mutex.
+ * @return NULL if the mutex can not be created, otherwise returns a pointer to
+ * the created mutex.
+ *
+ * If there is enough memory to create the mutex it will be created and initialized
+ * and returned as a pointer.
+ * If there is no enough memory to create the mutex a NULL is returned.
  */
 BR_Mutex_t* BR_IpcMutexCreate(void)
 {
-  // TODO
-  return E_ENOSYS;
+  BR_Mutex_t* mutex = NULL;
+  BR_Object_t* obj = NULL;
+
+  __BR_ENTER_CRITICAL();
+
+  /* Allocate memory for the mutex object. */
+  obj = __BR_Malloc(sizeof(BR_Object_t));
+  if (NULL != obj)
+  {
+    /* Allocate memory for the mutex. */
+    mutex = __BR_Malloc(sizeof(BR_Mutex_t));
+    if (NULL != mutex)
+    {
+      mutex->parent = obj;
+      mutex->owner = NULL;
+      mutex->state = __BR_MUTEX_RELEASED;
+    }
+  }
+
+  __BR_EXIT_CRITICAL();
+
+  return mutex;
 }
 
 /**
@@ -104,7 +131,10 @@ BR_Err_t BR_IpcMutexRelease(BR_Mutex_t* mutex)
 }
 
 /**
- * @brief TODO
+ * @brief Executed a control command to a mutex.
+ * @return Error code.
+ * @retval E_ENOSYS Always returns this value.
+ * @warning This function is currently not supported.
  */
 BR_Err_t BR_IpcMutexControl(BR_Mutex_t* mutex, uint8_t cmd, void* param)
 {

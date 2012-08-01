@@ -307,6 +307,10 @@
       </outputs>
       <inputs>
         <tool>
+          <name>BICOMP</name>
+          <file> 37 52 13 47 34 56 18 0 3 25 53 77 81</file>
+        </tool>
+        <tool>
           <name>ICCARM</name>
           <file> 37 52 13 47 34 56 18 45 0 3 25 53 77 81</file>
         </tool>

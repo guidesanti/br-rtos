@@ -55,7 +55,7 @@ BR_Err_t BR_TimerRestart(BR_Timer_t* timer);
 /* INTER PROCESS COMMUNICATION API                                            */
 /******************************************************************************/
 BR_Mutex_t* BR_IpcMutexCreate(void);
-BR_Err_t BR_IpcMutexAcquire(BR_Mutex_t* mutex);
+BR_Err_t BR_IpcMutexAcquire(BR_Mutex_t* mutex, uint32_t time);
 BR_Err_t BR_IpcMutexRelease(BR_Mutex_t* mutex);
 BR_Err_t BR_IpcMutexControl(BR_Mutex_t* mutex, uint8_t cmd, void* param);
 

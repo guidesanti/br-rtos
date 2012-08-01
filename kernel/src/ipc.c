@@ -103,7 +103,7 @@ BR_Mutex_t* BR_IpcMutexCreate(void)
     {
       mutex->parent = obj;
       mutex->owner = NULL;
-      mutex->state = __BR_MUTEX_RELEASED;
+      mutex->counter = 0U;
     }
   }
 
@@ -113,21 +113,109 @@ BR_Mutex_t* BR_IpcMutexCreate(void)
 }
 
 /**
- * @brief TODO
+ * @brief Attempt to acquire a mutex.
+ * @param [in] mutex A pointer to the mutex.
+ * @param [in] time A timeout value to wait for the mutex (in milliseconds).
+ * @return Error code.
+ * @retval E_OK If the mutex is successfully acquired.
+ * @retval E_TIMEOUT If the timeout has been reached and the mutex was not acquired.
+ *
+ * This function will put the task in waiting state if the mutex is already acquired
+ * by another task. If the timeout occurs the task requesting the mutex will be
+ * put back in ready state and the function will return with E_TIMEOUT.
+ * If the mutex is successfully acquired E_OK is returned.
+ * The mutex may be recursively acquired by the same task, in this case the
+ * task will need to release the mutex the same number of times t has acquired
+ * the mutex before it can be acquired by another task.
  */
-BR_Err_t BR_IpcMutexAcquire(BR_Mutex_t* mutex)
+BR_Err_t BR_IpcMutexAcquire(BR_Mutex_t* mutex, uint32_t time)
 {
-  // TODO
-  return E_ENOSYS;
+  BR_Err_t ret = E_OK;
+
+  __BR_ASSERT(NULL != mutex);
+
+  __BR_ENTER_CRITICAL();
+
+#if (1U == __BR_CHECK_FUNC_PARAMETERS)
+  if (NULL != mutex)
+#endif
+  {
+    if (NULL == mutex->owner)
+    {
+      mutex->owner = runningTask;
+      mutex->counter++;
+    }
+    else if (mutex->owner == runningTask)
+    {
+      mutex->counter++;
+    }
+    else
+    {
+#warning "TODO: Put the task in the mutex waiting list"
+      // TODO
+    }
+  }
+#if (1U == __BR_CHECK_FUNC_PARAMETERS)
+  else
+  {
+    ret = E_INVAL;
+  }
+#endif
+
+  __BR_EXIT_CRITICAL();
+
+  return ret;
 }
 
 /**
- * @brief TODO
+ * @brief Release a mutex.
+ * @param [in] mutex A pointer to the mutex to be released.
+ * @return Error code.
+ * @retval E_OK If the mutex is released successfully.
+ * @retval E_ERROR If the owner of the mutex is note the task that is calling this function.
+ * @retval E_INVAL If mutex == NULL and the check parameters feature is enabled.
+ *
+ * This function will release a previously acquired mutex if the owner of the
+ * mutex is the task that has been acquired it.
+ * On successful release of the mutex E_OK is returned, otherwise E_ERROR
+ * is returned.
  */
 BR_Err_t BR_IpcMutexRelease(BR_Mutex_t* mutex)
 {
-  // TODO
-  return E_ENOSYS;
+  BR_Err_t ret = E_OK;
+
+  __BR_ASSERT(NULL != mutex);
+
+  __BR_ENTER_CRITICAL();
+
+#if (1U == __BR_CHECK_FUNC_PARAMETERS)
+  if (NULL != mutex)
+#endif
+  {
+    if (mutex->owner == runningTask)
+    {
+      mutex->counter--;
+      if (0U == mutex->counter)
+      {
+        mutex->owner = NULL;
+#warning "TODO: Check if there is some task waiting for this mutex"
+      }
+    }
+    else
+    {
+      ret = E_ERROR;
+    }
+  }
+#if (1U == __BR_CHECK_FUNC_PARAMETERS)
+  else
+  {
+    ret = E_INVAL;
+  }
+#endif
+
+  __BR_EXIT_CRITICAL();
+
+  return ret;
 }
 
 /**

@@ -80,7 +80,7 @@
  * 0U -> disable the parameters check feature
  * 1U -> enable the parameters check feature
  */
-#define __BR_CHECK_FUNC_PARAMETERS  (0U)
+#define __BR_CHECK_FUNC_PARAMETERS  (1U)
 
 /** @} */
 

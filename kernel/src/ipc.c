@@ -20,6 +20,7 @@
 /******************************************************************************/
 #include "ipc.h"
 #include "port.h"
+#include "list.h"
 
 
 /******************************************************************************/
@@ -66,6 +67,14 @@ void __BR_IpcInit(void)
   // TODO
 }
 
+/**
+ * @brief TODO
+ */
+void __BR_IpcUpdate(void)
+{
+  // TODO
+}
+
 /** @} */
 
 /******************************************************************************/
@@ -79,6 +88,7 @@ void __BR_IpcInit(void)
 
 /**
  * @brief Creates a mutex.
+ * @param [in] name The mutex name.
  * @return NULL if the mutex can not be created, otherwise returns a pointer to
  * the created mutex.
  *
@@ -86,25 +96,23 @@ void __BR_IpcInit(void)
  * and returned as a pointer.
  * If there is no enough memory to create the mutex a NULL is returned.
  */
-BR_Mutex_t* BR_IpcMutexCreate(void)
+BR_Mutex_t* BR_IpcMutexCreate(const char* name)
 {
   BR_Mutex_t* mutex = NULL;
   BR_Object_t* obj = NULL;
 
   __BR_ENTER_CRITICAL();
 
-  /* Allocate memory for the mutex object. */
-  obj = __BR_Malloc(sizeof(BR_Object_t));
-  if (NULL != obj)
+  /* Allocate memory for the mutex. */
+  mutex = __BR_Malloc(sizeof(BR_Mutex_t));
+  if (NULL != mutex)
   {
-    /* Allocate memory for the mutex. */
-    mutex = __BR_Malloc(sizeof(BR_Mutex_t));
-    if (NULL != mutex)
-    {
-      mutex->parent = obj;
-      mutex->owner = NULL;
-      mutex->counter = 0U;
-    }
+    mutex->parent = obj;
+    mutex->owner = NULL;
+    mutex->counter = 0U;
+    __BR_ListInit(&(mutex->waitList));
+    /* Allocate memory for the mutex object. */
+    obj = __BR_ObjectCreate(name, BR_OBJ_TYPE_MUTEX, mutex);
   }
 
   __BR_EXIT_CRITICAL();
@@ -115,7 +123,7 @@ BR_Mutex_t* BR_IpcMutexCreate(void)
 /**
  * @brief Attempt to acquire a mutex.
  * @param [in] mutex A pointer to the mutex.
- * @param [in] time A timeout value to wait for the mutex (in milliseconds).
+ * @param [in] ticks A timeout value to wait for the mutex (number of system ticks).
  * @return Error code.
  * @retval E_OK If the mutex is successfully acquired.
  * @retval E_TIMEOUT If the timeout has been reached and the mutex was not acquired.
@@ -128,7 +136,7 @@ BR_Mutex_t* BR_IpcMutexCreate(void)
  * task will need to release the mutex the same number of times t has acquired
  * the mutex before it can be acquired by another task.
  */
-BR_Err_t BR_IpcMutexAcquire(BR_Mutex_t* mutex, uint32_t time)
+BR_Err_t BR_IpcMutexAcquire(BR_Mutex_t* mutex, uint32_t ticks)
 {
   BR_Err_t ret = E_OK;
 
@@ -151,7 +159,16 @@ BR_Err_t BR_IpcMutexAcquire(BR_Mutex_t* mutex, uint32_t time)
     }
     else
     {
-#warning "TODO: Put the task in the mutex waiting list"
+      /* Change the running task state to waiting and set its counter. */
+      runningTask->state = __BR_TASK_ST_WAITING;
+      runningTask->counter = ticks;
+      /* Remove the task from priority table and insert it in the mutex waiting list. */
+      __BR_ListRemove(&(runningTask->list));
+      __BR_ListInsertAfter(&(mutex->waitList), &(runningTask->list));
+      __BR_EXIT_CRITICAL();
+      /* Yield the CPU. */
+      __BR_PortYield();
+
       // TODO
     }
   }

@@ -50,13 +50,7 @@
  * @{
  */
 
-static uint16_t nextId = 0U;
-
-static BR_ListNode_t objList;
-
-#if (1U == __BR_DEBUG)
-static BR_Object_t* objListDebug[__BR_MAX_OBJ_LIST_DEBUG];
-#endif
+static BR_ListNode_t objList[BR_N_OBJ_TYPES];
 
 /** @} */
 
@@ -82,10 +76,15 @@ static BR_Object_t* objListDebug[__BR_MAX_OBJ_LIST_DEBUG];
 
 void __BR_ObjectInit(void)
 {
-  __BR_ListInit(&objList);
+  uint8_t index = 0U;
+
+  for (index = 0U; index < BR_N_OBJ_TYPES; index++)
+  {
+    __BR_ListInit(&(objList[index]));
+  }
 }
 
-BR_Object_t* __BR_ObjectCreate(char* name, BR_ObjectType_t type, void* child)
+BR_Object_t* __BR_ObjectCreate(const char* name, BR_ObjectType_t type, void* child)
 {
   BR_Object_t* obj = NULL;
 
@@ -97,17 +96,12 @@ BR_Object_t* __BR_ObjectCreate(char* name, BR_ObjectType_t type, void* child)
   obj = BR_MemAlloc(sizeof(BR_Object_t));
   if (NULL != obj)
   {
-#if (1U == __BR_DEBUG)
-    objListDebug[nextId] = obj;
-#endif
-    /* Set the object ID and update the nextId value. */
-    obj->id = nextId++;
     /* Set the object type. */
     obj->type = type;
     /* Initialize the object list node and insert it within the objects list. */
     obj->child = child;
     __BR_ListInit(&(obj->node));
-    __BR_ListInsertBefore(&objList, &(obj->node));
+    __BR_ListInsertBefore(&(objList[type]), &(obj->node));
     /* Set the object name. */
     strncpy(obj->name, name, __BR_MAX_OBJ_NAME_LEN);
     obj->name[__BR_MAX_TASK_NAME_LEN - 1U] = '\0';
@@ -116,42 +110,27 @@ BR_Object_t* __BR_ObjectCreate(char* name, BR_ObjectType_t type, void* child)
   return obj;
 }
 
-BR_Object_t* __BR_ObjectFind(uint16_t id)
+BR_Object_t* __BR_ObjectFindByName(const char* name)
 {
   BR_Object_t* obj = NULL;
-  BR_ListNode_t* node = &objList;
+  BR_ListNode_t* node = NULL;
+  uint8_t index = 0U;
 
-  node = node->next;
-  while (node != &objList)
+  for (index = 0U; index < BR_N_OBJ_TYPES; index++)
   {
-    obj = __BR_LIST_ENTRY(node, BR_Object_t, node);
-    if (id == obj->id)
+    node = objList[index].next;
+    while (node != &(objList[index]))
     {
-      break;
+      obj = __BR_LIST_ENTRY(node, BR_Object_t, node);
+      if (0U == strncmp(name, obj->name, __BR_MAX_OBJ_NAME_LEN))
+      {
+        return obj;
+      }
+      node = node->next;
     }
-    node = node->next;
   }
 
-  return obj;
-}
-
-BR_Object_t* __BR_ObjectFindByName(char* name)
-{
-  BR_Object_t* obj = NULL;
-  BR_ListNode_t* node = &objList;
-
-  node = node->next;
-  while (node != &objList)
-  {
-    obj = __BR_LIST_ENTRY(node, BR_Object_t, node);
-    if (0U == strncmp(name, obj->name, __BR_MAX_OBJ_NAME_LEN))
-    {
-      break;
-    }
-    node = node->next;
-  }
-
-  return obj;
+  return NULL;
 }
 
 /** @} */

@@ -221,7 +221,7 @@ BR_Err_t BR_TimerCreate(const char* name, uint32_t time, BR_TimerCallback_t call
   __BR_ASSERT(NULL != timerArg);
 
 #if (1U == __BR_CHECK_FUNC_PARAMETERS)
-  if ((NULL != callback) && (NULL != timer))
+  if ((NULL != callback) && (NULL != timerArg))
   {
 #endif
     timer = NULL;

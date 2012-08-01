@@ -108,14 +108,14 @@ typedef struct BR_ListNode
 typedef enum
 {
   BR_OBJ_TYPE_TASK = 0U,
-  BR_OBJ_TYPE_DEVICE,
   BR_OBJ_TYPE_TIMER,
+  BR_OBJ_TYPE_DEVICE,
+  BR_OBJ_TYPE_MUTEX,
   BR_N_OBJ_TYPES,
 } BR_ObjectType_t;
 
 typedef struct
 {
-    uint16_t        id;
     BR_ObjectType_t type;
     void*           child;
     BR_ListNode_t   node;
@@ -210,9 +210,10 @@ typedef struct
  */
 typedef struct
 {
-    BR_Object_t*  parent;
-    BR_Task_t*    owner;
-    uint8_t       counter;
+    BR_Object_t*  parent;   /**< The mutex parent object. */
+    BR_Task_t*    owner;    /**< The mutex owner. */
+    uint8_t       counter;  /**< The counter of acquires by the mutex owner. */
+    BR_ListNode_t waitList; /**< The task wait list for the mutex. */
 } BR_Mutex_t;
 
 /** @} */

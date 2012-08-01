@@ -39,9 +39,8 @@
 /* K E R N E L  I N T E R N A L  F U N C T I O N S                            */
 /******************************************************************************/
 void __BR_ObjectInit(void);
-BR_Object_t* __BR_ObjectCreate(char* name, BR_ObjectType_t type, void* child);
-BR_Object_t* __BR_ObjectFind(uint16_t id);
-BR_Object_t* __BR_ObjectFindByName(char* name);
+BR_Object_t* __BR_ObjectCreate(const char* name, BR_ObjectType_t type, void* child);
+BR_Object_t* __BR_ObjectFind(const char* name);
 
 /** @} */
 

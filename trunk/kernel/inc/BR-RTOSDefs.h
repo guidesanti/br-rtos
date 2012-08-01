@@ -212,7 +212,7 @@ typedef struct
 {
     BR_Object_t*  parent;
     BR_Task_t*    owner;
-    uint8_t       state;
+    uint8_t       counter;
 } BR_Mutex_t;
 
 /** @} */

@@ -32,9 +32,6 @@
  * @{
  */
 
-#define __BR_MUTEX_RELEASED (0U)  /**< The mutex is released and may be acquired by some task. */
-#define __BR_MUTEX_ACQUIRED (1U)  /**< The mutex is already acquired by some task. */
-
 /** @} */
 
 /******************************************************************************/

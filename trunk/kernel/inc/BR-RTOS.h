@@ -52,6 +52,16 @@ BR_Err_t BR_TimerStop(BR_Timer_t* timer);
 BR_Err_t BR_TimerRestart(BR_Timer_t* timer);
 
 /******************************************************************************/
+/* DEVICE CONTROL API                                                         */
+/******************************************************************************/
+BR_Err_t BR_DeviceRegister(const char* name, BR_Device_t* device);
+BR_Err_t BR_DeviceOpen(BR_Device_t* device, uint8_t flags);
+BR_Err_t BR_DeviceClose(BR_Device_t* device);
+uint32_t BR_DeviceRead(BR_Device_t* device, uint32_t address, uint8_t* buffer, uint32_t nBytes);
+uint32_t BR_DeviceWrite(BR_Device_t* device, uint32_t address, uint8_t* buffer, uint32_t nBytes);
+BR_Err_t BR_DeviceControl(BR_Device_t* device, uint8_t cmd, void* param);
+
+/******************************************************************************/
 /* INTER PROCESS COMMUNICATION API                                            */
 /******************************************************************************/
 BR_Mutex_t* BR_IpcMutexCreate(const char* name);

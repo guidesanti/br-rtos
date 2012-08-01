@@ -201,6 +201,28 @@ typedef struct
 /** @} */
 
 /**
+ * @addtogroup DeviceCtrl
+ * @{
+ */
+
+/**
+ * The device structure.
+ */
+typedef struct
+{
+    BR_Object_t*  parent;
+    uint8_t       flags;
+    BR_Err_t      (*init)   (BR_Device_t* device);
+    BR_Err_t      (*open)   (BR_Device_t* device, uint8_t flags);
+    BR_Err_t      (*close)  (BR_Device_t* device);
+    uint32_t      (*read)   (BR_Device_t* device, uint32_t address, uint8_t* buffer, uint32_t nBytes);
+    uint32_t      (*write)  (BR_Device_t* device, uint32_t address, uint8_t* buffer, uint32_t nBytes);
+    BR_Err_t      (*control)(BR_Device_t* device, uint8_t cmd, void* param);
+} BR_Device_t;
+
+/** @} */
+
+/**
  * @addtogroup IPC
  * @{
  */

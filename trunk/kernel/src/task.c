@@ -39,7 +39,6 @@
 /******************************************************************************/
 /* P R I V A T E  F U N C T I O N S  P R O T O T Y P E S                      */
 /******************************************************************************/
-static void __BR_IdleTask(void);
 
 
 /******************************************************************************/
@@ -99,9 +98,51 @@ static uint8_t currentPriority = (BR_N_TASK_PRIORITIES - 1U);
  *
  * This function implements the code to be executed as the idle task.
  */
-static void __BR_IdleTask(void)
+void __BR_IdleTask(void)
 {
   while (TRUE) { }
+}
+
+/**
+ * @brief Initialize the kernel.
+ */
+void __BR_TasklInit(void)
+{
+  uint8_t index = 0U;
+
+  /* Initialize the suspended and waiting lists. */
+  __BR_ListInit(&suspendedTaskList);
+  __BR_ListInit(&waitingTaskList);
+
+  /* Initialize the priority table. */
+  for (index = 0U; index < BR_N_TASK_PRIORITIES; index++)
+  {
+    __BR_ListInit(&priorityTable[index]);
+  }
+}
+
+/**
+ * @brief Start the task scheduler.
+ *
+ * This function should be called from main() and will not return unless the
+ * scheduler is not able to be started.
+ * This function will start the task switching and must be called after
+ * all tasks has been successfully created.
+ */
+void __BR_TaskStartScheduler(void)
+{
+  /* Set the first task to run. */
+  while (TRUE == __BR_ListIsEmpty(&(priorityTable[currentPriority])))
+  {
+    currentPriority--;
+  }
+  __BR_ASSERT(currentPriority < BR_N_TASK_PRIORITIES);
+  runningTask = __BR_LIST_ENTRY(priorityTable[currentPriority].next, BR_Task_t, list);
+  __BR_ListRemove(&(runningTask->list));
+  __BR_ListInsertBefore(&(priorityTable[currentPriority]), &(runningTask->list));
+
+  /* Start the scheduler. */
+  __BR_PortSchedulerStart();
 }
 
 /**
@@ -177,54 +218,6 @@ void __BR_TaskTickUpdate(void)
  * @name Public API Functions
  * @{
  */
-
-/**
- * @brief Initialize the kernel.
- */
-void BR_KernelInit(void)
-{
-  uint8_t index = 0U;
-
-  __BR_ObjectInit();
-
-  __BR_ListInit(&suspendedTaskList);
-  __BR_ListInit(&waitingTaskList);
-  /* Initialize the priority table. */
-  for (index = 0U; index < BR_N_TASK_PRIORITIES; index++)
-  {
-    __BR_ListInit(&priorityTable[index]);
-  }
-
-  /* Initialize the timers sub-system. */
-  __BR_TimerInit();
-
-  /* Create the idle task. */
-  BR_TaskCreate("Idle", __BR_IdleTask, 32U, NULL, BR_TASK_PRIORITY_TRIVIAL, NULL);
-}
-
-/**
- * @brief Start the task scheduler.
- *
- * This function should be called from main() and will not return unless the
- * scheduler is not able to be started.
- * This function will start the task switching and must be called after
- * all tasks has been successfully created.
- */
-void BR_KernelStartScheduler(void)
-{
-  /* Set the first task to run. */
-  while (TRUE == __BR_ListIsEmpty(&(priorityTable[currentPriority])))
-  {
-    currentPriority--;
-  }
-  __BR_ASSERT(currentPriority < BR_N_TASK_PRIORITIES);
-  runningTask = __BR_LIST_ENTRY(priorityTable[currentPriority].next, BR_Task_t, list);
-  __BR_ListRemove(&(runningTask->list));
-  __BR_ListInsertBefore(&(priorityTable[currentPriority]), &(runningTask->list));
-
-  /* Start the scheduler. */
-  __BR_PortSchedulerStart();
-}
 
 /**
  * @brief Create a new task.

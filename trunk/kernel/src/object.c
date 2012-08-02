@@ -110,7 +110,7 @@ BR_Object_t* __BR_ObjectCreate(const char* name, BR_ObjectType_t type, void* chi
   return obj;
 }
 
-BR_Object_t* __BR_ObjectFindByName(const char* name)
+BR_Object_t* __BR_ObjectFind(const char* name)
 {
   BR_Object_t* obj = NULL;
   BR_ListNode_t* node = NULL;

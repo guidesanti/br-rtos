@@ -225,6 +225,14 @@ typedef struct
  * @{
  */
 
+typedef enum
+{
+  BR_DEVICE_TYPE_CHAR,
+  BR_DEVICE_TYPE_I2C,
+  BR_DEVICE_TYPE_SPI,
+  BR_DEVICE_TYPE_UNKNOWN,
+} BR_DeviceType_t;
+
 typedef struct BR_Device_t BR_Device_t;
 
 /**
@@ -232,14 +240,15 @@ typedef struct BR_Device_t BR_Device_t;
  */
 struct BR_Device_t
 {
-    BR_Object_t*  parent;
-    uint8_t       flags;
-    BR_Err_t      (*init)   (BR_Device_t* device);
-    BR_Err_t      (*open)   (BR_Device_t* device, uint8_t flags);
-    BR_Err_t      (*close)  (BR_Device_t* device);
-    uint32_t      (*read)   (BR_Device_t* device, uint32_t address, uint8_t* buffer, uint32_t nBytes);
-    uint32_t      (*write)  (BR_Device_t* device, uint32_t address, uint8_t* buffer, uint32_t nBytes);
-    BR_Err_t      (*control)(BR_Device_t* device, uint8_t cmd, void* param);
+    BR_Object_t*    parent;
+    uint8_t         flags;
+    BR_DeviceType_t TYPE;
+    BR_Err_t        (*init)   (BR_Device_t* device);
+    BR_Err_t        (*open)   (BR_Device_t* device, uint8_t flags);
+    BR_Err_t        (*close)  (BR_Device_t* device);
+    uint32_t        (*read)   (BR_Device_t* device, uint32_t address, uint8_t* buffer, uint32_t nBytes);
+    uint32_t        (*write)  (BR_Device_t* device, uint32_t address, uint8_t* buffer, uint32_t nBytes);
+    BR_Err_t        (*control)(BR_Device_t* device, uint8_t cmd, void* param);
 };
 
 /** @} */

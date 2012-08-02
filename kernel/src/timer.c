@@ -64,7 +64,7 @@
 /**
  * The timer task.
  */
-static BR_Task_t* timerTask = NULL;
+BR_Task_t* timerTask = NULL;
 
 /**
  * The list of running timers.
@@ -95,9 +95,6 @@ void __BR_TimerInit(void)
   /* Initialize the running timers list and the soft expired timers list. */
   __BR_ListInit(&runningTimers);
   __BR_ListInit(&expiredTimers);
-
-  /* Create the timer task. */
-  BR_TaskCreate("Timer Task", __BR_TimerTask, 40U, NULL, BR_TASK_PRIORITY_CRITICAL, &timerTask);
 }
 
 /**

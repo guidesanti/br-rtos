@@ -40,6 +40,11 @@
 /******************************************************************************/
 /* K E R N E L  I N T E R N A L  F U N C T I O N S                            */
 /******************************************************************************/
+void __BR_IdleTask(void);
+void __BR_TasklInit(void);
+void __BR_TaskStartScheduler(void);
+void __BR_TaskSwitch(void);
+void __BR_TaskTickUpdate(void);
 
 /** @} */
 

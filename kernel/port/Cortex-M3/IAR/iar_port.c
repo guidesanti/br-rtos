@@ -33,7 +33,17 @@
  */
 
 /* SCB registers. */
-#define __BR_SCB_ICSR (*((volatile uint32_t*)0xE000ED04U))
+#define __BR_SCB_ICSR   (*((volatile uint32_t*)0xE000ED04U))
+#define __BR_SCB_AIRCR  (*((volatile uint32_t*)0xE000ED0CU))
+
+/* SCB AIRCR register bits. */
+#define __BR_SCB_AIRCR_VECTRESET      ((uint32_t)0x00000001U)
+#define __BR_SCB_AIRCR_VECTCLRACTIVE  ((uint32_t)0x00000002U)
+#define __BR_SCB_AIRCR_SYSRESETREQ    ((uint32_t)0x00000004U)
+#define __BR_SCB_AIRCR_PRIGROUP       ((uint32_t)0x00000700U)
+#define __BR_SCB_AIRCR_ENDIANESS      ((uint32_t)0x00008000U)
+#define __BR_SCB_AIRCR_VECTKEY        ((uint32_t)0xFFFF0000U)
+
 
 /** @} */
 
@@ -148,6 +158,15 @@ void __BR_PortSysTickHandler(void)
 
   /* Set the PendSV exception to pending state, so a context switch can be executed. */
   __BR_SCB_ICSR |= SCB_ICSR_PENDSVSET;
+}
+
+/**
+ * @brief Force a system reset.
+ */
+void __BR_PortReset(void)
+{
+  //SCB->AIRCR |= SCB_AIRCR_SYSRESETREQ;
+  __BR_SCB_AIRCR |= __BR_SCB_AIRCR_SYSRESETREQ;
 }
 
 /** @} */

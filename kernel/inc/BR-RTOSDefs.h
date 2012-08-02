@@ -19,6 +19,10 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+/******************************************************************************/
+/* G E N E R A L  D E F I N I T IO N S                                        */
+/******************************************************************************/
+
 /* Define the mask of a bit within a variable. */
 #define BIT_MASK_0  (0x00000001U)
 #define BIT_MASK_1  (0x00000002U)
@@ -105,6 +109,10 @@ typedef struct BR_ListNode
   struct BR_ListNode* next;
 } BR_ListNode_t;
 
+/******************************************************************************/
+/* O B J E C T  D E F I N I T I O N S                                         */
+/******************************************************************************/
+
 typedef enum
 {
   BR_OBJ_TYPE_TASK = 0U,
@@ -121,6 +129,10 @@ typedef struct
     BR_ListNode_t   node;
     char            name[__BR_MAX_OBJ_NAME_LEN];
 } BR_Object_t;
+
+/******************************************************************************/
+/* T A S K  C O N T R O L  D E F I N I T I O N S                              */
+/******************************************************************************/
 
 /**
  * @addtogroup TaskCtrl
@@ -149,6 +161,10 @@ typedef struct
 } BR_Task_t;
 
 /** @} */
+
+/******************************************************************************/
+/* T I M E R  C O N T R O L  D E F I N I T I O N S                            */
+/******************************************************************************/
 
 /**
  * @addtogroup TimerCtrl
@@ -200,15 +216,21 @@ typedef struct
 
 /** @} */
 
+/******************************************************************************/
+/* D E V I C E  C O N T R O L  D E F I N I T I O N S                          */
+/******************************************************************************/
+
 /**
  * @addtogroup DeviceCtrl
  * @{
  */
 
+typedef struct BR_Device_t BR_Device_t;
+
 /**
  * The device structure.
  */
-typedef struct
+struct BR_Device_t
 {
     BR_Object_t*  parent;
     uint8_t       flags;
@@ -218,9 +240,13 @@ typedef struct
     uint32_t      (*read)   (BR_Device_t* device, uint32_t address, uint8_t* buffer, uint32_t nBytes);
     uint32_t      (*write)  (BR_Device_t* device, uint32_t address, uint8_t* buffer, uint32_t nBytes);
     BR_Err_t      (*control)(BR_Device_t* device, uint8_t cmd, void* param);
-} BR_Device_t;
+};
 
 /** @} */
+
+/******************************************************************************/
+/* I N T E R  P R O C E S S  C O M M U N I C A T I O N  D E F I N I T I O N S */
+/******************************************************************************/
 
 /**
  * @addtogroup IPC

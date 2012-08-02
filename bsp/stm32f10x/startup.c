@@ -25,6 +25,7 @@
 #include "object.h"
 #include "task.h"
 #include "timer.h"
+#include "device.h"
 
 extern void BR_AppInit(void);
 
@@ -59,7 +60,7 @@ static void __BR_StartUp(void)
   __BR_TimerInit();
 
   /* Devices initialization. */
-  //__BR_DeviceInit();
+  __BR_DeviceInit();
 
   /* Create the idle task. */
   BR_TaskCreate("Idle", __BR_IdleTask, 32U, NULL, BR_TASK_PRIORITY_TRIVIAL, NULL);

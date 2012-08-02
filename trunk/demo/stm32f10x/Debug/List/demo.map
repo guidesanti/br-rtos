@@ -1,6 +1,6 @@
 ###############################################################################
 #                                                                             #
-# IAR ELF Linker V6.30.1.53127/W32 for ARM              02/Aug/2012  12:50:18 #
+# IAR ELF Linker V6.30.1.53127/W32 for ARM              02/Aug/2012  15:05:46 #
 # Copyright 2007-2011 IAR Systems AB.                                         #
 #                                                                             #
 #    Output file  =  C:\Users\Guilherme\Workspace\BR-RTOS                     #
@@ -47,6 +47,15 @@
 ###############################################################################
 
 *******************************************************************************
+*** MESSAGES
+***
+
+Error[Li005]: no definition for "__BR_DeviceInit" [referenced from
+          C:\Users\Guilherme\Workspace\BR-RTOS
+          (trunk)\demo\stm32f10x\Debug\Obj\startup.o]
+
+
+*******************************************************************************
 *** RUNTIME MODEL ATTRIBUTES
 ***
 
@@ -68,7 +77,7 @@ __SystemLibrary = DLib
   .intvec            const    0x08000000  0x130  stm32f10x_it.o [1]
                             - 0x08000130  0x130
 
-"P1":                                     0xcf8
+"P1":                                     0xcfc
   .text              ro code  0x08000130  0x33c  task.o [1]
   .text              ro code  0x0800046c   0x6a  list.o [1]
   .text              ro code  0x080004d6   0x2e  copy_init3.o [4]
@@ -84,24 +93,24 @@ __SystemLibrary = DLib
   .text              ro code  0x08000aa4  0x114  demo.o [1]
   .text              ro code  0x08000bb8   0xee  stm32f10x_gpio.o [1]
   .text              ro code  0x08000ca8   0x24  stm32f10x_rcc.o [1]
-  .text              ro code  0x08000ccc   0x66  startup.o [1]
-  .text              ro code  0x08000d34   0x2c  data_init3.o [4]
-  .iar.init_table    const    0x08000d60   0x24  - Linker created -
-  .text              ro code  0x08000d84   0x16  stm32f10x_it.o [1]
-  .text              ro code  0x08000d9c   0x16  cmain.o [4]
-  .text              ro code  0x08000db2    0x4  low_level_init.o [3]
-  .text              ro code  0x08000db6    0x4  exit.o [3]
-  .text              ro code  0x08000dbc    0xa  cexit.o [4]
-  .text              ro code  0x08000dc8   0x14  exit.o [5]
-  .rodata            const    0x08000ddc    0xc  demo.o [1]
-  .rodata            const    0x08000de8    0xc  demo.o [1]
-  .rodata            const    0x08000df4    0xc  startup.o [1]
-  .text              ro code  0x08000e00    0xc  cstartup_M.o [4]
-  .rodata            const    0x08000e0c    0x8  demo.o [1]
-  .rodata            const    0x08000e14    0x8  startup.o [1]
-  .rodata            const    0x08000e1c    0x0  bwt_init3c.o [4]
-  Initializer bytes  ro data  0x08000e1c    0xc  <for P2 s0>
-                            - 0x08000e28  0xcf8
+  .text              ro code  0x08000ccc   0x6a  startup.o [1]
+  .text              ro code  0x08000d38   0x2c  data_init3.o [4]
+  .iar.init_table    const    0x08000d64   0x24  - Linker created -
+  .text              ro code  0x08000d88   0x16  stm32f10x_it.o [1]
+  .text              ro code  0x08000da0   0x16  cmain.o [4]
+  .text              ro code  0x08000db6    0x4  low_level_init.o [3]
+  .text              ro code  0x08000dba    0x4  exit.o [3]
+  .text              ro code  0x08000dc0    0xa  cexit.o [4]
+  .text              ro code  0x08000dcc   0x14  exit.o [5]
+  .rodata            const    0x08000de0    0xc  demo.o [1]
+  .rodata            const    0x08000dec    0xc  demo.o [1]
+  .rodata            const    0x08000df8    0xc  startup.o [1]
+  .text              ro code  0x08000e04    0xc  cstartup_M.o [4]
+  .rodata            const    0x08000e10    0x8  demo.o [1]
+  .rodata            const    0x08000e18    0x8  startup.o [1]
+  .rodata            const    0x08000e20    0x0  bwt_init3c.o [4]
+  Initializer bytes  ro data  0x08000e20    0xc  <for P2 s0> (used: 0x0)
+                            - 0x08000e2c  0xcfc
 
 "P2", part 1 of 3:                          0xc
   P2 s0                       0x20000000    0xc  <Init block>
@@ -142,7 +151,7 @@ Zero (__iar_zero_init3)
 
 Copy (__iar_copy_init3)
     1 source range, total size 0xc (133% of destination):
-          0x08000e1c    0xc
+          0x08000e20    0xc
     1 destination range, total size 0x9:
           0x20000000    0x9
 
@@ -161,14 +170,14 @@ C:\Users\Guilherme\Workspace\BR-RTOS (trunk)\demo\stm32f10x\Debug\Obj: [1]
     iar_port_asm.o        120
     list.o                106
     object.o              128                32
-    startup.o             102       20
+    startup.o             106       20
     stm32f10x_gpio.o      238
     stm32f10x_it.o         22      304
     stm32f10x_rcc.o        36
     task.o                848        1       61
     timer.o               588                20
     -------------------------------------------
-    Total:              2 804      365    1 153
+    Total:              2 808      365    1 153
 
 command line: [2]
     -------------------------------------------
@@ -201,7 +210,7 @@ shb_l.a: [5]
     Gaps                   10                 3
     Linker created                  39    2 048
 -----------------------------------------------
-    Grand Total:        3 220      404    3 204
+    Grand Total:        3 224      404    3 204
 
 
 *******************************************************************************
@@ -210,7 +219,7 @@ shb_l.a: [5]
 
 Entry                      Address   Size  Type      Object
 -----                      -------   ----  ----      ------
-?main                   0x08000d9d         Code  Gb  cmain.o [4]
+?main                   0x08000da1         Code  Gb  cmain.o [4]
 BR_AppInit              0x08000b67   0x2e  Code  Gb  demo.o [1]
 BR_MemAlloc             0x08000691   0x40  Code  Gb  heap.o [1]
 BR_TaskCreate           0x08000281  0x10a  Code  Gb  task.o [1]
@@ -220,26 +229,26 @@ BR_TaskWait             0x0800041b   0x3c  Code  Gb  task.o [1]
 BR_TimerControl         0x08000941   0x9a  Code  Gb  timer.o [1]
 BR_TimerCreate          0x08000891   0xb0  Code  Gb  timer.o [1]
 BR_TimerStart           0x080009dd   0x34  Code  Gb  timer.o [1]
-BusFault_Handler        0x08000d95    0x2  Code  Gb  stm32f10x_it.o [1]
+BusFault_Handler        0x08000d99    0x2  Code  Gb  stm32f10x_it.o [1]
 CSTACK$$Base            0x20000488          --   Gb  - Linker created -
 CSTACK$$Limit           0x20000c88          --   Gb  - Linker created -
-DebugMon_Handler        0x08000d99    0x2  Code  Gb  stm32f10x_it.o [1]
+DebugMon_Handler        0x08000d9d    0x2  Code  Gb  stm32f10x_it.o [1]
 GPIO_Init               0x08000bb9   0xcc  Code  Gb  stm32f10x_gpio.o [1]
 GPIO_ReadOutputDataBit  0x08000c85   0x16  Code  Gb  stm32f10x_gpio.o [1]
 GPIO_ResetBits          0x08000ca1    0x6  Code  Gb  stm32f10x_gpio.o [1]
 GPIO_SetBits            0x08000c9b    0x6  Code  Gb  stm32f10x_gpio.o [1]
-HardFault_Handler       0x08000d89    0xa  Code  Gb  stm32f10x_it.o [1]
-MemManage_Handler       0x08000d93    0x2  Code  Gb  stm32f10x_it.o [1]
+HardFault_Handler       0x08000d8d    0xa  Code  Gb  stm32f10x_it.o [1]
+MemManage_Handler       0x08000d97    0x2  Code  Gb  stm32f10x_it.o [1]
 MyTask1                 0x08000acd   0x52  Code  Gb  demo.o [1]
 MyTask2                 0x08000b1f   0x48  Code  Gb  demo.o [1]
-NMI_Handler             0x08000d85    0x2  Code  Gb  stm32f10x_it.o [1]
+NMI_Handler             0x08000d89    0x2  Code  Gb  stm32f10x_it.o [1]
 NVIC_SetPriority        0x08000505   0x22  Code  Lc  iar_port.o [1]
 RCC_APB2PeriphClockCmd  0x08000ca9   0x20  Code  Gb  stm32f10x_rcc.o [1]
-Region$$Table$$Base     0x08000d60          --   Gb  - Linker created -
-Region$$Table$$Limit    0x08000d84          --   Gb  - Linker created -
+Region$$Table$$Base     0x08000d64          --   Gb  - Linker created -
+Region$$Table$$Limit    0x08000d88          --   Gb  - Linker created -
 SysTick_Config          0x08000527   0x30  Code  Lc  iar_port.o [1]
 Task1OnTimeout          0x08000aa5   0x28  Code  Gb  demo.o [1]
-UsageFault_Handler      0x08000d97    0x2  Code  Gb  stm32f10x_it.o [1]
+UsageFault_Handler      0x08000d9b    0x2  Code  Gb  stm32f10x_it.o [1]
 __BR_IdleTask           0x08000131    0x2  Code  Gb  task.o [1]
 __BR_ListInit           0x0800046d    0xc  Code  Gb  list.o [1]
 __BR_ListInsertAfter    0x08000479   0x1a  Code  Gb  list.o [1]
@@ -263,7 +272,7 @@ __BR_PortStartFirstTask
 __BR_PortSysTickHandler
                         0x080005dd   0x18  Code  Gb  iar_port.o [1]
 __BR_PortYield          0x080005cf    0xe  Code  Gb  iar_port.o [1]
-__BR_StartUp            0x08000ccd   0x42  Code  Lc  startup.o [1]
+__BR_StartUp            0x08000ccd   0x46  Code  Lc  startup.o [1]
 __BR_TaskStartScheduler
                         0x08000161   0x62  Code  Gb  task.o [1]
 __BR_TaskSwitch         0x080001c5   0x5e  Code  Gb  task.o [1]
@@ -273,27 +282,27 @@ __BR_TimerDecrement     0x080007e1   0x62  Code  Gb  timer.o [1]
 __BR_TimerInit          0x080007d1   0x10  Code  Gb  timer.o [1]
 __BR_TimerTask          0x08000843   0x4e  Code  Gb  timer.o [1]
 __aeabi_memset          0x08000a1d         Code  Gb  ABImemset.o [4]
-__cmain                 0x08000d9d         Code  Gb  cmain.o [4]
-__exit                  0x08000dc9   0x14  Code  Gb  exit.o [5]
+__cmain                 0x08000da1         Code  Gb  cmain.o [4]
+__exit                  0x08000dcd   0x14  Code  Gb  exit.o [5]
 __iar_Memset            0x08000a1d         Code  Gb  ABImemset.o [4]
 __iar_Memset_word       0x08000a25         Code  Gb  ABImemset.o [4]
-__iar_SB                0x08000e1c         Data  Gb  bwt_init3c.o [4]
+__iar_SB                0x08000e20         Data  Gb  bwt_init3c.o [4]
 __iar_copy_init3        0x080004d7   0x2e  Code  Gb  copy_init3.o [4]
-__iar_data_init3        0x08000d35   0x2c  Code  Gb  data_init3.o [4]
-__iar_program_start     0x08000e01         Code  Gb  cstartup_M.o [4]
+__iar_data_init3        0x08000d39   0x2c  Code  Gb  data_init3.o [4]
+__iar_program_start     0x08000e05         Code  Gb  cstartup_M.o [4]
 __iar_zero_init3        0x08000a83   0x22  Code  Gb  zero_init3.o [4]
-__low_level_init        0x08000db3    0x4  Code  Gb  low_level_init.o [3]
+__low_level_init        0x08000db7    0x4  Code  Gb  low_level_init.o [3]
 __vector_table          0x08000000  0x130  Data  Gb  stm32f10x_it.o [1]
-_call_main              0x08000da9         Code  Gb  cmain.o [4]
-_exit                   0x08000dbd         Code  Gb  cexit.o [4]
-_main                   0x08000daf         Code  Gb  cmain.o [4]
+_call_main              0x08000dad         Code  Gb  cmain.o [4]
+_exit                   0x08000dc1         Code  Gb  cexit.o [4]
+_main                   0x08000db3         Code  Gb  cmain.o [4]
 bytesFree               0x20000004    0x4  Data  Lc  heap.o [1]
 currentPriority         0x20000008    0x1  Data  Lc  task.o [1]
-exit                    0x08000db7    0x4  Code  Gb  exit.o [3]
+exit                    0x08000dbb    0x4  Code  Gb  exit.o [3]
 expiredTimers           0x2000046c    0x8  Data  Lc  timer.o [1]
 gpioInit                0x20000474    0x4  Data  Gb  demo.o [1]
 heap                    0x2000000c  0x400  Data  Lc  heap.o [1]
-main                    0x08000d25    0xe  Code  Gb  startup.o [1]
+main                    0x08000d29    0xe  Code  Gb  startup.o [1]
 memset                  0x08000751   0x14  Code  Gb  task.o [1]
 nextFreeByte            0x20000000    0x4  Data  Lc  heap.o [1]
 objList                 0x20000434   0x20  Data  Lc  object.o [1]
@@ -313,9 +322,9 @@ waitingTaskList         0x2000045c    0x8  Data  Lc  task.o [1]
 [4] = rt7M_tl.a
 [5] = shb_l.a
 
-  3 220 bytes of readonly  code memory
+  3 224 bytes of readonly  code memory
     404 bytes of readonly  data memory
   3 204 bytes of readwrite data memory
 
-Errors: none
+Errors: 1
 Warnings: none

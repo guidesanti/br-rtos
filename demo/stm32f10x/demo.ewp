@@ -1853,6 +1853,9 @@
     <group>
       <name>kernel</name>
       <file>
+        <name>$PROJ_DIR$\..\..\kernel\src\device.c</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$\..\..\kernel\src\heap.c</name>
       </file>
       <file>

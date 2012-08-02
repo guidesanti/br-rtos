@@ -1,5 +1,5 @@
 /**
- * @file        template.h
+ * @file        template.c
  * @date        TODO
  * @author      Guilherme A. de Santi <guidesanti@yahoo.com.br>
  * @copyright   &copy; 2012, BR-RTOS Development Team

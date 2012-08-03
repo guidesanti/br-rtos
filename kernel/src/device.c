@@ -132,6 +132,8 @@ BR_Err_t BR_DeviceRegister(const char* name, BR_Device_t* device)
   if ((NULL != name) && (NULL != device))
 #endif
   {
+    __BR_ENTER_CRITICAL();
+
     /* Check the device integrity. */
     if (device->type >= BR_N_DEVICE_TYPES)
     {
@@ -149,6 +151,8 @@ BR_Err_t BR_DeviceRegister(const char* name, BR_Device_t* device)
     {
       ret = E_ERROR;
     }
+
+    __BR_EXIT_CRITICAL();
   }
 #if (1U == __BR_CHECK_FUNC_PARAMETERS)
   else

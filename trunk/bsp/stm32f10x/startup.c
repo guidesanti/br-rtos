@@ -26,41 +26,38 @@
 #include "task.h"
 #include "timer.h"
 #include "device.h"
+#include "board.h"
 
+/******************************************************************************/
+/* F U N C T I O N S  P R O T O T Y P E S                                     */
+/******************************************************************************/
 extern void BR_AppInit(void);
-
-/******************************************************************************/
-/* P R I V A T E  F U N C T I O N S  P R O T O T Y P E S                      */
-/******************************************************************************/
 static void __BR_StartUp(void);
 
 /******************************************************************************/
 /* C O N S T A N T ,  M A C R O  A N D  T Y P E  D E F I N I T I O N S        */
 /******************************************************************************/
 
+/******************************************************************************/
+/* F U N C T I O N S                                                          */
+/******************************************************************************/
+
 /**
- * @name Constants, Macros and Type definitions
- * @{
+ * @brief System start up.
  */
-
-/** @} */
-
-/******************************************************************************/
-/* P R I V A T E  F U N C T I O N S                                           */
-/******************************************************************************/
-
 static void __BR_StartUp(void)
 {
-  /* Board initialization. */
-  //__BR_BoardInit();
-
-  /* BR-RTOS kernel internals initialization. */
+  /* Initialize the internal BR-RTOS kernel structures. */
   __BR_ObjectInit();
   __BR_TasklInit();
   __BR_TimerInit();
-
-  /* Devices initialization. */
   __BR_DeviceInit();
+
+  /* Board initialization. */
+  __BR_BoardInit();
+
+  /* Device drivers initializetion. */
+  __BR_DeviceInitAll();
 
   /* Create the idle task. */
   BR_TaskCreate("Idle", __BR_IdleTask, 32U, NULL, BR_TASK_PRIORITY_TRIVIAL, NULL);
@@ -74,10 +71,6 @@ static void __BR_StartUp(void)
   /* Start the scheduler. */
   __BR_TaskStartScheduler();
 }
-
-/******************************************************************************/
-/* P U B L I C  F U N C T I O N S                                             */
-/******************************************************************************/
 
 void main(void)
 {

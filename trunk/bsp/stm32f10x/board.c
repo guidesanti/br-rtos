@@ -19,17 +19,50 @@
 /* I N C L U D E S                                                            */
 /******************************************************************************/
 
+/******************************************************************************/
+/* F U N C T I O N S  P R O T O T Y P E S                                     */
+/******************************************************************************/
+static void __BR_RccConfig(void);
+static void __BR_NvicConfig(void);
 
 /******************************************************************************/
 /* C O N S T A N T ,  M A C R O  A N D  T Y P E  D E F I N I T I O N S        */
 /******************************************************************************/
 
-/**
- * @name Constants, Macro and Type Definitions
- * @{
- */
+/******************************************************************************/
+/* F U N C T I O N S                                                          */
+/******************************************************************************/
 
-/** @} */
+/**
+ * @brief Initialize the STM32F10x board clock system.
+ */
+static void __BR_RccConfig(void)
+{
+  // TODO
+}
+
+/**
+ * @brief Initialize the STM32F10x board interrupt controller.
+ */
+static void __BR_NvicConfig(void)
+{
+  // TODO
+}
+
+/**
+ * @brief Board initialization code.
+ */
+void __BR_BoardInit(void)
+{
+  /* Initialize the clock system. */
+  __BR_RccConfig();
+
+  /* Initialize the system control, reset and interrupts. */
+  __BR_NvicConfig();
+
+  /* Initialize the board devices. */
+  // TODO
+}
 
 /** @} */
 

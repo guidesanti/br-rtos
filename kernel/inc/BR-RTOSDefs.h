@@ -251,6 +251,7 @@ struct BR_Device_t
     uint32_t        (*read)   (BR_Device_t* device, uint32_t address, uint8_t* buffer, uint32_t nBytes);
     uint32_t        (*write)  (BR_Device_t* device, uint32_t address, uint8_t* buffer, uint32_t nBytes);
     BR_Err_t        (*control)(BR_Device_t* device, uint8_t cmd, void* param);
+    void*           custom;
 };
 
 /** @} */

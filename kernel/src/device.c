@@ -139,6 +139,8 @@ BR_Err_t BR_DeviceRegister(const char* name, BR_Device_t* device)
     {
       device->type = BR_DEVICE_TYPE_UNKNOWN;
     }
+    /* Initialize the device list node. */
+    __BR_ListInit(&(device->node));
     /* Insert the device within the kernel device list. */
     __BR_ListInsertAfter(&(deviceTable[device->type]), &(device->node));
     /* Allocate the object memory for the device. */

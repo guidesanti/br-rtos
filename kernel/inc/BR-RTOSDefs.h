@@ -227,10 +227,11 @@ typedef struct
 
 typedef enum
 {
-  BR_DEVICE_TYPE_CHAR,
+  BR_DEVICE_TYPE_CHAR = 0U,
   BR_DEVICE_TYPE_I2C,
   BR_DEVICE_TYPE_SPI,
   BR_DEVICE_TYPE_UNKNOWN,
+  BR_N_DEVICE_TYPES,
 } BR_DeviceType_t;
 
 typedef struct BR_Device_t BR_Device_t;
@@ -241,8 +242,9 @@ typedef struct BR_Device_t BR_Device_t;
 struct BR_Device_t
 {
     BR_Object_t*    parent;
+    BR_ListNode_t   node;
     uint8_t         flags;
-    BR_DeviceType_t TYPE;
+    BR_DeviceType_t type;
     BR_Err_t        (*init)   (BR_Device_t* device);
     BR_Err_t        (*open)   (BR_Device_t* device, uint8_t flags);
     BR_Err_t        (*close)  (BR_Device_t* device);

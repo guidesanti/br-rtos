@@ -62,6 +62,8 @@
  * @{
  */
 
+static uint8_t criticalCount = 0U;
+
 /** @} */
 
 /******************************************************************************/
@@ -167,6 +169,30 @@ void __BR_PortReset(void)
 {
   //SCB->AIRCR |= SCB_AIRCR_SYSRESETREQ;
   __BR_SCB_AIRCR |= __BR_SCB_AIRCR_SYSRESETREQ;
+}
+
+/**
+ * @brief Enter kernel critical section.
+ */
+void __BR_PortEnterCritical(void)
+{
+  __BR_PortDisableInterrupts();
+  criticalCount++;
+}
+
+/**
+ * @brief Exit kernel critical section.
+ */
+void __BR_PortExitCritical(void)
+{
+  if (criticalCount > 0U)
+  {
+    criticalCount--;
+  }
+  if (0U == criticalCount)
+  {
+    __BR_PortEnableInterrupts();
+  }
 }
 
 /** @} */

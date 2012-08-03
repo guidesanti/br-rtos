@@ -22,6 +22,8 @@
 #include "BR-RTOS.h"
 #include "port.h"
 #include "device.h"
+#include "object.h"
+#include "list.h"
 
 
 /******************************************************************************/
@@ -50,6 +52,8 @@
  * @{
  */
 
+static BR_ListNode_t deviceTable[BR_N_DEVICE_TYPES];
+
 /** @} */
 
 /******************************************************************************/
@@ -66,7 +70,33 @@
  */
 void __BR_DeviceInit(void)
 {
-  // TODO
+  uint8_t index = 0U;
+
+  for (index = 0U; index < BR_N_DEVICE_TYPES; index++)
+  {
+    __BR_ListInit(&(deviceTable[index]));
+  }
+}
+
+/**
+ * @brief Initialize all the devices registered within the kernel.
+ */
+void __BR_DeviceInitAll(void)
+{
+  BR_ListNode_t* node = NULL;
+  BR_Device_t* device = NULL;
+  uint8_t index = 0U;
+
+  for (index = 0U; index < BR_N_DEVICE_TYPES; index++)
+  {
+    node = deviceTable[index].next;
+    while (node != (&(deviceTable[index])))
+    {
+      device = __BR_LIST_ENTRY(node, BR_Device_t, node);
+      device->init(device);
+      node = node->next;
+    }
+  }
 }
 
 /** @} */
@@ -93,6 +123,7 @@ void __BR_DeviceInit(void)
 BR_Err_t BR_DeviceRegister(const char* name, BR_Device_t* device)
 {
   BR_Err_t ret = E_OK;
+  BR_Object_t* obj = NULL;
 
   /* Check the parameters. */
   __BR_ASSERT(NULL != name);
@@ -101,11 +132,23 @@ BR_Err_t BR_DeviceRegister(const char* name, BR_Device_t* device)
   if ((NULL != name) && (NULL != device))
 #endif
   {
-#error "TODO"
-    /* Allocate the object memory for the device. */
-    // TODO
+    /* Check the device integrity. */
+    if (device->type >= BR_N_DEVICE_TYPES)
+    {
+      device->type = BR_DEVICE_TYPE_UNKNOWN;
+    }
     /* Insert the device within the kernel device list. */
-    // TODO
+    __BR_ListInsertAfter(&(deviceTable[device->type]), &(device->node));
+    /* Allocate the object memory for the device. */
+    obj = __BR_ObjectCreate(name, BR_OBJ_TYPE_DEVICE, device);
+    if (NULL != obj)
+    {
+      device->parent = obj;
+    }
+    else
+    {
+      ret = E_ERROR;
+    }
   }
 #if (1U == __BR_CHECK_FUNC_PARAMETERS)
   else
@@ -118,12 +161,63 @@ BR_Err_t BR_DeviceRegister(const char* name, BR_Device_t* device)
 }
 
 /**
- * @brief TODO
+ * @brief Look for a device within the kernel device object list.
+ * @param [in] name The device name.
+ * @return A pointer to device if found, otherwise returns NULL.
+ */
+BR_Device_t* BR_DeviceFind(const char* name)
+{
+  BR_Object_t* obj = NULL;
+  BR_Device_t* dev = NULL;
+
+  __BR_ENTER_CRITICAL();
+
+  obj = __BR_ObjectFind(name);
+  if (NULL != obj)
+  {
+    dev = (BR_Device_t*)(obj->child);
+  }
+
+  __BR_EXIT_CRITICAL();
+
+  return dev;
+}
+
+/**
+ * @brief Initialize a device.
+ * @param [in] A pointer to device.
+ * @return Error code.
+ * @retval E_OK If the device was initialized with successful.
+ * @retval E_ERROR If the initialization function is not implemented.
+ * @retval E_INVAL If device == NULL and the check parameters feature is enabled.
  */
 BR_Err_t BR_DeviceInit(BR_Device_t* device)
 {
-#error "TODO"
-  // TODO
+  BR_Err_t ret = E_OK;
+
+  /* Check the parameters. */
+  __BR_ASSERT(NULL != device);
+#if (1U == __BR_CHECK_FUNC_PARAMETERS)
+  if (NULL != device)
+#endif
+  {
+    if (NULL != device->init)
+    {
+      ret = device->init(device);
+    }
+    else
+    {
+      ret = E_ERROR;
+    }
+  }
+#if (1U == __BR_CHECK_FUNC_PARAMETERS)
+  else
+  {
+    ret = E_INVAL;
+  }
+#endif
+
+  return ret;
 }
 
 /**

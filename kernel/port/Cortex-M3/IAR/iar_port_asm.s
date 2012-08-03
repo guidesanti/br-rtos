@@ -5,8 +5,8 @@
 	EXTERN __BR_TaskSwitch
 
 	PUBLIC __BR_PortPendSVCHandler
-	PUBLIC __BR_PortEnableIRQ
-	PUBLIC __BR_PortDisableIRQ
+	PUBLIC __BR_PortEnableInterrupts
+	PUBLIC __BR_PortDisableInterrupts
 	PUBLIC __BR_PortSVCHandler
 	PUBLIC __BR_PortSetBasePriorityMask
 	PUBLIC __BR_PortStartFirstTask
@@ -43,16 +43,16 @@ __BR_PortPendSVCHandler:
 	bx r14
 
 /*
- * void BR_PortEnableIRQ(void)
+ * void __BR_PortEnableInterrupts(void)
  */
-__BR_PortEnableIRQ:
+__BR_PortEnableInterrupts:
 	cpsie i
 	bx r14
 
 /*
- * void BR_PortDisableIRQ(void)
+ * void __BR_PortDisableInterrupts(void)
  */
-__BR_PortDisableIRQ:
+__BR_PortDisableInterrupts:
 	cpsid i
 	bx r14
 

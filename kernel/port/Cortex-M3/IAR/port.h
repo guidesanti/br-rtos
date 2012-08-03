@@ -32,10 +32,10 @@
  * @{
  */
 
-#define __BR_ENTER_CRITICAL()     __BR_PortDisableIRQ()
-#define __BR_EXIT_CRITICAL()      __BR_PortEnableIRQ()
-#define __BR_DISABLE_INTERRUPTS() __BR_PortDisableIRQ()
-#define __BR_ENABLE_INTERRUPTS()  __BR_PortEnableIRQ()
+#define __BR_ENTER_CRITICAL()     __BR_PortEnterCritical()
+#define __BR_EXIT_CRITICAL()      __BR_PortExitCritical()
+#define __BR_DISABLE_INTERRUPTS() __BR_PortDisableInterrupts()
+#define __BR_ENABLE_INTERRUPTS()  __BR_PortEnableInterrupts()
 #define __BR_RESET()              __BR_PortReset()
 
 /**
@@ -77,8 +77,10 @@ void __BR_PortSVCHandler(void);
 void __BR_PortPendSVCHandler(void);
 void __BR_PortSysTickHandler(void);
 void __BR_PortReset(void);
-void __BR_PortEnableIRQ(void);
-void __BR_PortDisableIRQ(void);
+void __BR_PortEnterCritical(void);
+void __BR_PortExitCritical(void);
+void __BR_PortEnableInterrupts(void);
+void __BR_PortDisableInterrupts(void);
 void __BR_PortSetBasePriorityMask(uint8_t basePriMask);
 void __BR_PortStartFirstTask(void);
 

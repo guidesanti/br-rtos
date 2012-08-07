@@ -6,6 +6,7 @@
 #endif 
 
 #include "stm32f10x.h"
+#include "usart.h"
 
 void NMI_Handler(void);
 void HardFault_Handler(void);
@@ -54,9 +55,9 @@ void SysTick_Handler(void);
 #define I2C2_ER_IRQHandler          (0U)
 #define SPI1_IRQHandler             (0U)
 #define SPI2_IRQHandler             (0U)
-#define USART1_IRQHandler           (0U)
-#define USART2_IRQHandler           (0U)
-#define USART3_IRQHandler           (0U)
+#define USART1_IRQHandler           __BR_UsartIsr1
+#define USART2_IRQHandler           __BR_UsartIsr2
+#define USART3_IRQHandler           __BR_UsartIsr3
 #define EXTI15_10_IRQHandler        (0U)
 #define RTCAlarm_IRQHandler         (0U)
 #define USBWakeUp_IRQHandler        (0U)

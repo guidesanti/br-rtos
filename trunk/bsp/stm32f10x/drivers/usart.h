@@ -45,6 +45,9 @@
 /* F U N C T I O N S                                                          */
 /******************************************************************************/
 void __BR_UsartInit(void);
+void __BR_UsartIsr1(void);
+void __BR_UsartIsr2(void);
+void __BR_UsartIsr3(void);
 
 
 /** @} */

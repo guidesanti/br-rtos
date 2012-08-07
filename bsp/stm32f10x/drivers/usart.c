@@ -23,6 +23,7 @@
 /******************************************************************************/
 /* I N C L U D E S                                                            */
 /******************************************************************************/
+#include "BR-RTOS.h"
 #include "usart.h"
 #include "device.h"
 #include "port.h"
@@ -30,6 +31,51 @@
 #include "stm32f10x_gpio.h"
 #include "stm32f10x_rcc.h"
 #include "stm32f10x_usart.h"
+
+/******************************************************************************/
+/* C O N S T A N T ,  M A C R O  A N D  T Y P E  D E F I N I T I O N S        */
+/******************************************************************************/
+
+#define USART_DEFAULT_RX_BUFFER_SIZE  (100U)
+
+#ifndef USART1_DEV_NAME
+#define USART1_DEV_NAME "usart1"
+#warning "USART1_DEV_NAME is not defined, assuming default value 'usart1'"
+#endif
+
+#ifndef USART2_DEV_NAME
+#define USART2_DEV_NAME "usart2"
+#warning "USART2_DEV_NAME is not defined, assuming default value 'usart2'"
+#endif
+
+#ifndef USART3_DEV_NAME
+#define USART3_DEV_NAME "usart3"
+#warning "USART3_DEV_NAME is not defined, assuming default value 'usart3'"
+#endif
+
+#ifndef USART1_RX_BUFFER_SIZE
+#define USART1_RX_BUFFER_SIZE USART_DEFAULT_RX_BUFFER_SIZE
+#warning "USART1_RX_BUFFER_SIZE is not defined, assuming default USART_DEFAULT_RX_BUFFER_SIZE"
+#endif
+
+#ifndef USART2_RX_BUFFER_SIZE
+#define USART2_RX_BUFFER_SIZE USART_DEFAULT_RX_BUFFER_SIZE
+#warning "USART2_RX_BUFFER_SIZE is not defined, assuming default USART_DEFAULT_RX_BUFFER_SIZE"
+#endif
+
+#ifndef USART3_RX_BUFFER_SIZE
+#define USART3_RX_BUFFER_SIZE USART_DEFAULT_RX_BUFFER_SIZE
+#warning "USART3_RX_BUFFER_SIZE is not defined, assuming default USART_DEFAULT_RX_BUFFER_SIZE"
+#endif
+
+typedef struct
+{
+    USART_TypeDef*    usart;
+    uint8_t*          rxBuffer;
+    uint16_t          rxBufferIni;
+    uint16_t          rxBufferEnd;
+    uint16_t          rxBufferSize;
+} UsartCtrl;
 
 
 /******************************************************************************/
@@ -45,45 +91,7 @@ static void __UsartRccConfig(void);
 static void __UsartGpioConfig(void);
 static void __UsartNvicConfig(void);
 static void __UsartDmaConfig(void);
-
-
-/******************************************************************************/
-/* C O N S T A N T ,  M A C R O  A N D  T Y P E  D E F I N I T I O N S        */
-/******************************************************************************/
-
-#define USART_DEFAULT_RX_BUFFER_SIZE  (100U)
-
-#ifndef USART1_DEV_NAME
-#define USART1_DEV_NAME "usart1"
-#endif
-
-#ifndef USART2_DEV_NAME
-#define USART2_DEV_NAME "usart2"
-#endif
-
-#ifndef USART3_DEV_NAME
-#define USART3_DEV_NAME "usart3"
-#endif
-
-#ifndef USART1_RX_BUFFER_SIZE
-#define USART1_RX_BUFFER_SIZE USART_DEFAULT_RX_BUFFER_SIZE
-#endif
-
-#ifndef USART2_RX_BUFFER_SIZE
-#define USART2_RX_BUFFER_SIZE USART_DEFAULT_RX_BUFFER_SIZE
-#endif
-
-#ifndef USART3_RX_BUFFER_SIZE
-#define USART3_RX_BUFFER_SIZE USART_DEFAULT_RX_BUFFER_SIZE
-#endif
-
-typedef struct
-{
-    USART_TypeDef*  usart;
-    uint8_t*        rxBuffer;
-    uint16_t        rxBufferIni;
-    uint16_t        rxBufferEnd;
-} UsartCtrl;
+static void __UsartIsr(UsartCtrl* usartCtrl);
 
 
 /******************************************************************************/
@@ -98,11 +106,12 @@ static UsartCtrl usart1Ctrl =
     .rxBuffer = usart1RxBuffer,
     .rxBufferIni = 0U,
     .rxBufferEnd = 0U,
+    .rxBufferSize = USART1_RX_BUFFER_SIZE,
 };
 
 static BR_Device_t usart1 =
 {
-    .type     BR_DEVICE_TYPE_CHAR,
+    .type     = BR_DEVICE_TYPE_CHAR,
     .init     = __UsartInit,
     .open     = __UsartOpen,
     .close    = __UsartClose,
@@ -120,11 +129,12 @@ static UsartCtrl usart2Ctrl =
     .rxBuffer = usart2RxBuffer,
     .rxBufferIni = 0U,
     .rxBufferEnd = 0U,
+    .rxBufferSize = USART2_RX_BUFFER_SIZE,
 };
 
 static BR_Device_t usart2 =
 {
-    .type     BR_DEVICE_TYPE_CHAR,
+    .type     = BR_DEVICE_TYPE_CHAR,
     .init     = __UsartInit,
     .open     = __UsartOpen,
     .close    = __UsartClose,
@@ -142,11 +152,12 @@ static UsartCtrl usart3Ctrl =
     .rxBuffer = usart3RxBuffer,
     .rxBufferIni = 0U,
     .rxBufferEnd = 0U,
+    .rxBufferSize = USART3_RX_BUFFER_SIZE,
 };
 
 static BR_Device_t usart3 =
 {
-    .type     BR_DEVICE_TYPE_CHAR,
+    .type     = BR_DEVICE_TYPE_CHAR,
     .init     = __UsartInit,
     .open     = __UsartOpen,
     .close    = __UsartClose,
@@ -190,7 +201,22 @@ static BR_Err_t __UsartClose(BR_Device_t* device)
 
 static uint32_t __UsartRead(BR_Device_t* device, uint32_t address, uint8_t* buffer, uint32_t nBytes)
 {
-#error "TODO"
+  UsartCtrl* usartCtrl = (UsartCtrl*)device->custom;
+  uint32_t bytesRead = 0U;
+
+  /* Check the parameters. */
+  __BR_ASSERT(NULL != device);
+  __BR_ASSERT(NULL != buffer);
+
+  while ((usartCtrl->rxBufferIni != usartCtrl->rxBufferEnd) &&
+         (bytesRead < nBytes))
+  {
+    buffer[bytesRead] = usartCtrl->rxBuffer[usartCtrl->rxBufferIni];
+    usartCtrl->rxBufferIni = ((usartCtrl->rxBufferIni + 1U) % usartCtrl->rxBufferSize);
+    bytesRead++;
+  }
+
+  return bytesRead;
 }
 
 static uint32_t __UsartWrite(BR_Device_t* device, uint32_t address, uint8_t* buffer, uint32_t nBytes)
@@ -272,6 +298,8 @@ static BR_Err_t __UsartControl(BR_Device_t* device, uint8_t cmd, void* param)
 
 static void __UsartRccConfig(void)
 {
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);
@@ -353,7 +381,26 @@ static void __UsartNvicConfig(void)
 
 static void __UsartDmaConfig(void)
 {
-#error "TODO"
+#warning "TODO"
+}
+
+static void __UsartIsr(UsartCtrl* usartCtrl)
+{
+  USART_TypeDef* usart = usartCtrl->usart;
+
+  /* Check for RX interrupt flag. */
+  if (BITS_GET(usart->SR, USART_SR_RXNE))
+  {
+    /* Read the received data. */
+    usartCtrl->rxBuffer[usartCtrl->rxBufferEnd] = usart->DR;
+    usartCtrl->rxBufferEnd = ((usartCtrl->rxBufferEnd + 1U) % usartCtrl->rxBufferSize);
+    /* Clear the interrupt flag. */
+    BITS_CLEAR(usart->SR, USART_SR_RXNE);
+  }
+
+  /*
+   * NOTE: The other interrupts should not occur since they are never enabled by this driver.
+   */
 }
 
 void __BR_UsartInit(void)
@@ -373,7 +420,7 @@ void __BR_UsartInit(void)
   /* DMA configuration. */
   __UsartDmaConfig();
 
-  usartInitSt.USART_BaudRate = 9600U;
+  usartInitSt.USART_BaudRate = 57600U;
   usartInitSt.USART_WordLength = USART_WordLength_8b;
   usartInitSt.USART_StopBits = USART_StopBits_1;
   usartInitSt.USART_Parity = USART_Parity_No;
@@ -416,6 +463,30 @@ void __BR_UsartInit(void)
   BR_DeviceRegister(USART3_DEV_NAME, &usart3);
   /* Enable interrupts. */
   USART_ITConfig(USART3, USART_IT_RXNE, ENABLE);
+}
+
+/**
+ * @brief USART1 interrupt service routine.
+ */
+void __BR_UsartIsr1(void)
+{
+  __UsartIsr(&usart1Ctrl);
+}
+
+/**
+ * @brief USART2 interrupt service routine.
+ */
+void __BR_UsartIsr2(void)
+{
+  __UsartIsr(&usart2Ctrl);
+}
+
+/**
+ * @brief USART3 interrupt service routine.
+ */
+void __BR_UsartIsr3(void)
+{
+  __UsartIsr(&usart3Ctrl);
 }
 
 

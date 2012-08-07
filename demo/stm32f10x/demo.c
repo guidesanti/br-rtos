@@ -60,6 +60,8 @@ void MyTask2(void);
  * @{
  */
 
+BR_Device_t* terminal = NULL;
+
 /**@}*/
 
 /******************************************************************************/
@@ -87,6 +89,7 @@ BR_Timer_t* timer1 = NULL;
  */
 void Task1OnTimeout(void* param)
 {
+  BR_DeviceWrite(terminal, 0U, "TESTE\n\r", 7U);
   if (GPIO_ReadOutputDataBit(GPIOC, GPIO_Pin_8))
   {
     GPIO_ResetBits(GPIOC, GPIO_Pin_8);
@@ -99,19 +102,25 @@ void Task1OnTimeout(void* param)
 
 void MyTask1(void)
 {
+  uint8_t buffer[10U];
+
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
   gpioInit.GPIO_Pin = GPIO_Pin_8;
   gpioInit.GPIO_Speed = GPIO_Speed_50MHz;
   gpioInit.GPIO_Mode = GPIO_Mode_Out_PP;
   GPIO_Init(GPIOC, &gpioInit);
 
-  BR_TimerCreate("Timer1", 2U, Task1OnTimeout, NULL, 0U, &timer1);
+  BR_TimerCreate("Timer1", 1U, Task1OnTimeout, NULL, 0U, &timer1);
   BR_TimerControl(timer1, BR_TIMER_CMD_SET_CONT, NULL);
   BR_TimerStart(timer1);
 
   while (1U)
   {
-    // TODO
+    /* Check for new data within the terminal. */
+    if (BR_DeviceRead(terminal, 0U, buffer, 1U))
+    {
+      BR_DeviceWrite(terminal, 0U, buffer, 1U);
+    }
   }
 }
 
@@ -145,6 +154,11 @@ void MyTask2(void)
 
 void BR_AppInit(void)
 {
+  /* Look for the USART1 device driver. */
+  terminal = BR_DeviceFind("usart1");
+  BR_DeviceOpen(terminal, 0U);
+
+  /* Creating the application tasks. */
   BR_TaskCreate("My Task 1", MyTask1, 30U, NULL, BR_TASK_PRIORITY_CRITICAL, NULL);
   BR_TaskCreate("My Task 2", MyTask2, 30U, NULL, BR_TASK_PRIORITY_CRITICAL, NULL);
 }

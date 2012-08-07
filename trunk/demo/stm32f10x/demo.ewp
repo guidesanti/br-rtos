@@ -295,8 +295,11 @@
         <option>
           <name>CCIncludePath2</name>
           <state>$PROJ_DIR$\</state>
-          <state>$PROJ_DIR$\STM32F10x_StdPeriph_Driver\inc</state>
           <state>$PROJ_DIR$\..\..\config</state>
+          <state>$PROJ_DIR$\..\..\bsp</state>
+          <state>$PROJ_DIR$\..\..\bsp\stm32f10x</state>
+          <state>$PROJ_DIR$\..\..\bsp\stm32f10x\drivers</state>
+          <state>$PROJ_DIR$\..\..\bsp\stm32f10x\libs\STM32F10x_StdPeriph_Driver\inc</state>
           <state>$PROJ_DIR$\..\..\kernel</state>
           <state>$PROJ_DIR$\..\..\kernel\inc</state>
           <state>$PROJ_DIR$\..\..\kernel\src</state>
@@ -1827,12 +1830,6 @@
       <name>$PROJ_DIR$\demo.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\STM32F10x_StdPeriph_Driver\src\stm32f10x_gpio.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\STM32F10x_StdPeriph_Driver\src\stm32f10x_rcc.c</name>
-    </file>
-    <file>
       <name>$PROJ_DIR$\system_stm32f10x.c</name>
     </file>
   </group>
@@ -1840,6 +1837,84 @@
     <name>BR-RTOS</name>
     <group>
       <name>bsp</name>
+      <group>
+        <name>drivers</name>
+        <file>
+          <name>$PROJ_DIR$\..\..\bsp\stm32f10x\drivers\usart.c</name>
+        </file>
+      </group>
+      <group>
+        <name>libs</name>
+        <file>
+          <name>$PROJ_DIR$\..\..\bsp\stm32f10x\libs\STM32F10x_StdPeriph_Driver\src\misc.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\bsp\stm32f10x\libs\STM32F10x_StdPeriph_Driver\src\stm32f10x_adc.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\bsp\stm32f10x\libs\STM32F10x_StdPeriph_Driver\src\stm32f10x_bkp.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\bsp\stm32f10x\libs\STM32F10x_StdPeriph_Driver\src\stm32f10x_can.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\bsp\stm32f10x\libs\STM32F10x_StdPeriph_Driver\src\stm32f10x_cec.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\bsp\stm32f10x\libs\STM32F10x_StdPeriph_Driver\src\stm32f10x_crc.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\bsp\stm32f10x\libs\STM32F10x_StdPeriph_Driver\src\stm32f10x_dac.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\bsp\stm32f10x\libs\STM32F10x_StdPeriph_Driver\src\stm32f10x_dbgmcu.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\bsp\stm32f10x\libs\STM32F10x_StdPeriph_Driver\src\stm32f10x_dma.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\bsp\stm32f10x\libs\STM32F10x_StdPeriph_Driver\src\stm32f10x_exti.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\bsp\stm32f10x\libs\STM32F10x_StdPeriph_Driver\src\stm32f10x_flash.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\bsp\stm32f10x\libs\STM32F10x_StdPeriph_Driver\src\stm32f10x_fsmc.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\bsp\stm32f10x\libs\STM32F10x_StdPeriph_Driver\src\stm32f10x_gpio.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\bsp\stm32f10x\libs\STM32F10x_StdPeriph_Driver\src\stm32f10x_i2c.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\bsp\stm32f10x\libs\STM32F10x_StdPeriph_Driver\src\stm32f10x_iwdg.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\bsp\stm32f10x\libs\STM32F10x_StdPeriph_Driver\src\stm32f10x_pwr.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\bsp\stm32f10x\libs\STM32F10x_StdPeriph_Driver\src\stm32f10x_rcc.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\bsp\stm32f10x\libs\STM32F10x_StdPeriph_Driver\src\stm32f10x_rtc.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\bsp\stm32f10x\libs\STM32F10x_StdPeriph_Driver\src\stm32f10x_sdio.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\bsp\stm32f10x\libs\STM32F10x_StdPeriph_Driver\src\stm32f10x_spi.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\bsp\stm32f10x\libs\STM32F10x_StdPeriph_Driver\src\stm32f10x_tim.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\bsp\stm32f10x\libs\STM32F10x_StdPeriph_Driver\src\stm32f10x_usart.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\bsp\stm32f10x\libs\STM32F10x_StdPeriph_Driver\src\stm32f10x_wwdg.c</name>
+        </file>
+      </group>
       <file>
         <name>$PROJ_DIR$\..\..\bsp\stm32f10x\board.c</name>
       </file>
@@ -1877,6 +1952,12 @@
         <name>$PROJ_DIR$\..\..\kernel\src\timer.c</name>
       </file>
     </group>
+  </group>
+  <group>
+    <name>config</name>
+    <file>
+      <name>$PROJ_DIR$\demo.icf</name>
+    </file>
   </group>
 </project>
 

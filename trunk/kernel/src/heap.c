@@ -95,6 +95,8 @@ void* BR_MemAlloc(BR_Size_t nBytes)
   uint8_t* ptr = NULL;
   uint32_t index = 0U;
 
+  __BR_ENTER_CRITICAL();
+
   /* Check if there is enough memory to allocate. */
   if (bytesFree >= nBytes)
   {
@@ -111,6 +113,8 @@ void* BR_MemAlloc(BR_Size_t nBytes)
   {
     __BR_ASSERT(FALSE);
   }
+
+  __BR_EXIT_CRITICAL();
 
   return ptr;
 }

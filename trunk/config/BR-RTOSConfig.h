@@ -42,7 +42,7 @@
 /**
  * The heap size specified in number of bytes.
  */
-#define __BR_HEAP_SIZE              (1024U)
+#define __BR_HEAP_SIZE              (2048U)
 
 /**
  * The frequency of the CPU core specified in hertz.

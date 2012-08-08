@@ -61,6 +61,18 @@
 BR_Task_t* runningTask = NULL;
 
 /**
+ * The task priority table.
+ *
+ * All tasks within the priority table are in the ready state.
+ */
+BR_ListNode_t priorityTable[BR_N_TASK_PRIORITIES];
+
+/**
+ * The current priority level.
+ */
+uint8_t currentPriority = (BR_N_TASK_PRIORITIES - 1U);
+
+/**
  * The list of tasks within suspended state.
  */
 static BR_ListNode_t suspendedTaskList;
@@ -69,18 +81,6 @@ static BR_ListNode_t suspendedTaskList;
  * The list of tasks within waiting state.
  */
 static BR_ListNode_t waitingTaskList;
-
-/**
- * The task priority table.
- *
- * All tasks within the priority table are in the ready state.
- */
-static BR_ListNode_t priorityTable[BR_N_TASK_PRIORITIES];
-
-/**
- * The current priority level.
- */
-static uint8_t currentPriority = (BR_N_TASK_PRIORITIES - 1U);
 
 /** @} */
 

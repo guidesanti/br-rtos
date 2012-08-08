@@ -18,9 +18,12 @@
 /******************************************************************************/
 /* I N C L U D E S                                                            */
 /******************************************************************************/
+#include "BR-RTOS.h"
 #include "ipc.h"
 #include "port.h"
 #include "list.h"
+#include "object.h"
+#include "task.h"
 
 
 /******************************************************************************/
@@ -48,6 +51,8 @@
  * @{
  */
 
+static BR_ListNode_t mutexList;
+
 /** @} */
 
 /******************************************************************************/
@@ -64,7 +69,7 @@
  */
 void __BR_IpcInit(void)
 {
-  // TODO
+  __BR_ListInit(&mutexList);
 }
 
 /**
@@ -72,7 +77,7 @@ void __BR_IpcInit(void)
  */
 void __BR_IpcUpdate(void)
 {
-  // TODO
+#warning "TODO"
 }
 
 /** @} */
@@ -99,20 +104,17 @@ void __BR_IpcUpdate(void)
 BR_Mutex_t* BR_IpcMutexCreate(const char* name)
 {
   BR_Mutex_t* mutex = NULL;
-  BR_Object_t* obj = NULL;
 
   __BR_ENTER_CRITICAL();
 
   /* Allocate memory for the mutex. */
-  mutex = __BR_Malloc(sizeof(BR_Mutex_t));
+  mutex = BR_MemAlloc(sizeof(BR_Mutex_t));
   if (NULL != mutex)
   {
-    mutex->parent = obj;
+    mutex->parent = __BR_ObjectCreate(name, BR_OBJ_TYPE_MUTEX, mutex);
     mutex->owner = NULL;
     mutex->counter = 0U;
     __BR_ListInit(&(mutex->waitList));
-    /* Allocate memory for the mutex object. */
-    obj = __BR_ObjectCreate(name, BR_OBJ_TYPE_MUTEX, mutex);
   }
 
   __BR_EXIT_CRITICAL();
@@ -165,11 +167,21 @@ BR_Err_t BR_IpcMutexAcquire(BR_Mutex_t* mutex, uint32_t ticks)
       /* Remove the task from priority table and insert it in the mutex waiting list. */
       __BR_ListRemove(&(runningTask->list));
       __BR_ListInsertAfter(&(mutex->waitList), &(runningTask->list));
-      __BR_EXIT_CRITICAL();
+      /* Set the task error code. */
+      runningTask->errorCode = __BR_TASK_ERR_UNKNOW;
       /* Yield the CPU. */
       __BR_PortYield();
-
-      // TODO
+      /* Exit critical section to allow the task switch. */
+      __BR_EXIT_CRITICAL();
+      /* Check the task error code. */
+      if (__BR_TASK_ERR_OK == runningTask->errorCode)
+      {
+        ret = E_OK;
+      }
+      else
+      {
+        ret = E_TIMEOUT;
+      }
     }
   }
 #if (1U == __BR_CHECK_FUNC_PARAMETERS)
@@ -200,6 +212,7 @@ BR_Err_t BR_IpcMutexAcquire(BR_Mutex_t* mutex, uint32_t ticks)
 BR_Err_t BR_IpcMutexRelease(BR_Mutex_t* mutex)
 {
   BR_Err_t ret = E_OK;
+  BR_Task_t* task = NULL;
 
   __BR_ASSERT(NULL != mutex);
 
@@ -215,8 +228,26 @@ BR_Err_t BR_IpcMutexRelease(BR_Mutex_t* mutex)
       if (0U == mutex->counter)
       {
         mutex->owner = NULL;
-#warning "TODO: Check if there is some task waiting for this mutex"
+        /* Check if there is some task waiting for this mutes. */
+        if (FALSE == __BR_ListIsEmpty(&(mutex->waitList)))
+        {
+          task = __BR_LIST_ENTRY(mutex->waitList.next, BR_Task_t, list);
+          /* Remove the task from the mutex wait list. */
+          /* Set the new state of the task to ready and insert it back to priority table. */
+          task->state = __BR_TASK_ST_READY;
+          task->counter = 0U;
+          __BR_ListRemove(&(task->list));
+          __BR_ListInsertAfter(&priorityTable[task->priority], &(task->list));
+          /* Set the current priority. */
+          if (task->priority > currentPriority)
+          {
+            currentPriority = task->priority;
+          }
+          /* Set the task error code. */
+          task->errorCode = __BR_TASK_ERR_OK;
+        }
       }
+      ret = E_OK;
     }
     else
     {

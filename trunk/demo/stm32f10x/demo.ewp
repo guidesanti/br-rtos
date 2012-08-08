@@ -1940,6 +1940,9 @@
         <name>$PROJ_DIR$\..\..\kernel\port\Cortex-M3\IAR\iar_port_asm.s</name>
       </file>
       <file>
+        <name>$PROJ_DIR$\..\..\kernel\src\ipc.c</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$\..\..\kernel\src\list.c</name>
       </file>
       <file>

@@ -139,10 +139,17 @@ typedef struct
  * @{
  */
 
+/* The task states. */
 #define __BR_TASK_ST_READY      (0U)
 #define __BR_TASK_ST_RUNNING    (1U)
 #define __BR_TASK_ST_WAITING    (2U)
 #define __BR_TASK_ST_SUSPENDED  (3U)
+
+/* The task error codes. */
+#define __BR_TASK_ERR_OK        (0U)
+#define __BR_TASK_ERR_ERROR     (1U)
+#define __BR_TASK_ERR_TIMEOUT   (2U)
+#define __BR_TASK_ERR_UNKNOW    (3U)
 
 /**
  * A new type to represent the stack pointer.
@@ -157,6 +164,7 @@ typedef struct
     uint8_t state;
     uint8_t priority;
     BR_ListNode_t list;
+    uint8_t errorCode;
     char name[__BR_MAX_TASK_NAME_LEN + 1U];
 } BR_Task_t;
 
@@ -273,6 +281,7 @@ typedef struct
     BR_Object_t*  parent;   /**< The mutex parent object. */
     BR_Task_t*    owner;    /**< The mutex owner. */
     uint8_t       counter;  /**< The counter of acquires by the mutex owner. */
+    BR_ListNode_t node;     /**< The mutex node within the mutex list. */
     BR_ListNode_t waitList; /**< The task wait list for the mutex. */
 } BR_Mutex_t;
 

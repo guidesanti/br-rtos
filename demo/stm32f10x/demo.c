@@ -22,6 +22,7 @@
 #include "stm32f10x.h"
 #include "stm32f10x_rcc.h"
 #include "stm32f10x_gpio.h"
+#include "string.h"
 
 /**@}*/
 
@@ -45,6 +46,7 @@
  * @{
  */
 
+void Print(char* str);
 void Task1OnTimeout(void* param);
 void MyTask1(void);
 void MyTask2(void);
@@ -60,6 +62,7 @@ void MyTask2(void);
  * @{
  */
 
+BR_Mutex_t* tmutex = NULL;
 BR_Device_t* terminal = NULL;
 
 /**@}*/
@@ -82,6 +85,15 @@ BR_Timer_t* timer1 = NULL;
 /******************************************************************************/
 /* P R I V A T E  F U N C T I O N S                                           */
 /******************************************************************************/
+
+void Print(char* str)
+{
+  if (TRUE == BR_IpcMutexAcquire(tmutex, 3U))
+  {
+    BR_DeviceWrite(terminal, 0U, str, strlen(str));
+    BR_IpcMutexRelease(tmutex);
+  }
+}
 
 /**
  * @defgroup PrivateFunc Private Functions
@@ -116,11 +128,17 @@ void MyTask1(void)
 
   while (1U)
   {
-    /* Check for new data within the terminal. */
-    if (BR_DeviceRead(terminal, 0U, buffer, 1U))
+//    /* Check for new data within the terminal. */
+//    if (BR_DeviceRead(terminal, 0U, buffer, 1U))
+//    {
+//      BR_DeviceWrite(terminal, 0U, buffer, 1U);
+//    }
+    if (TRUE == BR_IpcMutexAcquire(tmutex, 10U))
     {
-      BR_DeviceWrite(terminal, 0U, buffer, 1U);
+      BR_DeviceWrite(terminal, 0U, "TASK 1\r\n", 6U);
     }
+    BR_TaskWait(2U);
+    BR_IpcMutexRelease(tmutex);
   }
 }
 
@@ -134,10 +152,16 @@ void MyTask2(void)
 
   while (1U)
   {
-    GPIO_SetBits(GPIOC, GPIO_Pin_9);
-    BR_TaskWait(1U);
-    GPIO_ResetBits(GPIOC, GPIO_Pin_9);
-    BR_TaskWait(1U);
+//    GPIO_SetBits(GPIOC, GPIO_Pin_9);
+//    BR_TaskWait(1U);
+//    GPIO_ResetBits(GPIOC, GPIO_Pin_9);
+//    BR_TaskWait(1U);
+    if (TRUE == BR_IpcMutexAcquire(tmutex, 10U))
+    {
+      BR_DeviceWrite(terminal, 0U, "TASK 1\r\n", 6U);
+    }
+    BR_TaskWait(5U);
+    BR_IpcMutexRelease(tmutex);
   }
 }
 
@@ -157,6 +181,9 @@ void BR_AppInit(void)
   /* Look for the USART1 device driver. */
   terminal = BR_DeviceFind("usart1");
   BR_DeviceOpen(terminal, 0U);
+
+  /* Creating the tmutex. */
+  tmutex = BR_IpcMutexCreate("tmutex1");
 
   /* Creating the application tasks. */
   BR_TaskCreate("My Task 1", MyTask1, 30U, NULL, BR_TASK_PRIORITY_CRITICAL, NULL);

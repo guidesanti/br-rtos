@@ -25,6 +25,7 @@
 #include "object.h"
 #include "task.h"
 #include "timer.h"
+#include "ipc.h"
 #include "device.h"
 #include "board.h"
 
@@ -51,6 +52,7 @@ static void __BR_StartUp(void)
   __BR_ObjectInit();
   __BR_TasklInit();
   __BR_TimerInit();
+  __BR_IpcInit();
   __BR_DeviceInit();
 
   /* Board initialization. */

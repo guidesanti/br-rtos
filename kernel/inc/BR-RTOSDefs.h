@@ -164,6 +164,7 @@ typedef struct
     uint8_t state;
     uint8_t priority;
     BR_ListNode_t list;
+    BR_ListNode_t resWaitList;
     uint8_t errorCode;
     char name[__BR_MAX_TASK_NAME_LEN + 1U];
 } BR_Task_t;

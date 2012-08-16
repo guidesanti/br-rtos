@@ -65,12 +65,12 @@ BR_Task_t* runningTask = NULL;
  *
  * All tasks within the priority table are in the ready state.
  */
-BR_ListNode_t priorityTable[BR_N_TASK_PRIORITIES];
+static BR_ListNode_t priorityTable[BR_N_TASK_PRIORITIES];
 
 /**
  * The current priority level.
  */
-uint8_t currentPriority = (BR_N_TASK_PRIORITIES - 1U);
+static uint8_t currentPriority = (BR_N_TASK_PRIORITIES - 1U);
 
 /**
  * The list of tasks within suspended state.
@@ -294,6 +294,8 @@ BR_Err_t BR_TaskCreate(const char* name, void (*run)(void), uint8_t stackLen, vo
           task->priority = priority;
           __BR_ListInit(&(task->list));
           __BR_ListInsertBefore(&(priorityTable[priority]), &(task->list));
+          /* Initialize the task reseource wait list. */
+          __BR_ListInit(&(task->resWaitList));
           /* Initialize the task stack. */
           task->stackPointer = __BR_PortInitStack(task->stackPointer, run, param);
           ret = E_OK;
@@ -377,34 +379,20 @@ void BR_TaskSuspend(BR_Task_t* task)
  */
 void BR_TaskResume(BR_Task_t* task)
 {
-  BR_Task_t* taskAux = NULL;
-  BR_ListNode_t* node = NULL;
-
   __BR_ENTER_CRITICAL();
 
-  /* Look at the suspended list to find the task. */
-  node = suspendedTaskList.next;
-  while (node != &suspendedTaskList)
+  /* Remove the task from its current list. */
+  __BR_ListRemove(&(task->list));
+  /* Insert the task within the priority table. */
+  __BR_ListInsertAfter(&(priorityTable[task->priority]), &(task->list));
+  /* Set the task counter and state. */
+  task->counter = 0U;
+  task->state = __BR_TASK_ST_READY;
+  /* Check the task priority. */
+  if (task->priority >= currentPriority)
   {
-    taskAux = __BR_LIST_ENTRY(node, BR_Task_t, list);
-    node = node->next;
-    if (task == taskAux)
-    {
-      /* Remove the task from suspended list. */
-      __BR_ListRemove(&(task->list));
-      /* Insert the task within the priority table. */
-      __BR_ListInsertAfter(&(priorityTable[task->priority]), &(task->list));
-      /* Set the task state. */
-      task->counter = 0U;
-      task->state = __BR_TASK_ST_READY;
-      /* Check the task priority. */
-      if (task->priority > currentPriority)
-      {
-        currentPriority = task->priority;
-        __BR_PortYield();
-      }
-      break;
-    }
+    currentPriority = task->priority;
+    __BR_PortYield();
   }
 
   __BR_EXIT_CRITICAL();

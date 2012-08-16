@@ -420,7 +420,7 @@ void __BR_UsartInit(void)
   /* DMA configuration. */
   __UsartDmaConfig();
 
-  usartInitSt.USART_BaudRate = 57600U;
+  usartInitSt.USART_BaudRate = 2400U;
   usartInitSt.USART_WordLength = USART_WordLength_8b;
   usartInitSt.USART_StopBits = USART_StopBits_1;
   usartInitSt.USART_Parity = USART_Parity_No;

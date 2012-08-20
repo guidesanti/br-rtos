@@ -63,6 +63,9 @@
 #define BITS_CLEAR(VAR, MASK) ((VAR) &= (~(MASK)))
 #define BITS_TOGGLE(VAR, MASK) ((VAR) ^= (MASK))
 
+#define U32_LOW(VAR)  ((uint16_t)((VAR) & 0x0000FFFFU))
+#define U32_HIGH(VAR) ((uint16_t)(((VAR) & 0xFFFF0000U)) >> 16U)
+
 /* The available task priorities. */
 #define BR_TASK_PRIORITY_TRIVIAL    (0U)
 #define BR_TASK_PRIORITY_LOW        (1U)
@@ -239,6 +242,7 @@ typedef enum
   BR_DEVICE_TYPE_CHAR = 0U,
   BR_DEVICE_TYPE_I2C,
   BR_DEVICE_TYPE_SPI,
+  BR_DEVICE_TYPE_RTC,
   BR_DEVICE_TYPE_UNKNOWN,
   BR_N_DEVICE_TYPES,
 } BR_DeviceType_t;

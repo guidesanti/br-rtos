@@ -70,7 +70,7 @@
 /**
  * @brief TODO
  */
-void __BR_ListInit( BR_ListNode_t* list )
+void inline __BR_ListInit( BR_ListNode_t* list )
 {
   __BR_ASSERT(NULL != list);
   list->prev = list;
@@ -80,7 +80,7 @@ void __BR_ListInit( BR_ListNode_t* list )
 /**
  * @brief TODO
  */
-void __BR_ListInsertAfter( BR_ListNode_t* list, BR_ListNode_t* node )
+void inline __BR_ListInsertAfter( BR_ListNode_t* list, BR_ListNode_t* node )
 {
   __BR_ASSERT(NULL != list);
   __BR_ASSERT(NULL != node);
@@ -93,7 +93,7 @@ void __BR_ListInsertAfter( BR_ListNode_t* list, BR_ListNode_t* node )
 /**
  * @brief TODO
  */
-void __BR_ListInsertBefore( BR_ListNode_t* list, BR_ListNode_t* node )
+void inline __BR_ListInsertBefore( BR_ListNode_t* list, BR_ListNode_t* node )
 {
   __BR_ASSERT(NULL != list);
   __BR_ASSERT(NULL != node);
@@ -106,7 +106,7 @@ void __BR_ListInsertBefore( BR_ListNode_t* list, BR_ListNode_t* node )
 /**
  * @brief TODO
  */
-void __BR_ListRemove( BR_ListNode_t* node )
+void inline __BR_ListRemove( BR_ListNode_t* node )
 {
   __BR_ASSERT(NULL != node);
   node->prev->next = node->next;
@@ -118,7 +118,7 @@ void __BR_ListRemove( BR_ListNode_t* node )
 /**
  * @brief TODO
  */
-BR_Boolean_t __BR_ListIsEmpty( BR_ListNode_t* node )
+BR_Boolean_t inline __BR_ListIsEmpty( BR_ListNode_t* node )
 {
   if (node->next == node) return TRUE;
   return FALSE;

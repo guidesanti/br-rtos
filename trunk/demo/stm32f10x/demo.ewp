@@ -1840,6 +1840,9 @@
       <group>
         <name>drivers</name>
         <file>
+          <name>$PROJ_DIR$\..\..\bsp\stm32f10x\drivers\rtc.c</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$\..\..\bsp\stm32f10x\drivers\usart.c</name>
         </file>
       </group>

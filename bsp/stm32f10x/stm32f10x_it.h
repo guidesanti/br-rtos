@@ -6,6 +6,7 @@
 #endif 
 
 #include "stm32f10x.h"
+#include "rtc.h"
 #include "usart.h"
 
 void NMI_Handler(void);
@@ -21,7 +22,7 @@ void SysTick_Handler(void);
 #define WWDG_IRQHandler             (0U)
 #define PVD_IRQHandler              (0U)
 #define TAMPER_IRQHandler           (0U)
-#define RTC_IRQHandler              (0U)
+#define RTC_IRQHandler              __BR_RtcIsr
 #define FLASH_IRQHandler            (0U)
 #define RCC_IRQHandler              (0U)
 #define EXTI0_IRQHandler            (0U)

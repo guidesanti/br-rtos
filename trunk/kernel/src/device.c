@@ -93,7 +93,10 @@ void __BR_DeviceInitAll(void)
     while (node != (&(deviceTable[index])))
     {
       device = __BR_LIST_ENTRY(node, BR_Device_t, node);
-      device->init(device);
+      if (NULL != device->init)
+      {
+        device->init(device);
+      }
       node = node->next;
     }
   }

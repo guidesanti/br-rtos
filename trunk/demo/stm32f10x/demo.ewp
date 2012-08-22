@@ -296,14 +296,14 @@
           <name>CCIncludePath2</name>
           <state>$PROJ_DIR$\</state>
           <state>$PROJ_DIR$\..\..\config</state>
-          <state>$PROJ_DIR$\..\..\bsp</state>
-          <state>$PROJ_DIR$\..\..\bsp\stm32f10x</state>
-          <state>$PROJ_DIR$\..\..\bsp\stm32f10x\drivers</state>
-          <state>$PROJ_DIR$\..\..\bsp\stm32f10x\libs\STM32F10x_StdPeriph_Driver\inc</state>
           <state>$PROJ_DIR$\..\..\kernel</state>
           <state>$PROJ_DIR$\..\..\kernel\inc</state>
           <state>$PROJ_DIR$\..\..\kernel\src</state>
-          <state>$PROJ_DIR$\..\..\kernel\port\Cortex-M3\IAR</state>
+          <state>$PROJ_DIR$\..\..\port\arch\Cortex-M3\IAR</state>
+          <state>$PROJ_DIR$\..\..\port\bsp</state>
+          <state>$PROJ_DIR$\..\..\port\bsp\stm32f10x</state>
+          <state>$PROJ_DIR$\..\..\port\bsp\stm32f10x\drivers</state>
+          <state>$PROJ_DIR$\..\..\port\bsp\stm32f10x\libs\STM32F10x_StdPeriph_Driver\inc</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>

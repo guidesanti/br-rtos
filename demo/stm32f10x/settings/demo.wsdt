@@ -25,7 +25,7 @@
             <Factory>Workspace</Factory>
             <Session>
               
-            <NodeDict><ExpandedNode>demo</ExpandedNode><ExpandedNode>demo/BR-RTOS</ExpandedNode><ExpandedNode>demo/BR-RTOS/bsp</ExpandedNode><ExpandedNode>demo/BR-RTOS/port</ExpandedNode><ExpandedNode>demo/Output</ExpandedNode><ExpandedNode>demo/app</ExpandedNode><ExpandedNode>demo/config</ExpandedNode></NodeDict></Session>
+            <NodeDict><ExpandedNode>demo</ExpandedNode><ExpandedNode>demo/BR-RTOS</ExpandedNode><ExpandedNode>demo/BR-RTOS/bsp</ExpandedNode><ExpandedNode>demo/app</ExpandedNode></NodeDict></Session>
           </Tab>
         </Tabs>
         

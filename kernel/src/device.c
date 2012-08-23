@@ -68,7 +68,7 @@ static BR_ListNode_t deviceTable[BR_N_DEVICE_TYPES];
 /**
  * @brief Initialize the device control sub-system.
  */
-void __BR_DeviceInit(void)
+void __BR_DeviceStartUpInit(void)
 {
   uint8_t index = 0U;
 
@@ -126,7 +126,6 @@ void __BR_DeviceInitAll(void)
 BR_Err_t BR_DeviceRegister(const char* name, BR_Device_t* device)
 {
   BR_Err_t ret = E_OK;
-  BR_Object_t* obj = NULL;
 
   /* Check the parameters. */
   __BR_ASSERT(NULL != name);
@@ -142,20 +141,12 @@ BR_Err_t BR_DeviceRegister(const char* name, BR_Device_t* device)
     {
       device->type = BR_DEVICE_TYPE_UNKNOWN;
     }
+    /* Initialize the device object. */
+    __BR_ObjectInit(&(device->parent), BR_OBJ_TYPE_DEVICE, name);
     /* Initialize the device list node. */
     __BR_ListInit(&(device->node));
     /* Insert the device within the kernel device list. */
     __BR_ListInsertAfter(&(deviceTable[device->type]), &(device->node));
-    /* Allocate the object memory for the device. */
-    obj = __BR_ObjectCreate(name, BR_OBJ_TYPE_DEVICE, device);
-    if (NULL != obj)
-    {
-      device->parent = obj;
-    }
-    else
-    {
-      ret = E_ERROR;
-    }
 
     __BR_EXIT_CRITICAL();
   }
@@ -176,15 +167,30 @@ BR_Err_t BR_DeviceRegister(const char* name, BR_Device_t* device)
  */
 BR_Device_t* BR_DeviceFind(const char* name)
 {
-  BR_Object_t* obj = NULL;
+  uint8_t index = 0U;
+  BR_Boolean_t found = FALSE;
+  BR_ListNode_t* node = NULL;
   BR_Device_t* dev = NULL;
 
   __BR_ENTER_CRITICAL();
 
-  obj = __BR_ObjectFind(name);
-  if (NULL != obj)
+  for (index = 0U; index < BR_N_DEVICE_TYPES; index++)
   {
-    dev = (BR_Device_t*)(obj->child);
+    node = deviceTable[index].next;
+    while (node != &(deviceTable[index]))
+    {
+      dev = __BR_LIST_ENTRY(node, BR_Device_t, node);
+      if (0U == strncmp(name, dev->parent.name, __BR_MAX_OBJ_NAME_LEN))
+      {
+        found = TRUE;
+        break;
+      }
+      node = node->next;
+    }
+    if (TRUE == found)
+    {
+      break;
+    }
   }
 
   __BR_EXIT_CRITICAL();

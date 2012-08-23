@@ -1,58 +1,45 @@
 /**
- * @file        task.h
- * @date        2012, July 20
+ * @file        init.h
+ * @date        2012, August 23
  * @author      Guilherme A. de Santi <guidesanti@yahoo.com.br>
- * @copyright   Guilherme A. de Santi &copy; 2012
+ * @copyright   &copy; 2012, BR-RTOS Development Team
  * @brief       TODO: add brief description
  *
- * TODO: add detailed description
+ * This file is part of the BR-RTOS.
+ * The license distribution terms may found at COPYING or LICENSE file
+ * within the source directory tree.
  */
 
 
-#ifndef _TASK_H_
-#define _TASK_H_
+#ifndef _INIT_H_
+#define _INIT_H_
 
 /**
- * @addtogroup TaskCtrl Task Control
+ * @addtogroup Init
  * @{
  */
 
 /******************************************************************************/
 /* I N C L U D E S                                                            */
 /******************************************************************************/
-#include "BR-RTOSDefs.h"
-#include "port.h"
-#include "list.h"
-#include <stdint.h>
 
 
 /******************************************************************************/
 /* C O N S T A N T ,  M A C R O  A N D  T Y P E  D E F I N I T I O N S        */
 /******************************************************************************/
 
-/**
- * @name Constants, Macros and Type definitions
- * @{
- */
+
+/******************************************************************************/
+/* V A R I A B L E S                                                          */
+/******************************************************************************/
+
+
+/******************************************************************************/
+/* F U N C T I O N S                                                          */
+/******************************************************************************/
+void __BR_InitKernel(void);
+
 
 /** @} */
 
-/******************************************************************************/
-/* K E R N E L  I N T E R N A L  V A R I A B L E S                            */
-/******************************************************************************/
-extern BR_Task_t* runningTask;
-extern BR_ListNode_t priorityTable[BR_N_TASK_PRIORITIES];
-extern uint8_t currentPriority;
-
-/******************************************************************************/
-/* K E R N E L  I N T E R N A L  F U N C T I O N S                            */
-/******************************************************************************/
-void __BR_IdleTask(void);
-void __BR_TaskStartUpInit(void);
-void __BR_TaskStartScheduler(void);
-void __BR_TaskSwitch(void);
-void __BR_TaskTickUpdate(void);
-
-/** @} */
-
-#endif /* _TASK_H_ */
+#endif /* _INIT_H_ */

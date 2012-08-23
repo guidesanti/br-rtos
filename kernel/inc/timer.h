@@ -41,7 +41,7 @@ extern BR_Task_t* timerTask;
 /******************************************************************************/
 /* K E R N E L  I N T E R N A L  F U N C T I O N S                            */
 /******************************************************************************/
-void __BR_TimerInit(void);
+void __BR_TimerStartUpInit(void);
 void __BR_TimerDecrement(void);
 void __BR_TimerTask(void);
 

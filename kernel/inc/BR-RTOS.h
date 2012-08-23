@@ -35,7 +35,7 @@ void BR_KernelStartScheduler(void);
 /******************************************************************************/
 /* TASK CONTROL API                                                           */
 /******************************************************************************/
-BR_Err_t BR_TaskCreate(const char* name, void (*run)(void), uint8_t stackLen, void* param, uint8_t priority, BR_Task_t** taskArg);
+BR_Task_t* BR_TaskCreate(const char* name, void (*run)(void), uint8_t stackLen, void* param, uint8_t priority);
 void BR_TaskYield(void);
 void BR_TaskSuspend(BR_Task_t* task);
 void BR_TaskResume(BR_Task_t* task);
@@ -44,7 +44,7 @@ void BR_TaskWait(uint32_t ticks);
 /******************************************************************************/
 /* TIMER CONTROL API                                                          */
 /******************************************************************************/
-BR_Err_t BR_TimerCreate(const char* name, uint32_t time, BR_TimerCallback_t callback, void* param, uint8_t flags, BR_Timer_t** timerArg);
+BR_Timer_t* BR_TimerCreate(const char* name, uint32_t time, BR_TimerCallback_t callback, void* param, uint8_t flags);
 BR_Err_t BR_TimerControl(BR_Timer_t* timer, BR_TimerCmd_t cmd, void* param);
 BR_Err_t BR_TimerStart(BR_Timer_t* timer);
 BR_Err_t BR_TimerStop(BR_Timer_t* timer);

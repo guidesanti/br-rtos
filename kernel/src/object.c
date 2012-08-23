@@ -74,7 +74,7 @@ static BR_ListNode_t objList[BR_N_OBJ_TYPES];
  * @{
  */
 
-void __BR_ObjectInit(void)
+void __BR_ObjectStartUpInit(void)
 {
   uint8_t index = 0U;
 
@@ -84,30 +84,27 @@ void __BR_ObjectInit(void)
   }
 }
 
-BR_Object_t* __BR_ObjectCreate(const char* name, BR_ObjectType_t type, void* child)
+/**
+ * @brief Initialize a kernel object.
+ * @param [in] object A pointer to the object.
+ */
+void __BR_ObjectInit(BR_Object_t* object, BR_ObjectType_t type, const char* name)
 {
-  BR_Object_t* obj = NULL;
-
-  __BR_ASSERT(NULL != name);
+  __BR_ASSERT(NULL != object);
   __BR_ASSERT(type < BR_N_OBJ_TYPES);
-  __BR_ASSERT(NULL != child);
 
-  /* Allocating memory for the new object. */
-  obj = BR_MemAlloc(sizeof(BR_Object_t));
-  if (NULL != obj)
-  {
-    /* Set the object type. */
-    obj->type = type;
-    /* Initialize the object list node and insert it within the objects list. */
-    obj->child = child;
-    __BR_ListInit(&(obj->node));
-    __BR_ListInsertBefore(&(objList[type]), &(obj->node));
-    /* Set the object name. */
-    strncpy(obj->name, name, __BR_MAX_OBJ_NAME_LEN);
-    obj->name[__BR_MAX_TASK_NAME_LEN - 1U] = '\0';
-  }
+  /* Set the object type. */
+  object->type = type;
+  /* Initialize the object list node. */
+  __BR_ListInit(&(object->node));
+  /* Set the object name. */
+  strncpy(object->name, name, __BR_MAX_OBJ_NAME_LEN);
+  object->name[__BR_MAX_OBJ_NAME_LEN - 1U] = '\0';
 
-  return obj;
+  /* Insert the object within the object list. */
+  __BR_ENTER_CRITICAL();
+  __BR_ListInsertBefore(&(objList[type]), &(object->node));
+  __BR_EXIT_CRITICAL();
 }
 
 BR_Object_t* __BR_ObjectFind(const char* name)

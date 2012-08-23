@@ -183,7 +183,7 @@ void MyTask1(void)
 //        "\r\n");
 
     BR_DeviceControl(rtc, RTC_CMD_GET_TIME, &time);
-    sprintf(ch, "%lu\r\n", time);
+    snprintf(ch, 15U, "%lu\r\n", time);
     Print(ch);
     BR_TaskWait(1U);
   }
@@ -265,9 +265,9 @@ void BR_AppInit(void)
   tmutex = BR_IpcMutexCreate("tmutex1");
 
   /* Creating the application tasks. */
-  BR_TaskCreate("My Task 1", MyTask1, 30U, NULL, BR_TASK_PRIORITY_CRITICAL, NULL);
-  BR_TaskCreate("My Task 2", MyTask2, 30U, NULL, BR_TASK_PRIORITY_CRITICAL, NULL);
-  BR_TaskCreate("My Task 3", MyTask3, 30U, NULL, BR_TASK_PRIORITY_CRITICAL, NULL);
+  BR_TaskCreate("My Task 1", MyTask1, 40U, NULL, BR_TASK_PRIORITY_CRITICAL);
+  BR_TaskCreate("My Task 2", MyTask2, 30U, NULL, BR_TASK_PRIORITY_CRITICAL);
+  BR_TaskCreate("My Task 3", MyTask3, 30U, NULL, BR_TASK_PRIORITY_CRITICAL);
 }
 
 /**@}*/

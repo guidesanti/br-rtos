@@ -77,9 +77,9 @@ static void (*rtcAlarmCallback)(void) = NULL;
 
 static uint32_t rtcClockConfig[BOARD_RTC_N_CONFIGS] =
 {
+    RCC_RTCCLKSource_HSE_Div128,
     RCC_RTCCLKSource_LSE,
     RCC_RTCCLKSource_LSI,
-    RCC_RTCCLKSource_HSE_Div128,
 };
 
 
@@ -92,10 +92,16 @@ static void __RtcRccConfig(void)
   /* Enable the PWR and BKP. */
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE);
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_BKP, ENABLE);
-  /* Select the RTC clock source. */
+  /* Select the RTC clock source and enable the RTC clock. */
+  BITS_SET(PWR->CR, PWR_CR_DBP);
+  if (BOARD_RTC_USE_LSE == BOARD_RTC_CLOCK_CONFIG)
+  {
+    BITS_SET(RCC->BDCR, RCC_BDCR_LSEON);
+    while (!BITS_GET(RCC->BDCR, RCC_BDCR_LSERDY)) { }
+  }
   RCC_RTCCLKConfig(rtcClockConfig[BOARD_RTC_CLOCK_CONFIG]);
-  /* Enable the RTC clock. */
   RCC_RTCCLKCmd(ENABLE);
+  BITS_CLEAR(PWR->CR, PWR_CR_DBP);
 }
 
 static void __RtcNvicConfig(void)

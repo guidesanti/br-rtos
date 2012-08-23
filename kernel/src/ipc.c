@@ -95,7 +95,7 @@ BR_Mutex_t* BR_IpcMutexCreate(const char* name)
   mutex = BR_MemAlloc(sizeof(BR_Mutex_t));
   if (NULL != mutex)
   {
-    /* Initialize the mutex object. */
+    /* Initialize the mutex parent object. */
     __BR_ObjectInit(&(mutex->parent), BR_OBJ_TYPE_MUTEX, name);
     /* Initialize the mutex attributes. */
     mutex->owner = NULL;
@@ -106,6 +106,31 @@ BR_Mutex_t* BR_IpcMutexCreate(const char* name)
   __BR_EXIT_CRITICAL();
 
   return mutex;
+}
+
+/**
+ * @brief Initialize a static created mutex.
+ * @param [in] mutex A pointer to the mutex.
+ * @param [in] name The mutex name.
+ * @return Error code.
+ * @retval E_OK If the mutex is successfully initialized.
+ */
+void BR_IpcMutexInit(BR_Mutex_t* mutex, const char* name)
+{
+  /* Check the parameters. */
+  __BR_ASSERT(NULL != mutex);
+  __BR_ASSERT(NULL != name);
+
+  __BR_ENTER_CRITICAL();
+
+  /* Initialize the mutex parent object. */
+  __BR_ObjectInit(&(mutex->parent), BR_OBJ_TYPE_MUTEX, name);
+  /* Initialize the mutex attributes. */
+  mutex->owner = NULL;
+  mutex->counter = 0U;
+  __BR_ListInit(&(mutex->waitList));
+
+  __BR_EXIT_CRITICAL();
 }
 
 /**

@@ -35,11 +35,6 @@
 #define __BR_MAX_OBJ_NAME_LEN       (16U)
 
 /**
- * The maximum number of characters to be used by the task name.
- */
-#define __BR_MAX_TASK_NAME_LEN      (16U)
-
-/**
  * The heap size specified in number of bytes.
  */
 #define __BR_HEAP_SIZE              (2048U)

@@ -87,13 +87,17 @@ BR_Mutex_t* BR_IpcMutexCreate(const char* name)
 {
   BR_Mutex_t* mutex = NULL;
 
+  __BR_ASSERT(NULL != name);
+
   __BR_ENTER_CRITICAL();
 
   /* Allocate memory for the mutex. */
   mutex = BR_MemAlloc(sizeof(BR_Mutex_t));
   if (NULL != mutex)
   {
-    mutex->parent = __BR_ObjectCreate(name, BR_OBJ_TYPE_MUTEX, mutex);
+    /* Initialize the mutex object. */
+    __BR_ObjectInit(&(mutex->parent), BR_OBJ_TYPE_MUTEX, name);
+    /* Initialize the mutex attributes. */
     mutex->owner = NULL;
     mutex->counter = 0U;
     __BR_ListInit(&(mutex->waitList));

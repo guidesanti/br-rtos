@@ -39,7 +39,7 @@
 /******************************************************************************/
 /* K E R N E L  I N T E R N A L  F U N C T I O N S                            */
 /******************************************************************************/
-void __BR_DeviceInit(void);
+void __BR_DeviceStartUpInit(void);
 void __BR_DeviceInitAll(void);
 
 

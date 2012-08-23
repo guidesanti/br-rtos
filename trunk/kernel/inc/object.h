@@ -42,9 +42,9 @@
 /******************************************************************************/
 /* K E R N E L  I N T E R N A L  F U N C T I O N S                            */
 /******************************************************************************/
-void __BR_ObjectInit(void);
-BR_Object_t* __BR_ObjectCreate(const char* name, BR_ObjectType_t type, void* child);
-BR_Object_t* __BR_ObjectFind(const char* name);
+void          __BR_ObjectStartUpInit(void);
+void          __BR_ObjectInit(BR_Object_t* object, BR_ObjectType_t type, const char* name);
+BR_Object_t*  __BR_ObjectFind(const char* name);
 
 /** @} */
 

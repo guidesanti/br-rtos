@@ -106,7 +106,7 @@ void __BR_IdleTask(void)
 /**
  * @brief Initialize the kernel.
  */
-void __BR_TasklInit(void)
+void __BR_TaskStartUpInit(void)
 {
   uint8_t index = 0U;
 
@@ -225,105 +225,59 @@ void __BR_TaskTickUpdate(void)
  * @param [in] run A pointer to the task execution code.
  * @param [in] stackLen The length of the task stack (specified in number of CPU words).
  * @param [in] param A pointer to the parameters to be passed to the task.
- * @param [out] task The task structure.
- * @return Error code.
- * @retval E_INVAL If any parameter is invalid.
- * @retval E_NORES If there is no enough memory within the heap to allocate for the new task.
- * @retval E_OK If the task has been created successfully.
+ * @return TODO
  *
  * This function should be called once for each task before the scheduler is started.
  * It creates a new task and put it on the ready list.
- *
- * E_INVAL
- * If the parameters check are enabled (__BR_CHECK_FUNC_PARAMETERS == 1U) and any of
- * the function parameters is invalid the operation will be aborted and the function
- * will return E_INVAL.
- *
- * E_OK
- * If the task is created successfully the task ID is returned within the taskID parameter
- * if it is different from NULL and the function will return with error code E_OK.
- *
- * E_NORES
- * If there is no memory space available to create the task, the function will
- * abort the operation and return E_NORES.
  */
-BR_Err_t BR_TaskCreate(const char* name, void (*run)(void), uint8_t stackLen, void* param, uint8_t priority, BR_Task_t** taskArg)
+BR_Task_t*  BR_TaskCreate(const char* name, void (*run)(void), uint8_t stackLen, void* param, uint8_t priority)
 {
-  BR_Err_t ret = E_OK;
   BR_Task_t* task = NULL;
-  BR_Object_t* obj = NULL;
 
   /* Check the parameters. */
+  __BR_ASSERT(NULL != name);
   __BR_ASSERT(NULL != run);
   __BR_ASSERT(priority < BR_N_TASK_PRIORITIES);
 #if (1U == __BR_CHECK_FUNC_PARAMETERS)
-  if ((NULL != run) && (priority < BR_N_TASK_PRIORITIES))
+  if ((NULL != name) && (NULL != run) && (priority < BR_N_TASK_PRIORITIES))
   {
 #endif
     __BR_ENTER_CRITICAL();
+
     /* Allocate space for the new task on the heap. */
     task = BR_MemAlloc(sizeof(BR_Task_t));
     if (NULL != task)
     {
-      /* Create the task parent object. */
-      obj = __BR_ObjectCreate((char*)name, BR_OBJ_TYPE_TASK, task);
-      if (NULL != obj)
+      /* Initialize the task object. */
+      __BR_ObjectInit(&(task->parent), BR_OBJ_TYPE_TASK, name);
+      /* Allocate space for the task stack. */
+      task->stackPointer = BR_MemAlloc(stackLen * __BR_WORD_LEN);
+      if (NULL != task->stackPointer)
       {
-        task->parent = obj;
-        /* Allocate space for the task stack. */
-        task->stackPointer = BR_MemAlloc(stackLen * __BR_WORD_LEN);
-        if (NULL != task->stackPointer)
-        {
-          /* Fill the stack with default values for debugging. */
-          memset(task->stackPointer, 0xFFU, stackLen * __BR_WORD_LEN);
-          /* Set the stack pointer to the end of allocated memory. */
-          task->stackPointer += (stackLen - 1U);
-          /* Increment the created number of tasks.
-           * The number of the created task will be the task ID.
-           */
-          if (NULL != taskArg)
-          {
-            *(taskArg) = task;
-          }
-          /* Initialize the new task structure. */
-          task->counter = 0U;
-          task->state = __BR_TASK_ST_READY;
-          strncpy(task->name, name, __BR_MAX_TASK_NAME_LEN);
-          task->name[__BR_MAX_TASK_NAME_LEN - 1U] = '\0';
-          /* Set the task priority and initialize the task list. */
-          task->priority = priority;
-          __BR_ListInit(&(task->list));
-          __BR_ListInsertBefore(&(priorityTable[priority]), &(task->list));
-          /* Initialize the task reseource wait list. */
-          __BR_ListInit(&(task->resWaitList));
-          /* Initialize the task stack. */
-          task->stackPointer = __BR_PortInitStack(task->stackPointer, run, param);
-          ret = E_OK;
-        }
-        else
-        {
-          ret = E_NORES;
-        }
-      }
-      else
-      {
-        ret = E_NORES;
+        /* Fill the stack with default values for debugging. */
+        memset(task->stackPointer, 0xFFU, stackLen * __BR_WORD_LEN);
+        /* Set the stack pointer to the end of allocated memory. */
+        task->stackPointer += (stackLen - 1U);
+        /* Initialize the new task structure. */
+        task->counter = 0U;
+        task->state = __BR_TASK_ST_READY;
+        /* Set the task priority and initialize the task list. */
+        task->priority = priority;
+        __BR_ListInit(&(task->list));
+        __BR_ListInsertBefore(&(priorityTable[priority]), &(task->list));
+        /* Initialize the task reseource wait list. */
+        __BR_ListInit(&(task->resWaitList));
+        /* Initialize the task stack. */
+        task->stackPointer = __BR_PortInitStack(task->stackPointer, run, param);
       }
     }
-    else
-    {
-      ret = E_NORES;
-    }
+
     __BR_EXIT_CRITICAL();
 #if (1U == __BR_CHECK_FUNC_PARAMETERS)
   }
-  else
-  {
-    ret = E_INVAL;
-  }
 #endif
 
-  return ret;
+  return task;
 }
 
 /**

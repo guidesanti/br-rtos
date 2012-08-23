@@ -90,7 +90,7 @@ static BR_ListNode_t expiredTimers;
 /**
  * @brief TODO
  */
-void __BR_TimerInit(void)
+void __BR_TimerStartUpInit(void)
 {
   /* Initialize the running timers list and the soft expired timers list. */
   __BR_ListInit(&runningTimers);
@@ -208,17 +208,14 @@ void __BR_TimerTask(void)
  * If the flags parameter is zero, it is assumed a single shot timer with
  * milliseconds base time and a soft timer.
  */
-BR_Err_t BR_TimerCreate(const char* name, uint32_t time, BR_TimerCallback_t callback, void* param, uint8_t flags, BR_Timer_t** timerArg)
+BR_Timer_t* BR_TimerCreate(const char* name, uint32_t time, BR_TimerCallback_t callback, void* param, uint8_t flags)
 {
-  BR_Err_t ret = E_ERROR;
-  BR_Object_t* obj = NULL;
   BR_Timer_t* timer = NULL;
 
   __BR_ASSERT(NULL != callback);
-  __BR_ASSERT(NULL != timerArg);
 
 #if (1U == __BR_CHECK_FUNC_PARAMETERS)
-  if ((NULL != callback) && (NULL != timerArg))
+  if (NULL != callback)
   {
 #endif
     timer = NULL;
@@ -227,46 +224,26 @@ BR_Err_t BR_TimerCreate(const char* name, uint32_t time, BR_TimerCallback_t call
     timer = BR_MemAlloc(sizeof(BR_Timer_t));
     if (NULL != timer)
     {
-      /* Allocating the timer object. */
-      obj = __BR_ObjectCreate((char*)name, BR_OBJ_TYPE_TIMER, timer);
-      if (NULL != obj)
+      /* Initialize the timer object. */
+      __BR_ObjectInit(&(timer->parent), BR_OBJ_TYPE_TIMER, name);
+      /* Initialize the timer attributes. */
+      if (BR_TIMER_FLAG_SEC == BITS_GET(flags, __BR_TIMER_FLAG_BASE))
       {
-        if (BR_TIMER_FLAG_SEC == BITS_GET(flags, __BR_TIMER_FLAG_BASE))
-        {
-          time *= 1000U;
-        }
-        /* Set the timer attributes. */
-        timer->parent = obj;
-        __BR_ListInit(&(timer->node));
-        timer->counter = 0U;
-        timer->reload = time;
-        timer->callbak = callback;
-        timer->param = param;
-        timer->flags = flags;
-
-        *(timerArg) = timer;
-
-        ret = E_OK;
+        time *= 1000U;
       }
-      else
-      {
-        ret = E_NORES;
-      }
-    }
-    else
-    {
-      ret = E_NORES;
+      __BR_ListInit(&(timer->node));
+      timer->counter = 0U;
+      timer->reload = time;
+      timer->callbak = callback;
+      timer->param = param;
+      timer->flags = flags;
     }
     __BR_EXIT_CRITICAL();
 #if (1U == __BR_CHECK_FUNC_PARAMETERS)
   }
-  else
-  {
-    ret = E_INVAL;
-  }
 #endif
 
-  return ret;
+  return timer;
 }
 
 /**

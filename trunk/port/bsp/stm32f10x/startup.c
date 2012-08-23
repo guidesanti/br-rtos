@@ -22,6 +22,7 @@
 #include "BR-RTOS.h"
 #include "port.h"
 #include "startup.h"
+#include "init.h"
 #include "object.h"
 #include "task.h"
 #include "timer.h"
@@ -49,10 +50,7 @@ static void __BR_StartUp(void);
 static void __BR_StartUp(void)
 {
   /* Initialize the internal BR-RTOS kernel structures. */
-  __BR_ObjectInit();
-  __BR_TasklInit();
-  __BR_TimerInit();
-  __BR_DeviceInit();
+  __BR_InitKernel();
 
   /* Board initialization. */
   __BR_BoardInit();
@@ -61,10 +59,10 @@ static void __BR_StartUp(void)
   __BR_DeviceInitAll();
 
   /* Create the idle task. */
-  BR_TaskCreate("Idle", __BR_IdleTask, 32U, NULL, BR_TASK_PRIORITY_TRIVIAL, NULL);
+  BR_TaskCreate("Idle", __BR_IdleTask, 32U, NULL, BR_TASK_PRIORITY_TRIVIAL);
 
   /* Create the timer task. */
-  BR_TaskCreate("Timer Task", __BR_TimerTask, 40U, NULL, BR_TASK_PRIORITY_CRITICAL, &timerTask);
+  timerTask = BR_TaskCreate("Timer Task", __BR_TimerTask, 40U, NULL, BR_TASK_PRIORITY_CRITICAL);
 
   /* Application initialization. */
   BR_AppInit();

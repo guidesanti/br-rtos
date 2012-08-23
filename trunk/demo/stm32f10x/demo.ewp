@@ -1844,6 +1844,9 @@
         <name>$PROJ_DIR$\..\..\kernel\src\heap.c</name>
       </file>
       <file>
+        <name>$PROJ_DIR$\..\..\kernel\src\init.c</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$\..\..\kernel\src\ipc.c</name>
       </file>
       <file>

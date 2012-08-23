@@ -116,6 +116,9 @@ typedef struct BR_ListNode
 /* O B J E C T  D E F I N I T I O N S                                         */
 /******************************************************************************/
 
+/**
+ * Enumerates the kernel object types.
+ */
 typedef enum
 {
   BR_OBJ_TYPE_TASK = 0U,
@@ -125,12 +128,14 @@ typedef enum
   BR_N_OBJ_TYPES,
 } BR_ObjectType_t;
 
+/**
+ * The object structure definition.
+ */
 typedef struct
 {
-    BR_ObjectType_t type;
-    void*           child;
-    BR_ListNode_t   node;
-    char            name[__BR_MAX_OBJ_NAME_LEN];
+    BR_ObjectType_t type; /**< The object type. */
+    BR_ListNode_t   node; /**< The node within the objects list. */
+    char            name[__BR_MAX_OBJ_NAME_LEN];  /**< The object name. */
 } BR_Object_t;
 
 /******************************************************************************/
@@ -161,15 +166,14 @@ typedef uint32_t* BR_StackPointer_t;
 
 typedef struct
 {
-    volatile BR_StackPointer_t stackPointer;  /**< This MUST be the first structure field. */
-    BR_Object_t* parent;
-    uint32_t counter;
-    uint8_t state;
-    uint8_t priority;
-    BR_ListNode_t list;
-    BR_ListNode_t resWaitList;
-    uint8_t errorCode;
-    char name[__BR_MAX_TASK_NAME_LEN + 1U];
+    volatile BR_StackPointer_t  stackPointer;  /**< This MUST be the first structure field. */
+    BR_Object_t                 parent;
+    uint32_t                    counter;
+    uint8_t                     state;
+    uint8_t                     priority;
+    BR_ListNode_t               list;
+    BR_ListNode_t               resWaitList;
+    uint8_t                     errorCode;
 } BR_Task_t;
 
 /** @} */
@@ -217,7 +221,7 @@ typedef void (*BR_TimerCallback_t)(void* param);
  */
 typedef struct
 {
-    BR_Object_t*        parent;
+    BR_Object_t         parent;
     BR_ListNode_t       node;
     uint32_t            counter;
     uint32_t            reload;
@@ -247,14 +251,14 @@ typedef enum
   BR_N_DEVICE_TYPES,
 } BR_DeviceType_t;
 
-typedef struct BR_Device_t BR_Device_t;
+typedef struct BR_Device BR_Device_t;
 
 /**
  * The device structure.
  */
-struct BR_Device_t
+struct BR_Device
 {
-    BR_Object_t*    parent;
+    BR_Object_t     parent;
     BR_ListNode_t   node;
     uint8_t         flags;
     BR_DeviceType_t type;
@@ -283,10 +287,9 @@ struct BR_Device_t
  */
 typedef struct
 {
-    BR_Object_t*  parent;   /**< The mutex parent object. */
+    BR_Object_t   parent;   /**< The mutex parent object. */
     BR_Task_t*    owner;    /**< The mutex owner. */
     uint8_t       counter;  /**< The counter of acquires by the mutex owner. */
-    BR_ListNode_t node;     /**< The mutex node within the mutex list. */
     BR_ListNode_t waitList; /**< The task wait list for the mutex. */
 } BR_Mutex_t;
 

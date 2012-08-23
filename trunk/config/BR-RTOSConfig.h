@@ -108,15 +108,6 @@
  */
 #define __BR_DEBUG (1U)
 
-/**
- * The maxim number of kernel objects within the debugging objects list.
- *
- * The debugging objects list is created just to facilitate the visualization
- * of the kernel objects within the debugger.
- * This list may be accessed by the symbol objListDebug.
- */
-#define __BR_MAX_OBJ_LIST_DEBUG (10U)
-
 /** @} */
 
 /** @} */

@@ -52,8 +52,8 @@ typedef struct BR_SpiBus
   BR_Device_t   parent;
   BR_Device_t*  owner;
   BR_Mutex_t    lock;
-  void          (*configure)(BR_SpiBus_t* bus, BR_SpiConfig_t* config);
-  void          (*transfer)(BR_SpiBus_t* bus, void* txBuffer, void* rxBuffer, uint32_t nBytes);
+  BR_Err_t      (*configure)(BR_SpiBus_t* bus, BR_SpiConfig_t* config);
+  BR_Err_t      (*transfer)(BR_SpiBus_t* bus, void* txBuffer, void* rxBuffer, uint32_t nBytes);
 };
 
 typedef struct
@@ -73,7 +73,8 @@ typedef struct
 /* F U N C T I O N S                                                          */
 /******************************************************************************/
 BR_Err_t BR_SpiBusRegister(BR_SpiBus_t* bus, char* name);
-BR_Err_t BR_SpiAttach(BR_SpiBus_t* bus, BR_Device_t* device);
+BR_Err_t BR_SpiDeviceRegister(BR_SpiDevice_t* device, char* name);
+BR_Err_t BR_SpiAttach(BR_SpiDevice_t* device, char* busName);
 BR_Err_t BR_SpiAcquire(BR_SpiDevice_t* device);
 BR_Err_t BR_SpiRelease(BR_SpiDevice_t* device);
 BR_Err_t BR_SpiTransfer(BR_SpiDevice_t* device, void* txBuffer, void* rxBuffer, uint32_t length);

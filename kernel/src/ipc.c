@@ -178,8 +178,15 @@ BR_Err_t BR_IpcMutexAcquire(BR_Mutex_t* mutex, uint32_t ticks)
         __BR_ListInsertBefore(&(mutex->waitList), &(runningTask->resWaitList));
         /* Set the task error code. */
         runningTask->errorCode = __BR_TASK_ERR_UNKNOW;
-        /* Put the task in waiting state. */
-        BR_TaskWait(ticks);
+        /* Put the task in waiting or suspended state depending on ticks value. */
+        if (BR_IPC_WAIT_FOREVER == ticks)
+        {
+          BR_TaskSuspend(runningTask);
+        }
+        else
+        {
+          BR_TaskWait(ticks);
+        }
         /* Exit critical section to allow the task switch. */
         __BR_EXIT_CRITICAL();
         /* Check the task error code. */

@@ -66,14 +66,16 @@
 #define U32_LOW(VAR)  ((uint16_t)((VAR) & 0x0000FFFFU))
 #define U32_HIGH(VAR) ((uint16_t)(((VAR) & 0xFFFF0000U)) >> 16U)
 
-/* The available task priorities. */
-#define BR_TASK_PRIORITY_TRIVIAL    (0U)
-#define BR_TASK_PRIORITY_LOW        (1U)
-#define BR_TASK_PRIORITY_MEDIUM     (2U)
-#define BR_TASK_PRIORITY_HIGH       (3U)
-#define BR_TASK_PRIORITY_CRITICAL   (4U)
-/* The number of task priorities. */
-#define BR_N_TASK_PRIORITIES        (5U)
+#define U8_NIBBLE_0(VAR) ((VAR) & 0x0FU)
+#define U8_NIBBLE_1(VAR) (((VAR) & 0xF0U) >> 4U)
+
+#define U16_MSB(VAR)  ((uint8_t)(((VAR) & (0xFF00)) >> (8U)))
+#define U16_LSB(VAR)  ((uint8_t)((VAR) & (0x00FF)))
+
+#define U32_BYTE_0(VAR) ((uint8_t)((((uint32_t)VAR) & ((uint32_t)0x000000FFU)) >> 0U))
+#define U32_BYTE_1(VAR) ((uint8_t)((((uint32_t)VAR) & ((uint32_t)0x0000FF00U)) >> 8U))
+#define U32_BYTE_2(VAR) ((uint8_t)((((uint32_t)VAR) & ((uint32_t)0x00FF0000U)) >> 16U))
+#define U32_BYTE_3(VAR) ((uint8_t)((((uint32_t)VAR) & ((uint32_t)0xFF000000U)) >> 24U))
 
 typedef uint32_t BR_Size_t;
 
@@ -146,6 +148,15 @@ typedef struct
  * @addtogroup TaskCtrl
  * @{
  */
+
+/* The available task priorities. */
+#define BR_TASK_PRIORITY_TRIVIAL    (0U)
+#define BR_TASK_PRIORITY_LOW        (1U)
+#define BR_TASK_PRIORITY_MEDIUM     (2U)
+#define BR_TASK_PRIORITY_HIGH       (3U)
+#define BR_TASK_PRIORITY_CRITICAL   (4U)
+/* The number of task priorities. */
+#define BR_N_TASK_PRIORITIES        (5U)
 
 /* The task states. */
 #define __BR_TASK_ST_READY      (0U)
@@ -281,6 +292,8 @@ struct BR_Device
  * @addtogroup IPC
  * @{
  */
+
+#define BR_IPC_WAIT_FOREVER ((uint32_t)0xFFFFFFFFU)
 
 /**
  * The mutex structure.

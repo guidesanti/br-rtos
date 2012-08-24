@@ -7,6 +7,7 @@
 
 #include "stm32f10x.h"
 #include "rtc.h"
+#include "spi.h"
 #include "usart.h"
 
 void NMI_Handler(void);
@@ -54,8 +55,8 @@ void SysTick_Handler(void);
 #define I2C1_ER_IRQHandler          (0U)
 #define I2C2_EV_IRQHandler          (0U)
 #define I2C2_ER_IRQHandler          (0U)
-#define SPI1_IRQHandler             (0U)
-#define SPI2_IRQHandler             (0U)
+#define SPI1_IRQHandler             __BR_Spi1Isr
+#define SPI2_IRQHandler             __BR_Spi2Isr
 #define USART1_IRQHandler           __BR_UsartIsr1
 #define USART2_IRQHandler           __BR_UsartIsr2
 #define USART3_IRQHandler           __BR_UsartIsr3
@@ -70,7 +71,7 @@ void SysTick_Handler(void);
 #define FSMC_IRQHandler             (0U)
 #define SDIO_IRQHandler             (0U)
 #define TIM5_IRQHandler             (0U)
-#define SPI3_IRQHandler             (0U)
+#define SPI3_IRQHandler             __BR_Spi3Isr
 #define UART4_IRQHandler            (0U)
 #define UART5_IRQHandler            (0U)
 #define TIM6_IRQHandler             (0U)

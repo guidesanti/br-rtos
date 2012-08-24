@@ -381,7 +381,7 @@ static void __UsartNvicConfig(void)
 
 static void __UsartDmaConfig(void)
 {
-#warning "TODO"
+  // TODO
 }
 
 static void __UsartIsr(UsartCtrl* usartCtrl)

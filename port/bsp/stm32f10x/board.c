@@ -19,6 +19,7 @@
 /* I N C L U D E S                                                            */
 /******************************************************************************/
 #include "rtc.h"
+#include "spi.h"
 #include "usart.h"
 
 /******************************************************************************/
@@ -64,6 +65,7 @@ void __BR_BoardInit(void)
 
   /* Initialize the board devices. */
   __BR_RtcInit();
+  __BR_SpiStartUpInit();
   __BR_UsartInit();
 }
 

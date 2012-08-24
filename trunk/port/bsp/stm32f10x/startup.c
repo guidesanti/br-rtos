@@ -55,7 +55,7 @@ static void __BR_StartUp(void)
   /* Board initialization. */
   __BR_BoardInit();
 
-  /* Device drivers initializetion. */
+  /* Device drivers initialization. */
   __BR_DeviceInitAll();
 
   /* Create the idle task. */

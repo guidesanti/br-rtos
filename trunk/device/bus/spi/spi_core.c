@@ -131,7 +131,7 @@ BR_Err_t BR_SpiDeviceRegister(BR_SpiDevice_t* device, char* name)
 BR_Err_t BR_SpiAttach(BR_SpiDevice_t* device, char* busName)
 {
   BR_Err_t ret = E_OK;
-  BR_SpiDevice_t* bus = NULL;
+  BR_SpiBus_t* bus = NULL;
 
   /* Check the parameters. */
   __BR_ASSERT(NULL != device);
@@ -143,7 +143,7 @@ BR_Err_t BR_SpiAttach(BR_SpiDevice_t* device, char* busName)
     __BR_ENTER_CRITICAL();
 
     /* Look for the SPI bus. */
-    bus = (BR_SpiDevice_t*)BR_DeviceFind(busName);
+    bus = (BR_SpiBus_t*)BR_DeviceFind(busName);
     if (NULL != bus)
     {
       /* Attach the device to bus. */
@@ -180,7 +180,7 @@ BR_Err_t BR_SpiAcquire(BR_SpiDevice_t* device)
   {
 #endif
     /* Acquire the SPI bus lock. */
-    if (E_OK == BR_IpcMutexAcquire(device->bus->lock, BR_IPC_WAIT_FOREVER))
+    if (E_OK == BR_IpcMutexAcquire(&(device->bus->lock), BR_IPC_WAIT_FOREVER))
     {
       /* Check if the device is the current owner of the bus. */
       if (device->bus->owner != device)
@@ -192,7 +192,7 @@ BR_Err_t BR_SpiAcquire(BR_SpiDevice_t* device)
         }
         else
         {
-          BR_IpcMutexRelease(device->bus->lock);
+          BR_IpcMutexRelease(&(device->bus->lock));
           ret = E_ERROR;
         }
       }
@@ -225,7 +225,7 @@ BR_Err_t BR_SpiRelease(BR_SpiDevice_t* device)
   if (NULL != device)
   {
 #endif
-    BR_IpcMutexRelease(device->bus->lock);
+    BR_IpcMutexRelease(&(device->bus->lock));
 #if (__BR_CHECK_FUNC_PARAMETERS)
   }
   else
@@ -255,7 +255,7 @@ BR_Err_t BR_SpiTransfer(BR_SpiDevice_t* device, void* txBuffer, void* rxBuffer, 
   {
 #endif
     /* Acquire the SPI bus lock. */
-    if (E_OK == BR_IpcMutexAcquire(device->bus->lock, BR_IPC_WAIT_FOREVER))
+    if (E_OK == BR_IpcMutexAcquire(&(device->bus->lock), BR_IPC_WAIT_FOREVER))
     {
       /* Check if the device is the current owner of the bus. */
       if (device->bus->owner != device)
@@ -288,7 +288,7 @@ BR_Err_t BR_SpiTransfer(BR_SpiDevice_t* device, void* txBuffer, void* rxBuffer, 
 #endif
 
 __EXIT:
-  BR_IpcMutexRelease(device->bus->lock);
+  BR_IpcMutexRelease(&(device->bus->lock));
   return ret;
 }
 

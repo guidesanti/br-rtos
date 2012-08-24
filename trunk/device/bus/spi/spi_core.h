@@ -22,6 +22,7 @@
 /******************************************************************************/
 /* I N C L U D E S                                                            */
 /******************************************************************************/
+#include "BR-RTOS.h"
 
 
 /******************************************************************************/
@@ -29,10 +30,12 @@
 /******************************************************************************/
 
 /* SPI modes. */
-#define BR_SPI_MODE_0 (0U)
-#define BR_SPI_MODE_1 (1U)
-#define BR_SPI_MODE_2 (2U)
-#define BR_SPI_MODE_3 (3U)
+#define BR_SPI_MODE_0   (0U)
+#define BR_SPI_MODE_1   (1U)
+#define BR_SPI_MODE_2   (2U)
+#define BR_SPI_MODE_3   (3U)
+/* The total number of SPI modes. */
+#define BR_SPI_N_MODES  (4U)
 
 /* SPI data size. */
 #define BR_SPI_DATA_SIZE_8_BITS   (0U)
@@ -41,27 +44,29 @@
 
 typedef struct
 {
-  uint32_t  freqHz;
+  uint32_t  maxFreqHz;
   uint8_t   mode;
   uint8_t   dataSize;
 } BR_SpiConfig_t;
 
 typedef struct BR_SpiBus BR_SpiBus_t;
-typedef struct BR_SpiBus
+typedef struct BR_SpiDevice BR_SpiDevice_t;
+
+struct BR_SpiBus
 {
-  BR_Device_t   parent;
-  BR_Device_t*  owner;
-  BR_Mutex_t    lock;
-  BR_Err_t      (*configure)(BR_SpiBus_t* bus, BR_SpiConfig_t* config);
-  BR_Err_t      (*transfer)(BR_SpiBus_t* bus, void* txBuffer, void* rxBuffer, uint32_t nBytes);
+  BR_Device_t     parent;
+  BR_SpiDevice_t* owner;
+  BR_Mutex_t      lock;
+  BR_Err_t        (*configure)(BR_SpiBus_t* bus, BR_SpiConfig_t* config);
+  BR_Err_t        (*transfer)(BR_SpiBus_t* bus, void* txBuffer, void* rxBuffer, uint32_t length);
 };
 
-typedef struct
+struct BR_SpiDevice
 {
   BR_Device_t     parent;
   BR_SpiBus_t*    bus;
   BR_SpiConfig_t  config;
-} BR_SpiDevice_t;
+};
 
 
 /******************************************************************************/

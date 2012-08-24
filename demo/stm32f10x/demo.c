@@ -23,6 +23,7 @@
 #include "stm32f10x_rcc.h"
 #include "stm32f10x_gpio.h"
 #include "rtc.h"
+#include "spi_core.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -68,9 +69,17 @@ void MyTask3(void);
  * @{
  */
 
+BR_Task_t* task1 = NULL;
 BR_Mutex_t* tmutex = NULL;
 BR_Device_t* terminal = NULL;
 BR_Device_t* rtc = NULL;
+BR_SpiBus_t* spi1 = NULL;
+BR_SpiDevice_t spiDev1 =
+{
+    .config.maxFreqHz = 3000000U,
+    .config.mode = BR_SPI_MODE_0,
+    .config.dataSize = BR_SPI_DATA_SIZE_8_BITS,
+};
 
 /**@}*/
 
@@ -138,14 +147,30 @@ void OnRtcAlarm(void)
 
 BR_RtcTime_t time = 0U;
 char ch[15U];
+uint8_t buffer[50U] = { 0x0B, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
 void MyTask1(void)
 {
-//  uint8_t buffer[10U];
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
   gpioInit.GPIO_Pin = GPIO_Pin_8;
   gpioInit.GPIO_Speed = GPIO_Speed_50MHz;
   gpioInit.GPIO_Mode = GPIO_Mode_Out_PP;
   GPIO_Init(GPIOC, &gpioInit);
+
+  /* Flash chip select. */
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+  gpioInit.GPIO_Pin = GPIO_Pin_4;
+  gpioInit.GPIO_Speed = GPIO_Speed_50MHz;
+  gpioInit.GPIO_Mode = GPIO_Mode_Out_PP;
+  GPIO_Init(GPIOA, &gpioInit);
+  GPIO_SetBits(GPIOA, GPIO_Pin_4);
+
+  /* FRAM chip select. */
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+  gpioInit.GPIO_Pin = GPIO_Pin_1;
+  gpioInit.GPIO_Speed = GPIO_Speed_50MHz;
+  gpioInit.GPIO_Mode = GPIO_Mode_Out_PP;
+  GPIO_Init(GPIOA, &gpioInit);
+  GPIO_SetBits(GPIOA, GPIO_Pin_1);
 
   //BR_TimerCreate("Timer1", 1U, Task1OnTimeout, NULL, 0U, &timer1);
   //BR_TimerControl(timer1, BR_TIMER_CMD_SET_CONT, NULL);
@@ -185,6 +210,11 @@ void MyTask1(void)
     BR_DeviceControl(rtc, RTC_CMD_GET_TIME, &time);
     snprintf(ch, 15U, "%lu\r\n", time);
     Print(ch);
+
+    GPIO_ResetBits(GPIOA, GPIO_Pin_4);
+    BR_SpiTransfer(&spiDev1, buffer, buffer, 50U);
+    GPIO_SetBits(GPIOA, GPIO_Pin_4);
+
     BR_TaskWait(1U);
   }
 }
@@ -204,6 +234,7 @@ void MyTask2(void)
 //    GPIO_ResetBits(GPIOC, GPIO_Pin_9);
 //    BR_TaskWait(1U);
 
+    Print("Task 2:\r\n");
 //    Print("Task 2:\r\n"
 //        "TASK2 - 1  ....................................................................................................\r\n"
 //        "TASK2 - 2  ....................................................................................................\r\n"
@@ -226,7 +257,7 @@ void MyTask2(void)
 //        "TASK2 - 19 ....................................................................................................\r\n"
 //        "TASK2 - 20 ....................................................................................................\r\n"
 //        "\r\n");
-//    BR_TaskWait(30U);
+    BR_TaskWait(1U);
   }
 }
 
@@ -234,6 +265,7 @@ void MyTask3(void)
 {
   while (1U)
   {
+    Print("Task 3:\r\n");
 //    Print("Task 3:\r\n"
 //        "TASK3 - 1  ....................................................................................................\r\n"
 //        "TASK3 - 2  ....................................................................................................\r\n"
@@ -241,6 +273,7 @@ void MyTask3(void)
 //        "TASK3 - 4  ....................................................................................................\r\n"
 //        "TASK3 - 5  ....................................................................................................\r\n"
 //        "\r\n");
+    BR_TaskWait(1U);
   }
 }
 
@@ -257,15 +290,20 @@ void MyTask3(void)
 
 void BR_AppInit(void)
 {
+  /* Looking for devices. */
   rtc = BR_DeviceFind("rtc");
   terminal = BR_DeviceFind("usart1");
   BR_DeviceOpen(terminal, 0U);
+
+  /* Register the SPI device 1. */
+  BR_SpiDeviceRegister(&spiDev1, "spiDev1");
+  BR_SpiAttach(&spiDev1, "spi1");
 
   /* Creating the tmutex. */
   tmutex = BR_IpcMutexCreate("tmutex1");
 
   /* Creating the application tasks. */
-  BR_TaskCreate("My Task 1", MyTask1, 40U, NULL, BR_TASK_PRIORITY_CRITICAL);
+  task1 = BR_TaskCreate("My Task 1", MyTask1, 40U, NULL, BR_TASK_PRIORITY_CRITICAL);
   BR_TaskCreate("My Task 2", MyTask2, 30U, NULL, BR_TASK_PRIORITY_CRITICAL);
   BR_TaskCreate("My Task 3", MyTask3, 30U, NULL, BR_TASK_PRIORITY_CRITICAL);
 }

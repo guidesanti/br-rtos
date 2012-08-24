@@ -296,6 +296,7 @@
           <name>CCIncludePath2</name>
           <state>$PROJ_DIR$\</state>
           <state>$PROJ_DIR$\..\..\config</state>
+          <state>$PROJ_DIR$\..\..\device\bus\spi</state>
           <state>$PROJ_DIR$\..\..\kernel</state>
           <state>$PROJ_DIR$\..\..\kernel\inc</state>
           <state>$PROJ_DIR$\..\..\kernel\src</state>
@@ -1836,6 +1837,18 @@
   <group>
     <name>BR-RTOS</name>
     <group>
+      <name>device</name>
+      <group>
+        <name>bus</name>
+        <group>
+          <name>spi</name>
+          <file>
+            <name>$PROJ_DIR$\..\..\device\bus\spi\spi_core.c</name>
+          </file>
+        </group>
+      </group>
+    </group>
+    <group>
       <name>kernel</name>
       <file>
         <name>$PROJ_DIR$\..\..\kernel\src\device.c</name>
@@ -1882,6 +1895,9 @@
           <name>drivers</name>
           <file>
             <name>$PROJ_DIR$\..\..\port\bsp\stm32f10x\drivers\rtc.c</name>
+          </file>
+          <file>
+            <name>$PROJ_DIR$\..\..\port\bsp\stm32f10x\drivers\spi.c</name>
           </file>
           <file>
             <name>$PROJ_DIR$\..\..\port\bsp\stm32f10x\drivers\usart.c</name>

@@ -64,6 +64,7 @@ void __BR_BoardInit(void)
   __BR_NvicConfig();
 
   /* Initialize the board devices. */
+  __BR_GpioStartUpInit();
   __BR_RtcInit();
   __BR_SpiStartUpInit();
   __BR_UsartInit();

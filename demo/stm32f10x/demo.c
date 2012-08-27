@@ -23,6 +23,7 @@
 #include "stm32f10x_rcc.h"
 #include "stm32f10x_gpio.h"
 #include "rtc.h"
+#include "gpio.h"
 #include "spi_core.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -73,6 +74,7 @@ BR_Task_t* task1 = NULL;
 BR_Mutex_t* tmutex = NULL;
 BR_Device_t* terminal = NULL;
 BR_Device_t* rtc = NULL;
+BR_Device_t* gpioA = NULL;
 BR_SpiBus_t* spi1 = NULL;
 BR_SpiDevice_t spiDev1 =
 {
@@ -150,6 +152,9 @@ char ch[15U];
 uint8_t buffer[50U] = { 0x0B, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
 void MyTask1(void)
 {
+  BR_GpioConfig_t gpioConfig;
+  uint8_t aux = 0x01U;
+
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
   gpioInit.GPIO_Pin = GPIO_Pin_8;
   gpioInit.GPIO_Speed = GPIO_Speed_50MHz;
@@ -157,12 +162,17 @@ void MyTask1(void)
   GPIO_Init(GPIOC, &gpioInit);
 
   /* Flash chip select. */
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
-  gpioInit.GPIO_Pin = GPIO_Pin_4;
-  gpioInit.GPIO_Speed = GPIO_Speed_50MHz;
-  gpioInit.GPIO_Mode = GPIO_Mode_Out_PP;
-  GPIO_Init(GPIOA, &gpioInit);
-  GPIO_SetBits(GPIOA, GPIO_Pin_4);
+//  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+//  gpioInit.GPIO_Pin = GPIO_Pin_4;
+//  gpioInit.GPIO_Speed = GPIO_Speed_50MHz;
+//  gpioInit.GPIO_Mode = GPIO_Mode_Out_PP;
+//  GPIO_Init(GPIOA, &gpioInit);
+//  GPIO_SetBits(GPIOA, GPIO_Pin_4);
+  gpioConfig.bit = GPIO_BIT_4;
+  gpioConfig.function = GPIO_FUNC_OUT_PUSH_PULL;
+  gpioConfig.speed = GPIO_SPEED_50MHZ;
+  BR_DeviceControl(gpioA, GPIO_CMD_SET_CONFIG, &gpioConfig);
+  BR_DeviceWrite(gpioA, GPIO_ADDR_BIT_4, &aux, 1U);
 
   /* FRAM chip select. */
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
@@ -294,6 +304,7 @@ void BR_AppInit(void)
   rtc = BR_DeviceFind("rtc");
   terminal = BR_DeviceFind("usart1");
   BR_DeviceOpen(terminal, 0U);
+  gpioA = BR_DeviceFind("gpioA");
 
   /* Register the SPI device 1. */
   BR_SpiDeviceRegister(&spiDev1, "spiDev1");

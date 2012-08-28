@@ -81,7 +81,6 @@ typedef struct
 /******************************************************************************/
 /* F U N C T I O N S  P R O T O T Y P E S                                     */
 /******************************************************************************/
-static BR_Err_t __UsartInit(BR_Device_t* device);
 static BR_Err_t __UsartOpen(BR_Device_t* device, uint8_t flags);
 static BR_Err_t __UsartClose(BR_Device_t* device);
 static uint32_t __UsartRead(BR_Device_t* device, uint32_t address, uint8_t* buffer, uint32_t nBytes);
@@ -112,7 +111,7 @@ static UsartCtrl usart1Ctrl =
 static BR_Device_t usart1 =
 {
     .type     = BR_DEVICE_TYPE_CHAR,
-    .init     = __UsartInit,
+    .init     = NULL,
     .open     = __UsartOpen,
     .close    = __UsartClose,
     .read     = __UsartRead,
@@ -135,7 +134,7 @@ static UsartCtrl usart2Ctrl =
 static BR_Device_t usart2 =
 {
     .type     = BR_DEVICE_TYPE_CHAR,
-    .init     = __UsartInit,
+    .init     = NULL,
     .open     = __UsartOpen,
     .close    = __UsartClose,
     .read     = __UsartRead,
@@ -158,7 +157,7 @@ static UsartCtrl usart3Ctrl =
 static BR_Device_t usart3 =
 {
     .type     = BR_DEVICE_TYPE_CHAR,
-    .init     = __UsartInit,
+    .init     = NULL,
     .open     = __UsartOpen,
     .close    = __UsartClose,
     .read     = __UsartRead,
@@ -171,11 +170,6 @@ static BR_Device_t usart3 =
 /******************************************************************************/
 /* F U N C T I O N S                                                          */
 /******************************************************************************/
-
-static BR_Err_t __UsartInit(BR_Device_t* device)
-{
-  return E_ENOSYS;
-}
 
 static BR_Err_t __UsartOpen(BR_Device_t* device, uint8_t flags)
 {

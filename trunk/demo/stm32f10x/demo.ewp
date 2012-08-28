@@ -297,6 +297,7 @@
           <state>$PROJ_DIR$\</state>
           <state>$PROJ_DIR$\..\..\config</state>
           <state>$PROJ_DIR$\..\..\device\bus\spi</state>
+          <state>$PROJ_DIR$\..\..\drivers\flash\Atmel\AT25DB161D</state>
           <state>$PROJ_DIR$\..\..\kernel</state>
           <state>$PROJ_DIR$\..\..\kernel\inc</state>
           <state>$PROJ_DIR$\..\..\kernel\src</state>
@@ -1827,6 +1828,12 @@
   </configuration>
   <group>
     <name>app</name>
+    <group>
+      <name>drivers</name>
+      <file>
+        <name>$PROJ_DIR$\..\..\drivers\flash\Atmel\AT25DB161D\AT25DB161D.c</name>
+      </file>
+    </group>
     <file>
       <name>$PROJ_DIR$\demo.c</name>
     </file>

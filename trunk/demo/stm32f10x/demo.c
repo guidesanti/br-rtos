@@ -24,7 +24,7 @@
 #include "stm32f10x_gpio.h"
 #include "rtc.h"
 #include "gpio.h"
-#include "spi_core.h"
+#include "AT25DB161D.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -75,13 +75,14 @@ BR_Mutex_t* tmutex = NULL;
 BR_Device_t* terminal = NULL;
 BR_Device_t* rtc = NULL;
 BR_Device_t* gpioA = NULL;
-BR_SpiBus_t* spi1 = NULL;
-BR_SpiDevice_t spiDev1 =
-{
-    .config.maxFreqHz = 3000000U,
-    .config.mode = BR_SPI_MODE_0,
-    .config.dataSize = BR_SPI_DATA_SIZE_8_BITS,
-};
+BR_Device_t* flash = NULL;
+//BR_SpiBus_t* spi1 = NULL;
+//BR_SpiDevice_t spiDev1 =
+//{
+//    .config.maxFreqHz = 3000000U,
+//    .config.mode = BR_SPI_MODE_0,
+//    .config.dataSize = BR_SPI_DATA_SIZE_8_BITS,
+//};
 
 /**@}*/
 
@@ -149,7 +150,7 @@ void OnRtcAlarm(void)
 
 BR_RtcTime_t time = 0U;
 char ch[15U];
-uint8_t buffer[50U] = { 0x0B, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
+uint8_t buffer[10U];
 void MyTask1(void)
 {
   BR_GpioConfig_t gpioConfig;
@@ -221,9 +222,7 @@ void MyTask1(void)
     snprintf(ch, 15U, "%lu\r\n", time);
     Print(ch);
 
-    GPIO_ResetBits(GPIOA, GPIO_Pin_4);
-    BR_SpiTransfer(&spiDev1, buffer, buffer, 50U);
-    GPIO_SetBits(GPIOA, GPIO_Pin_4);
+    BR_DeviceControl(flash, AT25DB161D_IOCTL_GET_MANUFACTURE_ID, buffer);
 
     BR_TaskWait(1U);
   }
@@ -306,9 +305,10 @@ void BR_AppInit(void)
   BR_DeviceOpen(terminal, 0U);
   gpioA = BR_DeviceFind("gpioA");
 
-  /* Register the SPI device 1. */
-  BR_SpiDeviceRegister(&spiDev1, "spiDev1");
-  BR_SpiAttach(&spiDev1, "spi1");
+  /* Initialize the flash memory device driver. */
+  AT25DB161DInit();
+  /* Get the flash device. */
+  flash = BR_DeviceFind("flash1");
 
   /* Creating the tmutex. */
   tmutex = BR_IpcMutexCreate("tmutex1");

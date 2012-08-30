@@ -41,6 +41,7 @@ void BR_KernelStartScheduler(void);
 /******************************************************************************/
 /* TASK CONTROL API                                                           */
 /******************************************************************************/
+BR_Err_t BR_TaskInit(BR_Task_t* task, const char* name, void (*run)(void), uint8_t stackLen, void* param, uint8_t priority);
 BR_Task_t* BR_TaskCreate(const char* name, void (*run)(void), uint8_t stackLen, void* param, uint8_t priority);
 void BR_TaskYield(void);
 void BR_TaskSuspend(BR_Task_t* task);

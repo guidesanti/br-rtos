@@ -18,16 +18,17 @@
 /**
  * @addtogroup BR-RTOSConfig BR-RTOS Configuration Parameters
  * @{
+ *
+ * These are the static configuration parameters to be used by the BR-RTOS.
+ * The keys defined within this file may be modified by the user to customize
+ * the system to their needs, and as they are defined as C macros if any change
+ * is made to this file the system must be compiled again for the modifications
+ * take effect.
  */
 
 /******************************************************************************/
-/* U S E R  C O N F I G U R A T I O N  P A R A M E T E R S                    */
+/* B R - R T O S  C O N F I G U R A T I O N  P A R A M E T E R S              */
 /******************************************************************************/
-
-/**
- * @addtogroup UserConfig User Configuration Parameters
- * @{
- */
 
 /**
  * The maximum number of characters to be used by the kernel object names.
@@ -77,25 +78,6 @@
  */
 #define __BR_CHECK_FUNC_PARAMETERS  (1U)
 
-/** @} */
-
-/******************************************************************************/
-/* D E V E L O P E R  C O N F I G U R A T I O N  P A R A M E T E R S          */
-/******************************************************************************/
-
-/* -------------------------------------------------------------------------- */
-/* WARNING:                                                                   */
-/*                                                                            */
-/* The configuration parameters bellow this point are for debugging purposes  */
-/* only and must not be enabled and/or changed by the user unless the user    */
-/* intends to debug the kernel and its features.                              */
-/* -------------------------------------------------------------------------- */
-
-/**
- * @addtogroup DevConfig Developer Configuration Parameters
- * @{
- */
-
 /**
  * Enable/disable debugging of the BR-RTOS kernel.
  *
@@ -107,8 +89,6 @@
  * 1U -> enable the kernel debugging
  */
 #define __BR_DEBUG (1U)
-
-/** @} */
 
 /** @} */
 

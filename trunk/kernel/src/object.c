@@ -87,6 +87,8 @@ void __BR_ObjectStartUpInit(void)
 /**
  * @brief Initialize a kernel object.
  * @param [in] object A pointer to the object.
+ * @param [in] type The object type.
+ * @param [in] name The object name.
  */
 void __BR_ObjectInit(BR_Object_t* object, BR_ObjectType_t type, const char* name)
 {

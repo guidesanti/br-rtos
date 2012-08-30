@@ -15,7 +15,7 @@
 #define _INIT_H_
 
 /**
- * @addtogroup Init
+ * @addtogroup Init BR-RTOS Kernel Initialization
  * @{
  */
 
@@ -38,7 +38,6 @@
 /* F U N C T I O N S                                                          */
 /******************************************************************************/
 void __BR_InitKernel(void);
-
 
 /** @} */
 

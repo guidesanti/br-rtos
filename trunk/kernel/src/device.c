@@ -31,13 +31,6 @@
 /* C O N S T A N T ,  M A C R O  A N D  T Y P E  D E F I N I T I O N S        */
 /******************************************************************************/
 
-/**
- * @name Constants, Macro and Type Definitions
- * @{
- */
-
-/** @} */
-
 
 /******************************************************************************/
 /* P R I V A T E  F U N C T I O N S  P R O T O T Y P E S                      */
@@ -45,26 +38,21 @@
 
 
 /******************************************************************************/
-/* K E R N E L  I N T E R N A L  V A R I A B L E S                            */
+/* V A R I A B L E S                                                          */
 /******************************************************************************/
 
 /**
- * @name Kernel Internal Variables
- * @{
+ * The kernel device table.
+ *
+ * This table contains all the registered devices within the kernel.
+ * The table is indexed by the device type and each table element is a linked
+ * list of the registered devices of the same type.
  */
-
 static BR_ListNode_t deviceTable[BR_N_DEVICE_TYPES];
 
-/** @} */
-
 /******************************************************************************/
-/* K E R N E L  I N T E R N A L  F U N C T I O N S                            */
+/* F U N C T I O N S                                                          */
 /******************************************************************************/
-
-/**
- * @name Kernel Internal Functions
- * @{
- */
 
 /**
  * @brief Initialize the device control sub-system.
@@ -102,17 +90,6 @@ void __BR_DeviceInitAll(void)
     }
   }
 }
-
-/** @} */
-
-/******************************************************************************/
-/* P U B L I C  A P I  F U N C T I O N S                                      */
-/******************************************************************************/
-
-/**
- * @name Public API Functions
- * @{
- */
 
 /**
  * @brief Register a new device driver into the kernel.
@@ -201,7 +178,7 @@ BR_Device_t* BR_DeviceFind(const char* name)
 
 /**
  * @brief Initialize a device.
- * @param [in] A pointer to device.
+ * @param [in] device A pointer to device.
  * @return Error code.
  * @retval E_OK If the device was initialized with successful.
  * @retval E_ERROR If the initialization function is not implemented.
@@ -439,8 +416,6 @@ BR_Err_t BR_DeviceControl(BR_Device_t* device, uint8_t cmd, void* param)
 
   return ret;
 }
-
-/** @} */
 
 /** @} */
 

@@ -87,8 +87,10 @@ BR_Mutex_t* BR_IpcMutexCreate(const char* name)
  * @return Error code.
  * @retval E_OK If the mutex is successfully initialized.
  */
-void BR_IpcMutexInit(BR_Mutex_t* mutex, const char* name)
+BR_Err_t BR_IpcMutexInit(BR_Mutex_t* mutex, const char* name)
 {
+  BR_Err_t ret = E_OK;
+
   /* Check the parameters. */
   __BR_ASSERT(NULL != mutex);
   __BR_ASSERT(NULL != name);
@@ -103,6 +105,8 @@ void BR_IpcMutexInit(BR_Mutex_t* mutex, const char* name)
   __BR_ListInit(&(mutex->waitList));
 
   __BR_EXIT_CRITICAL();
+
+  return ret;
 }
 
 /**

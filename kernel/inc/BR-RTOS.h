@@ -30,6 +30,10 @@
 /******************************************************************************/
 /* GENERAL DEFINES                                                            */
 /******************************************************************************/
+#define BR_VERSION            "0.1.0"
+#define BR_VER_MAJOR          (0U)
+#define BR_VER_MINOR          (1U)
+#define BR_VER_PATCH          (0U)
 #define BR_ASSERT(EXPRESSION) __BR_ASSERT((EXPRESSION))
 
 /******************************************************************************/
@@ -72,8 +76,8 @@ BR_Err_t BR_DeviceControl(BR_Device_t* device, uint8_t cmd, void* param);
 /******************************************************************************/
 /* INTER PROCESS COMMUNICATION API                                            */
 /******************************************************************************/
+BR_Err_t BR_IpcMutexInit(BR_Mutex_t* mutex, const char* name);
 BR_Mutex_t* BR_IpcMutexCreate(const char* name);
-void BR_IpcMutexInit(BR_Mutex_t* mutex, const char* name);
 BR_Err_t BR_IpcMutexAcquire(BR_Mutex_t* mutex, uint32_t ticks);
 BR_Err_t BR_IpcMutexRelease(BR_Mutex_t* mutex);
 BR_Err_t BR_IpcMutexControl(BR_Mutex_t* mutex, uint8_t cmd, void* param);

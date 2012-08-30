@@ -220,12 +220,83 @@ void __BR_TaskTickUpdate(void)
  */
 
 /**
- * @brief Create a new task.
+ * @brief Initializes a statically created task.
+ * @param [in] task A pointer to the task structure.
  * @param [in] name The task name. Should be at a maximum of __BR_MAX_TASK_NAME_LEN characters.
  * @param [in] run A pointer to the task execution code.
  * @param [in] stackLen The length of the task stack (specified in number of CPU words).
  * @param [in] param A pointer to the parameters to be passed to the task.
- * @return TODO
+ * @param [in] priority The task priority.
+ * @return Error code.
+ * @retval E_OK If the task is successfully initialized and added to the ready queue.
+ * @retval E_INVAL If any of the parameters is invalid and the parameters check featrue is enabled.
+ * @retval E_NOMEM If there no space to create the task stack.
+ */
+BR_Err_t BR_TaskInit(BR_Task_t* task, const char* name, void (*run)(void), uint8_t stackLen, void* param, uint8_t priority)
+{
+  BR_Err_t ret = E_OK;
+
+  /* Check the parameters. */
+  __BR_ASSERT(NULL != task);
+  __BR_ASSERT(NULL != name);
+  __BR_ASSERT(NULL != run);
+  __BR_ASSERT(priority < BR_N_TASK_PRIORITIES);
+#if (1U == __BR_CHECK_FUNC_PARAMETERS)
+  if ((NULL != task) &&
+      (NULL != name) &&
+      (NULL != run) &&
+      (priority < BR_N_TASK_PRIORITIES))
+#endif
+  {
+    __BR_ENTER_CRITICAL();
+
+    /* Initialize the task object. */
+    __BR_ObjectInit(&(task->parent), BR_OBJ_TYPE_TASK, name);
+    /* Allocate space for the task stack. */
+    task->stackPointer = BR_MemAlloc(stackLen * __BR_WORD_LEN);
+    if (NULL != task->stackPointer)
+    {
+      /* Fill the stack with default values for debugging. */
+      memset(task->stackPointer, 0xFFU, stackLen * __BR_WORD_LEN);
+      /* Set the stack pointer to the end of allocated memory. */
+      task->stackPointer += (stackLen - 1U);
+      /* Initialize the new task structure. */
+      task->counter = 0U;
+      task->state = __BR_TASK_ST_READY;
+      /* Set the task priority and initialize the task list. */
+      task->priority = priority;
+      __BR_ListInit(&(task->list));
+      __BR_ListInsertBefore(&(priorityTable[priority]), &(task->list));
+      /* Initialize the task reseource wait list. */
+      __BR_ListInit(&(task->resWaitList));
+      /* Initialize the task stack. */
+      task->stackPointer = __BR_PortInitStack(task->stackPointer, run, param);
+    }
+    else
+    {
+      ret = E_NOMEM;
+    }
+
+    __BR_EXIT_CRITICAL();
+  }
+#if (1U == __BR_CHECK_FUNC_PARAMETERS)
+  else
+  {
+    ret = E_INVAL;
+  }
+#endif
+
+  return ret;
+}
+
+/**
+ * @brief Dynamically create a new task.
+ * @param [in] name The task name. Should be at a maximum of __BR_MAX_TASK_NAME_LEN characters.
+ * @param [in] run A pointer to the task execution code.
+ * @param [in] stackLen The length of the task stack (specified in number of CPU words).
+ * @param [in] param A pointer to the parameters to be passed to the task.
+ * @param [in] priority The task priority.
+ * @return A pointer to the created task or NULL if the task could not be created.
  *
  * This function should be called once for each task before the scheduler is started.
  * It creates a new task and put it on the ready list.
@@ -293,16 +364,15 @@ void BR_TaskYield(void)
 
 /**
  * @brief Put a task in suspended state.
- * @param [in] taskID The ID of the task to be suspended.
+ * @param [in] task A pointer to the task to be suspended.
  *
- * This function will put a task with ID taskID in suspended state.
- * If the ID is not valid nothing will be done.
- * If the ID is valid the task will be put in suspended state until a call
- * to BR_TaskResume() is called for the same task ID. No matter the current
- * state of the task it will be suspended and on resume it will be put in the ready state.
- * If the task identified by taskID is the same task that is current running
- * within the CPU it will be suspended and a new task will be immediately be
- * scheduled to run.
+ * This function will put a task in suspended state.
+ * If task is NULL the current running task will be suspended, otherwise the
+ * task pointed by task parameter will be suspended.
+ * No matter the current state of the task it will be suspended and on resume it
+ * will be put in the ready state. If the task to suspend is the same task that
+ * is current running on the CPU it will be suspended and a new task will be
+ * immediately be scheduled to run.
  */
 void BR_TaskSuspend(BR_Task_t* task)
 {
@@ -322,7 +392,7 @@ void BR_TaskSuspend(BR_Task_t* task)
 
 /**
  * @brief Resume a previously suspended task.
- * @param [in] taskID The ID of the task to be resumed.
+ * @param [in] task A pointer to the task to be suspended.
  *
  * Put the task with ID taskID in ready state if it has been previously suspended.
  * If the task is not within the suspended task list nothing will be done.

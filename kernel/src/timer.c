@@ -3,7 +3,7 @@
  * @date        2012, July 27
  * @author      Guilherme A. de Santi <guidesanti@yahoo.com.br>
  * @copyright   Guilherme A. de Santi &copy; 2012
- * @brief       TODO: Add brief description
+ * @brief       Implementation of the timer control API.
  *
  * TODO: Add detailed description
  */
@@ -53,13 +53,8 @@
 
 
 /******************************************************************************/
-/* K E R N E L  I N T E R N A L  V A R I A B L E S                            */
+/* V A R I A B L E S                                                          */
 /******************************************************************************/
-
-/**
- * @name Kernel Internal Variables
- * @{
- */
 
 /**
  * The timer task.
@@ -76,19 +71,13 @@ static BR_ListNode_t runningTimers;
  */
 static BR_ListNode_t expiredTimers;
 
-/** @} */
 
 /******************************************************************************/
-/* K E R N E L  I N T E R N A L  F U N C T I O N S                            */
+/* F U N C T I O N S                                                          */
 /******************************************************************************/
 
 /**
- * @name Kernel Internal Functions
- * @{
- */
-
-/**
- * @brief TODO
+ * @brief Initializes the timer control sub-system.
  */
 void __BR_TimerStartUpInit(void)
 {
@@ -98,7 +87,7 @@ void __BR_TimerStartUpInit(void)
 }
 
 /**
- * @brief TODO
+ * @brief Updates the current running timers.
  */
 void __BR_TimerDecrement(void)
 {
@@ -140,7 +129,7 @@ void __BR_TimerDecrement(void)
 }
 
 /**
- * @brief TODO
+ * @brief Implementation of the timer task.
  */
 void __BR_TimerTask(void)
 {
@@ -170,17 +159,6 @@ void __BR_TimerTask(void)
   }
 }
 
-/** @} */
-
-/******************************************************************************/
-/* P U B L I C  A P I  F U N C T I O N S                                      */
-/******************************************************************************/
-
-/**
- * @name Public API Functions
- * @{
- */
-
 /**
  * @brief Create a new timer resource.
  * @param [in] name The timer name.
@@ -188,7 +166,6 @@ void __BR_TimerTask(void)
  * @param [in] callback A pointer to the function to be executed when the timer expires.
  * @param [in] param An optional parameter to be passed back to the callback.
  * @param [in] flags The timer resource flags.
- * @param [out] timer A pointer to the created timer resource.
  * @return Error code:
  * @retval E_OK If the timer has been created successfully.
  * @retval E_INAL If any of the parameters is invalid and the parameters check is enabled.
@@ -336,26 +313,29 @@ BR_Err_t BR_TimerControl(BR_Timer_t* timer, BR_TimerCmd_t cmd, void* param)
 }
 
 /**
- * @brief TODO
+ * @brief Starts a previously created timer.
+ * @param [in] timer A pointer to the timer.
+ * @return Error code.
+ * @retval E_OK If the timer is successfully started.
+ * @retval E_INVAL If timer is NULL and the check parameters feature is enabled.
  */
 BR_Err_t BR_TimerStart(BR_Timer_t* timer)
 {
-  BR_Err_t ret = E_ERROR;
+  BR_Err_t ret = E_OK;
 
+  /* Check the parameters. */
   __BR_ASSERT(NULL != timer);
-
 #if (1U == __BR_CHECK_FUNC_PARAMETERS)
   if (NULL != timer)
-  {
 #endif
+  {
     __BR_ENTER_CRITICAL();
     timer->counter = timer->reload;
     __BR_ListRemove(&(timer->node));
     __BR_ListInsertAfter(&runningTimers, &(timer->node));
     __BR_EXIT_CRITICAL();
-    ret = E_OK;
-#if (1U == __BR_CHECK_FUNC_PARAMETERS)
   }
+#if (1U == __BR_CHECK_FUNC_PARAMETERS)
   else
   {
     ret = E_INVAL;
@@ -366,25 +346,28 @@ BR_Err_t BR_TimerStart(BR_Timer_t* timer)
 }
 
 /**
- * @brief TODO
+ * @brief Stops a previously started timer.
+ * @param [in] timer A pointer to the timer.
+ * @return Error code.
+ * @retval E_OK If the timer is successfully stopped.
+ * @retval E_INVAL If timer is NULL and the check parameters feature is enabled.
  */
 BR_Err_t BR_TimerStop(BR_Timer_t* timer)
 {
-  BR_Err_t ret = E_ERROR;
+  BR_Err_t ret = E_OK;
 
   __BR_ASSERT(NULL != timer);
 
 #if (1U == __BR_CHECK_FUNC_PARAMETERS)
   if (NULL != timer)
-  {
 #endif
+  {
     __BR_ENTER_CRITICAL();
     timer->counter = 0U;
     __BR_ListRemove(&(timer->node));
     __BR_EXIT_CRITICAL();
-    ret = E_OK;
-#if (1U == __BR_CHECK_FUNC_PARAMETERS)
   }
+#if (1U == __BR_CHECK_FUNC_PARAMETERS)
   else
   {
     ret = E_INVAL;
@@ -395,26 +378,29 @@ BR_Err_t BR_TimerStop(BR_Timer_t* timer)
 }
 
 /**
- * @brief TODO
+ * @brief Restarts a timer.
+ * @param [in] timer A pointer to the timer.
+ * @return Error code.
+ * @retval E_OK If the timer is successfully restarted.
+ * @retval E_INVAL If timer is NULL and the check parameters feature is enabled.
  */
 BR_Err_t BR_TimerRestart(BR_Timer_t* timer)
 {
-  BR_Err_t ret = E_ERROR;
+  BR_Err_t ret = E_OK;
 
   __BR_ASSERT(NULL != timer);
 
 #if (1U == __BR_CHECK_FUNC_PARAMETERS)
   if (NULL != timer)
-  {
 #endif
+  {
     __BR_ENTER_CRITICAL();
     timer->counter = timer->reload;
     __BR_ListRemove(&(timer->node));
     __BR_ListInsertAfter(&runningTimers, &(timer->node));
     __BR_EXIT_CRITICAL();
-    ret = E_OK;
-#if (1U == __BR_CHECK_FUNC_PARAMETERS)
   }
+#if (1U == __BR_CHECK_FUNC_PARAMETERS)
   else
   {
     ret = E_INVAL;
@@ -423,7 +409,5 @@ BR_Err_t BR_TimerRestart(BR_Timer_t* timer)
 
   return ret;
 }
-
-/** @} */
 
 /** @} */

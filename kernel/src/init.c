@@ -11,7 +11,7 @@
  */
 
 /**
- * @addtogroup Init
+ * @addtogroup @addtogroup Init BR-RTOS Kernel Initialization
  * @{
  */
 
@@ -44,6 +44,9 @@
 /* F U N C T I O N S                                                          */
 /******************************************************************************/
 
+/**
+ * @brief Initialize the BR-RTOS kernel.
+ */
 void __BR_InitKernel(void)
 {
   __BR_ObjectStartUpInit();
@@ -52,6 +55,4 @@ void __BR_InitKernel(void)
   __BR_DeviceStartUpInit();
 }
 
-
 /** @} */
-

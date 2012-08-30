@@ -12,6 +12,7 @@
 #ifndef _BR_RTOS_DEFS_H_
 #define _BR_RTOS_DEFS_H_
 
+
 /******************************************************************************/
 /* I N C L U D E S                                                            */
 /******************************************************************************/
@@ -114,7 +115,7 @@
 typedef uint32_t BR_Size_t;
 
 /**
- * @brief Error code list.
+ * Error code list.
  *
  * This is the list of error codes that may be returned by the BR-RTOS API
  * functions.
@@ -127,6 +128,7 @@ typedef enum
   E_NORES,
   E_ENOSYS,
   E_TIMEOUT,
+  E_NOMEM,
 } BR_Err_t;
 
 #ifndef TRUE
@@ -139,7 +141,6 @@ typedef enum
 
 typedef uint8_t BR_Boolean_t;
 
-#define __BR_LIST_DECLARE(NAME) BR_ListNode_t NAME = { &NAME, &NAME }
 #define __BR_LIST_ENTRY(NODE, TYPE, FIELD) ((TYPE*)(((uint8_t*)NODE) - ((uint8_t*)&(((TYPE*)0U)->FIELD))))
 
 typedef struct BR_ListNode
@@ -157,11 +158,11 @@ typedef struct BR_ListNode
  */
 typedef enum
 {
-  BR_OBJ_TYPE_TASK = 0U,
-  BR_OBJ_TYPE_TIMER,
-  BR_OBJ_TYPE_DEVICE,
-  BR_OBJ_TYPE_MUTEX,
-  BR_N_OBJ_TYPES,
+  BR_OBJ_TYPE_TASK = 0U,  /**< Task object. */
+  BR_OBJ_TYPE_TIMER,      /**< Timer object. */
+  BR_OBJ_TYPE_DEVICE,     /**< Device object. */
+  BR_OBJ_TYPE_MUTEX,      /**< Mutex object. */
+  BR_N_OBJ_TYPES,         /**< Number of object types. */
 } BR_ObjectType_t;
 
 /**
@@ -341,6 +342,5 @@ typedef struct
 } BR_Mutex_t;
 
 /** @} */
-
 
 #endif /* _BR_RTOS_DEFS_H_ */

@@ -1,0 +1,21 @@
+========================================================================================================================
+Author: Guilherme A. de Santi <guidesanti@yahoo.com.br>
+Date:   2012, August 30
+========================================================================================================================
+
+
+This is the documents folder of the BR-RTOS project.
+Every document within the project documentation has five main attributes:
+- Title: the document title (a brief friendly text)
+- Author: the responsible for the document
+- Date: the date of the document revision
+- Reference: the unique document identification within the project
+- Revision: the document revision
+
+Document Index
+
+========================================================================================================================
+Title                                  | Reference                     | Location
+========================================================================================================================
+Code Style                             | BR0001                        | ./
+========================================================================================================================

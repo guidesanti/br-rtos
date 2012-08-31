@@ -99,7 +99,7 @@
         </option>
         <option>
           <name>OGChipSelectEditMenu</name>
-          <state>STM32F100xB	ST STM32F100xB</state>
+          <state>STM32F10xxE	ST STM32F10xxE</state>
         </option>
         <option>
           <name>GenLowLevelInterface</name>
@@ -1989,13 +1989,13 @@
           <name>$PROJ_DIR$\..\..\port\bsp\stm32f10x\board.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\..\port\bsp\stm32f10x\startup.c</name>
-        </file>
-        <file>
           <name>$PROJ_DIR$\..\..\port\bsp\stm32f10x\stm32f10x_it.c</name>
         </file>
       </group>
     </group>
+    <file>
+      <name>$PROJ_DIR$\..\..\startup.c</name>
+    </file>
   </group>
   <group>
     <name>config</name>

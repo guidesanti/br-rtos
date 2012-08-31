@@ -3,7 +3,7 @@
  * @date        2012, August 20
  * @author      Guilherme A. de Santi <guidesanti@yahoo.com.br>
  * @copyright   &copy; 2012, BR-RTOS Development Team
- * @brief       TODO: add brief description
+ * @brief       STM32F10x BSP configuration file.
  *
  * This file is part of the BR-RTOS.
  * The license distribution terms may found at COPYING or LICENSE file
@@ -28,13 +28,17 @@
 /* C O N S T A N T ,  M A C R O  A N D  T Y P E  D E F I N I T I O N S        */
 /******************************************************************************/
 
-/* Clocks configuration. */
+/* --------------------------------------------------------------------------- */
+/* RCC                                                                         */
+/* --------------------------------------------------------------------------- */
 #define HSE_CLOCK_HZ  (8000000U)
 #define LSE_CLOCK_HZ  (32768U)
 #define HSI_CLOCK_HZ  (8000000U)
 #define LSI_CLOCK_HZ  (40000U)
 
-/* RTC Configuration. */
+/* --------------------------------------------------------------------------- */
+/* RTC                                                                         */
+/* --------------------------------------------------------------------------- */
 #define BOARD_RTC_USE_HSEDIV128 (0U)
 #define BOARD_RTC_USE_LSE       (1U)
 #define BOARD_RTC_USE_LSI       (2U)

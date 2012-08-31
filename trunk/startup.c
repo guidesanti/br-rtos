@@ -20,15 +20,16 @@
 /******************************************************************************/
 #include "BR-RTOSConfig.h"
 #include "BR-RTOS.h"
-#include "port.h"
 #include "startup.h"
 #include "init.h"
-#include "object.h"
 #include "task.h"
 #include "timer.h"
-#include "ipc.h"
 #include "device.h"
+
+/* If using BSP include the default board header file. */
+#if (1U == __BR_USE_BSP)
 #include "board.h"
+#endif
 
 /******************************************************************************/
 /* F U N C T I O N S  P R O T O T Y P E S                                     */
@@ -53,7 +54,9 @@ static void __BR_StartUp(void)
   __BR_InitKernel();
 
   /* Board initialization. */
+#if (1U == __BR_USE_BSP)
   __BR_BoardInit();
+#endif
 
   /* Device drivers initialization. */
   __BR_DeviceInitAll();
@@ -82,10 +85,15 @@ void main(void)
   /* Should never reach here. */
 #if (1U == __BR_DEBUG)
   /* Stop the software for debugging. */
-  __BR_ASSERT(FALSE);
+  BR_ASSERT(FALSE);
 #else
   /* Force a system reset. */
   __BR_RESET();
+
+  /* If there is no support for reset by software, enter the infinite loop.
+   * A chance for the watchdog (if enabled) to reset the system.
+   */
+  while (TRUE) { }
 #endif
 }
 

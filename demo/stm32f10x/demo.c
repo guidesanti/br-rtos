@@ -51,13 +51,10 @@
  * @{
  */
 
-void Delay(uint32_t counter);
-void Print(char* str);
-void Task1OnTimeout(void* param);
-void OnRtcAlarm(void);
-void MyTask1(void);
-void MyTask2(void);
-void MyTask3(void);
+static void Print(char* str);
+static void Task1OnTimeout(void* param);
+static void OnRtcAlarm(void);
+static void MyTask1(void);
 
 /**@}*/
 
@@ -105,63 +102,27 @@ BR_Timer_t* timer1 = NULL;
 /* P R I V A T E  F U N C T I O N S                                           */
 /******************************************************************************/
 
-void Delay(uint32_t counter)
-{
-  while (counter > 0U)
-  {
-    counter--;
-  }
-}
-
-void Print(char* str)
+static void Print(char* str)
 {
   if (E_OK == BR_IpcMutexAcquire(tmutex, 30U))
   {
     BR_DeviceWrite(terminal, 0U, (uint8_t*)str, strlen(str));
     BR_IpcMutexRelease(tmutex);
   }
-  else
-  {
-    BR_DeviceWrite(terminal, 0U, (uint8_t*)"Timeout\r\n", 9U);
-  }
 }
 
-/**
- * @defgroup PrivateFunc Private Functions
- * @{
- */
-void Task1OnTimeout(void* param)
+static void Task1OnTimeout(void* param)
 {
-  BR_DeviceWrite(terminal, 0U, "TESTE\n\r", 7U);
-  if (GPIO_ReadOutputDataBit(GPIOC, GPIO_Pin_8))
-  {
-    GPIO_ResetBits(GPIOC, GPIO_Pin_8);
-  }
-  else
-  {
-    GPIO_SetBits(GPIOC, GPIO_Pin_8);
-  }
+  Print("Timeout\r\n");
 }
 
-void OnRtcAlarm(void)
+static void OnRtcAlarm(void)
 {
   Print("RTC ALARM");
 }
 
-BR_RtcTime_t time = 0U;
-char ch[15U];
-uint8_t buffer[10U];
-void MyTask1(void)
+static void MyTask1(void)
 {
-  BR_GpioConfig_t gpioConfig;
-  uint8_t aux = 0x01U;
-
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
-  gpioInit.GPIO_Pin = GPIO_Pin_8;
-  gpioInit.GPIO_Speed = GPIO_Speed_50MHz;
-  gpioInit.GPIO_Mode = GPIO_Mode_Out_PP;
-  GPIO_Init(GPIOC, &gpioInit);
-
   /* Flash chip select. */
 //  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
 //  gpioInit.GPIO_Pin = GPIO_Pin_4;
@@ -169,28 +130,22 @@ void MyTask1(void)
 //  gpioInit.GPIO_Mode = GPIO_Mode_Out_PP;
 //  GPIO_Init(GPIOA, &gpioInit);
 //  GPIO_SetBits(GPIOA, GPIO_Pin_4);
-  gpioConfig.bit = GPIO_BIT_4;
-  gpioConfig.function = GPIO_FUNC_OUT_PUSH_PULL;
-  gpioConfig.speed = GPIO_SPEED_50MHZ;
-  BR_DeviceControl(gpioA, GPIO_CMD_SET_CONFIG, &gpioConfig);
-  BR_DeviceWrite(gpioA, GPIO_ADDR_BIT_4, &aux, 1U);
+//  gpioConfig.bit = GPIO_BIT_4;
+//  gpioConfig.function = GPIO_FUNC_OUT_PUSH_PULL;
+//  gpioConfig.speed = GPIO_SPEED_50MHZ;
+//  BR_DeviceControl(gpioA, GPIO_CMD_SET_CONFIG, &gpioConfig);
+//  BR_DeviceWrite(gpioA, GPIO_ADDR_BIT_4, &aux, 1U);
 
-  /* FRAM chip select. */
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
-  gpioInit.GPIO_Pin = GPIO_Pin_1;
-  gpioInit.GPIO_Speed = GPIO_Speed_50MHz;
-  gpioInit.GPIO_Mode = GPIO_Mode_Out_PP;
-  GPIO_Init(GPIOA, &gpioInit);
-  GPIO_SetBits(GPIOA, GPIO_Pin_1);
+//  BR_DeviceControl(rtc, RTC_CMD_SET_ALARM_CALLBACK, (void*)OnRtcAlarm);
+//  time = 30U;
+//  BR_DeviceControl(rtc, RTC_CMD_SET_ALARM_TIME, &time);
+//  BR_DeviceControl(rtc, RTC_CMD_SET_ALARM_ENABLED, NULL);
 
-  //BR_TimerCreate("Timer1", 1U, Task1OnTimeout, NULL, 0U, &timer1);
-  //BR_TimerControl(timer1, BR_TIMER_CMD_SET_CONT, NULL);
-  //BR_TimerStart(timer1);
-
-  BR_DeviceControl(rtc, RTC_CMD_SET_ALARM_CALLBACK, (void*)OnRtcAlarm);
-  time = 30U;
-  BR_DeviceControl(rtc, RTC_CMD_SET_ALARM_TIME, &time);
-  BR_DeviceControl(rtc, RTC_CMD_SET_ALARM_ENABLED, NULL);
+  /* Start a test timer. */
+  timer1 = BR_TimerCreate("Timer1", 1U, Task1OnTimeout, NULL, 0U);
+  BR_ASSERT(NULL != timer1);
+  BR_TimerControl(timer1, BR_TIMER_CMD_SET_CONT, NULL);
+  BR_TimerStart(timer1);
 
   while (1U)
   {
@@ -200,102 +155,22 @@ void MyTask1(void)
 //      BR_DeviceWrite(terminal, 0U, buffer, 1U);
 //    }
 
-//    Print("Task 1:\r\n"
-//        "TASK1 - 1  ....................................................................................................\r\n"
-//        "TASK1 - 2  ....................................................................................................\r\n"
-//        "TASK1 - 3  ....................................................................................................\r\n"
-//        "TASK1 - 4  ....................................................................................................\r\n"
-//        "TASK1 - 5  ....................................................................................................\r\n"
-//        "TASK1 - 6  ....................................................................................................\r\n"
-//        "TASK1 - 7  ....................................................................................................\r\n"
-//        "TASK1 - 8  ....................................................................................................\r\n"
-//        "TASK1 - 9  ....................................................................................................\r\n"
-//        "TASK1 - 10 ....................................................................................................\r\n"
-//        "TASK1 - 11 ....................................................................................................\r\n"
-//        "TASK1 - 12 ....................................................................................................\r\n"
-//        "TASK1 - 13 ....................................................................................................\r\n"
-//        "TASK1 - 14 ....................................................................................................\r\n"
-//        "TASK1 - 15 ....................................................................................................\r\n"
-//        "\r\n");
+//    BR_DeviceControl(rtc, RTC_CMD_GET_TIME, &time);
+//    snprintf(ch, 15U, "%lu\r\n", time);
+//    Print(ch);
 
-    BR_DeviceControl(rtc, RTC_CMD_GET_TIME, &time);
-    snprintf(ch, 15U, "%lu\r\n", time);
-    Print(ch);
+//    BR_DeviceControl(flash, AT25DB161D_IOCTL_GET_MANUFACTURE_ID, buffer);
 
-    BR_DeviceControl(flash, AT25DB161D_IOCTL_GET_MANUFACTURE_ID, buffer);
+    Print("Task 1\r\n");
 
     BR_TaskWait(1U);
   }
 }
 
-void MyTask2(void)
-{
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
-  gpioInit.GPIO_Pin = GPIO_Pin_9;
-  gpioInit.GPIO_Speed = GPIO_Speed_50MHz;
-  gpioInit.GPIO_Mode = GPIO_Mode_Out_PP;
-  GPIO_Init(GPIOC, &gpioInit);
-
-  while (1U)
-  {
-//    GPIO_SetBits(GPIOC, GPIO_Pin_9);
-//    BR_TaskWait(1U);
-//    GPIO_ResetBits(GPIOC, GPIO_Pin_9);
-//    BR_TaskWait(1U);
-
-    Print("Task 2:\r\n");
-//    Print("Task 2:\r\n"
-//        "TASK2 - 1  ....................................................................................................\r\n"
-//        "TASK2 - 2  ....................................................................................................\r\n"
-//        "TASK2 - 3  ....................................................................................................\r\n"
-//        "TASK2 - 4  ....................................................................................................\r\n"
-//        "TASK2 - 5  ....................................................................................................\r\n"
-//        "TASK2 - 6  ....................................................................................................\r\n"
-//        "TASK2 - 7  ....................................................................................................\r\n"
-//        "TASK2 - 8  ....................................................................................................\r\n"
-//        "TASK2 - 9  ....................................................................................................\r\n"
-//        "TASK2 - 10 ....................................................................................................\r\n"
-//        "TASK2 - 11 ....................................................................................................\r\n"
-//        "TASK2 - 12 ....................................................................................................\r\n"
-//        "TASK2 - 13 ....................................................................................................\r\n"
-//        "TASK2 - 14 ....................................................................................................\r\n"
-//        "TASK2 - 15 ....................................................................................................\r\n"
-//        "TASK2 - 16 ....................................................................................................\r\n"
-//        "TASK2 - 17 ....................................................................................................\r\n"
-//        "TASK2 - 18 ....................................................................................................\r\n"
-//        "TASK2 - 19 ....................................................................................................\r\n"
-//        "TASK2 - 20 ....................................................................................................\r\n"
-//        "\r\n");
-    BR_TaskWait(1U);
-  }
-}
-
-void MyTask3(void)
-{
-  while (1U)
-  {
-    Print("Task 3:\r\n");
-//    Print("Task 3:\r\n"
-//        "TASK3 - 1  ....................................................................................................\r\n"
-//        "TASK3 - 2  ....................................................................................................\r\n"
-//        "TASK3 - 3  ....................................................................................................\r\n"
-//        "TASK3 - 4  ....................................................................................................\r\n"
-//        "TASK3 - 5  ....................................................................................................\r\n"
-//        "\r\n");
-    BR_TaskWait(1U);
-  }
-}
-
-/**@}*/
 
 /******************************************************************************/
 /* P U B L I C  F U N C T I O N S                                             */
 /******************************************************************************/
-
-/**
- * @defgroup PublicFunc Public Functions
- * @{
- */
 
 void BR_AppInit(void)
 {
@@ -314,10 +189,5 @@ void BR_AppInit(void)
   tmutex = BR_IpcMutexCreate("tmutex1");
 
   /* Creating the application tasks. */
-  task1 = BR_TaskCreate("My Task 1", MyTask1, 40U, NULL, BR_TASK_PRIORITY_CRITICAL);
-  BR_TaskCreate("My Task 2", MyTask2, 30U, NULL, BR_TASK_PRIORITY_CRITICAL);
-  BR_TaskCreate("My Task 3", MyTask3, 30U, NULL, BR_TASK_PRIORITY_CRITICAL);
+  task1 = BR_TaskCreate("Task 1", MyTask1, 40U, NULL, BR_TASK_PRIORITY_CRITICAL);
 }
-
-/**@}*/
-

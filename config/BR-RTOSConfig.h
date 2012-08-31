@@ -90,6 +90,15 @@
  */
 #define __BR_DEBUG (1U)
 
+/**
+ * Enable/disable the use of BSP support.
+ *
+ * The values allowed for this key are:
+ * 0U -> disable the BSP support
+ * 1U -> enable the BSP support
+ */
+#define __BR_USE_BSP  (1U)
+
 /** @} */
 
 #endif /* _BR_RTOS_CONFIG_H_ */

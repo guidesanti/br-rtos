@@ -55,6 +55,7 @@ void BR_TaskWait(uint32_t ticks);
 /******************************************************************************/
 /* TIMER CONTROL API                                                          */
 /******************************************************************************/
+BR_Err_t BR_TimerInit(BR_Timer_t* timer, const char* name, uint32_t time, BR_TimerCallback_t callback, void* param, uint8_t flags);
 BR_Timer_t* BR_TimerCreate(const char* name, uint32_t time, BR_TimerCallback_t callback, void* param, uint8_t flags);
 BR_Err_t BR_TimerControl(BR_Timer_t* timer, BR_TimerCmd_t cmd, void* param);
 BR_Err_t BR_TimerStart(BR_Timer_t* timer);

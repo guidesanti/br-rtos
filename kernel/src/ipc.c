@@ -46,6 +46,35 @@
 /******************************************************************************/
 
 /**
+ * @brief Initialize a static created mutex.
+ * @param [in] mutex A pointer to the mutex.
+ * @param [in] name The mutex name.
+ * @return Error code.
+ * @retval E_OK If the mutex is successfully initialized.
+ */
+BR_Err_t BR_IpcMutexInit(BR_Mutex_t* mutex, const char* name)
+{
+  BR_Err_t ret = E_OK;
+
+  /* Check the parameters. */
+  __BR_ASSERT(NULL != mutex);
+  __BR_ASSERT(NULL != name);
+
+  __BR_ENTER_CRITICAL();
+
+  /* Initialize the mutex parent object. */
+  __BR_ObjectInit(&(mutex->parent), BR_OBJ_TYPE_MUTEX, name);
+  /* Initialize the mutex attributes. */
+  mutex->owner = NULL;
+  mutex->counter = 0U;
+  __BR_ListInit(&(mutex->waitList));
+
+  __BR_EXIT_CRITICAL();
+
+  return ret;
+}
+
+/**
  * @brief Creates a mutex.
  * @param [in] name The mutex name.
  * @return NULL if the mutex can not be created, otherwise returns a pointer to
@@ -78,35 +107,6 @@ BR_Mutex_t* BR_IpcMutexCreate(const char* name)
   __BR_EXIT_CRITICAL();
 
   return mutex;
-}
-
-/**
- * @brief Initialize a static created mutex.
- * @param [in] mutex A pointer to the mutex.
- * @param [in] name The mutex name.
- * @return Error code.
- * @retval E_OK If the mutex is successfully initialized.
- */
-BR_Err_t BR_IpcMutexInit(BR_Mutex_t* mutex, const char* name)
-{
-  BR_Err_t ret = E_OK;
-
-  /* Check the parameters. */
-  __BR_ASSERT(NULL != mutex);
-  __BR_ASSERT(NULL != name);
-
-  __BR_ENTER_CRITICAL();
-
-  /* Initialize the mutex parent object. */
-  __BR_ObjectInit(&(mutex->parent), BR_OBJ_TYPE_MUTEX, name);
-  /* Initialize the mutex attributes. */
-  mutex->owner = NULL;
-  mutex->counter = 0U;
-  __BR_ListInit(&(mutex->waitList));
-
-  __BR_EXIT_CRITICAL();
-
-  return ret;
 }
 
 /**

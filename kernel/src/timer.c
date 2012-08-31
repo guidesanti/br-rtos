@@ -160,6 +160,70 @@ void __BR_TimerTask(void)
 }
 
 /**
+ * @brief Initialize a statically created timer.
+ * @param [in] timer A pointer to the statically allocated timer.
+ * @param [in] name The timer name.
+ * @param [in] time The value to count down to zero before calling the callback.
+ * @param [in] callback A pointer to the function to be executed when the timer expires.
+ * @param [in] param An optional parameter to be passed back to the callback.
+ * @param [in] flags The timer resource flags.
+ * @return Error code:
+ * @retval E_OK If the timer has been initialized successfully.
+ * @retval E_INAL If any of the parameters is invalid and the parameters check is enabled.
+ *
+ * Initializes a timer resource and insert it within the kernel objects list.
+ *  * The flags are used to specify some timer configurations:
+ * - BR_TIMER_FLAG_SINGLE -> Single shot timer.
+ * - BR_TIMER_FLAG_CONT   -> Continuous timer, the timer will restart automatically after executing the callback.
+ * - BR_TIMER_FLAG_MS     -> Milliseconds based timer.
+ * - BR_TIMER_FLAG_SEC    -> Seconds based timer.
+ * - BR_TIMER_FLAG_SOFT   -> Soft timer, the callback will be executed from timer task.
+ * - BR_TIMER_FLAG_HARD   -> Hard timer, the callback will be executed from interrupt handler.
+ *
+ * If the flags parameter is zero, it is assumed a single shot timer with
+ * milliseconds base time and a soft timer.
+ */
+BR_Err_t BR_TimerInit(BR_Timer_t* timer, const char* name, uint32_t time, BR_TimerCallback_t callback, void* param, uint8_t flags)
+{
+  BR_Err_t ret = E_OK;
+
+  /* Check the parameters. */
+  __BR_ASSERT(NULL != timer);
+  __BR_ASSERT(NULL != name);
+  __BR_ASSERT(NULL != callback);
+#if (1U == __BR_CHECK_FUNC_PARAMETERS)
+  if ((NULL != timer) && (NULL != name) && (NULL != callback))
+#endif
+  {
+    __BR_ENTER_CRITICAL();
+
+    /* Initialize the timer object. */
+    __BR_ObjectInit(&(timer->parent), BR_OBJ_TYPE_TIMER, name);
+    /* Initialize the timer attributes. */
+    if (BR_TIMER_FLAG_SEC == BITS_GET(flags, __BR_TIMER_FLAG_BASE))
+    {
+      time *= 1000U;
+    }
+    __BR_ListInit(&(timer->node));
+    timer->counter = 0U;
+    timer->reload = time;
+    timer->callbak = callback;
+    timer->param = param;
+    timer->flags = flags;
+
+    __BR_EXIT_CRITICAL();
+  }
+#if (1U == __BR_CHECK_FUNC_PARAMETERS)
+  else
+  {
+    ret = E_INVAL;
+  }
+#endif
+
+  return ret;
+}
+
+/**
  * @brief Create a new timer resource.
  * @param [in] name The timer name.
  * @param [in] time The value to count down to zero before calling the callback.

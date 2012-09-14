@@ -43,6 +43,7 @@ static void __BR_NvicConfig(void);
  */
 static void __BR_RccConfig(void)
 {
+#if 0
   /* Configure the clock tree. */
   RCC->CFGR = (config->adcPre | config->ahbPre | config->apb1Pre |
                config->apb2Pre | config->mcoConf | config->pllMul |
@@ -89,6 +90,7 @@ static void __BR_RccConfig(void)
     /* Disable access to BDCR, BKP and RTC. */
     BITS_CLEAR(PWR->CR, PWR_CR_DBP);
   }
+#endif
 }
 
 /**

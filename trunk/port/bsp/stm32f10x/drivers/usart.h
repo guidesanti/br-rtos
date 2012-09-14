@@ -33,12 +33,33 @@
 /* C O N S T A N T ,  M A C R O  A N D  T Y P E  D E F I N I T I O N S        */
 /******************************************************************************/
 
-#define USART_CMD_SET_BAUDRATE  (0U)
-#define USART_CMD_SET_WORDLEN   (1U)
-#define USART_CMD_SET_STOPBITS  (2U)
-#define USART_CMD_SET_PARITY    (3U)
-#define USART_CMD_SET_HW_FL     (4U)
-#define USART_CMD_SET_MODE      (5U)
+/* USART control commands. */
+#define USART_CMD_SET_BAUDRATE      (0U)
+#define USART_CMD_SET_WORDLEN       (1U)
+#define USART_CMD_SET_STOPBITS      (2U)
+#define USART_CMD_SET_PARITY        (3U)
+#define USART_CMD_SET_HW_FL         (4U)
+
+/* Word length. */
+#define USART_WORD_LEN_8            (0U)
+#define USART_WORD_LEN_9            (1U)
+
+/* Stop bits. */
+#define USART_STOP_BITS_0_5         (0U)
+#define USART_STOP_BITS_1           (1U)
+#define USART_STOP_BITS_1_5         (2U)
+#define USART_STOP_BITS_2           (3U)
+
+/* Parity. */
+#define USART_PARITY_NO             (0U)
+#define USART_PARITY_EVEN           (1U)
+#define USART_PARITY_ODD            (2U)
+
+/* Hardware flow control. */
+#define USART_HW_FLOW_CTRL_NONE     (0U)
+#define USART_HW_FLOW_CTRL_RTS      (1U)
+#define USART_HW_FLOW_CTRL_CTS      (2U)
+#define USART_HW_FLOW_CTRL_RTS_CTS  (3U)
 
 
 /******************************************************************************/

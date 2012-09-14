@@ -34,7 +34,7 @@
 /******************************************************************************/
 /* F U N C T I O N S  P R O T O T Y P E S                                     */
 /******************************************************************************/
-extern void BR_AppInit(void);
+extern void AppInit(void);
 static void __BR_StartUp(void);
 
 /******************************************************************************/
@@ -68,7 +68,7 @@ static void __BR_StartUp(void)
   timerTask = BR_TaskCreate("Timer Task", __BR_TimerTask, 40U, NULL, BR_TASK_PRIORITY_CRITICAL);
 
   /* Application initialization. */
-  BR_AppInit();
+  AppInit();
 
   /* Start the scheduler. */
   __BR_TaskStartScheduler();

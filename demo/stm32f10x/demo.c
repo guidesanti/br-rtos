@@ -162,6 +162,8 @@ static void MyTask1(void)
 //    BR_DeviceControl(flash, AT25DB161D_IOCTL_GET_MANUFACTURE_ID, buffer);
 
     Print("Task 1\r\n");
+    
+    printf("Testando ...");
 
     BR_TaskWait(1U);
   }
@@ -172,7 +174,7 @@ static void MyTask1(void)
 /* P U B L I C  F U N C T I O N S                                             */
 /******************************************************************************/
 
-void BR_AppInit(void)
+void AppInit(void)
 {
   /* Looking for devices. */
   rtc = BR_DeviceFind("rtc");

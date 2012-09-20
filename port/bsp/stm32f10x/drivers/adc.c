@@ -29,12 +29,11 @@
 #include "device.h"
 #include "stm32f10x_rcc.h"
 #include "stm32f10x_gpio.h"
+#include "stm32f10x_adc.h"
 
 /******************************************************************************/
 /* C O N S T A N T ,  M A C R O  A N D  T Y P E  D E F I N I T I O N S        */
 /******************************************************************************/
-
-#define USART_DEFAULT_RX_BUFFER_SIZE  (100U)
 
 #ifndef ADC1_DEV_NAME
 #define ADC1_DEV_NAME "adc1"
@@ -74,16 +73,15 @@ static void __AdcRccConfig(void);
 static void __AdcGpioConfig(void);
 static void __AdcNvicConfig(void);
 static void __AdcDmaConfig(void);
-static void __AdcIsr(UsartCtrl* usartCtrl);
+static void __AdcIsr(ADC_TypeDef* adc);
 
 
 /******************************************************************************/
 /* V A R I A B L E S                                                          */
 /******************************************************************************/
 
-static uint16_t adc1Buffer[ADC1_BUFFER_SIZE];
-
-static const BR_Device_t adc1 =
+#if (__BR_BSP_STM32F10X_USE_ADC1)
+static BR_Device_t adc1 =
 {
     .type     = BR_DEVICE_TYPE_ADC,
     .init     = NULL,
@@ -94,10 +92,10 @@ static const BR_Device_t adc1 =
     .control  = __AdcControl,
     .custom   = (void*)ADC1,
 };
+#endif
 
-static uint16_t adc2Buffer[ADC1_BUFFER_SIZE];
-
-static const BR_Device_t adc2 =
+#if (__BR_BSP_STM32F10X_USE_ADC2)
+static BR_Device_t adc2 =
 {
     .type     = BR_DEVICE_TYPE_ADC,
     .init     = NULL,
@@ -108,10 +106,10 @@ static const BR_Device_t adc2 =
     .control  = __AdcControl,
     .custom   = (void*)ADC2,
 };
+#endif
 
-static uint16_t adc3Buffer[ADC1_BUFFER_SIZE];
-
-static const BR_Device_t adc3 =
+#if (__BR_BSP_STM32F10X_USE_ADC3)
+static BR_Device_t adc3 =
 {
     .type     = BR_DEVICE_TYPE_ADC,
     .init     = NULL,
@@ -122,8 +120,9 @@ static const BR_Device_t adc3 =
     .control  = __AdcControl,
     .custom   = (void*)ADC3,
 };
+#endif
 
-static const AdcGpioMap_t adcGpioMap[] =
+static const AdcGpioMap_t adcGpioMap[45U] =
 {
     /*  Use Flag                            Port    Pin         */
 
@@ -189,54 +188,107 @@ static const AdcGpioMap_t adcGpioMap[] =
 
 static BR_Err_t __AdcOpen(BR_Device_t* device, uint8_t flags)
 {
-#warning "TODO"
-//  UsartCtrl* usartCtrl = (UsartCtrl*)device->custom;
-//
-//  __BR_ASSERT(NULL != device);
-//
-//  USART_Cmd(usartCtrl->usart, ENABLE);
-//
-//  return E_OK;
+  ADC_TypeDef* adc = (ADC_TypeDef*)device->custom;
+
+  __BR_ASSERT(NULL != device);
+
+  /* Enable the ADC peripheral. */
+  ADC_Cmd(adc, ENABLE);
+  /* Calibrate the ADC peripheral. */
+  ADC_StartCalibration(adc);
+  while (SET == ADC_GetCalibrationStatus(adc)) { }
+
+  return E_OK;
 }
 
 static BR_Err_t __AdcClose(BR_Device_t* device)
 {
-#warning "TODO"
-//  UsartCtrl* usartCtrl = (UsartCtrl*)device->custom;
-//
-//  __BR_ASSERT(NULL != device);
-//
-//  USART_Cmd(usartCtrl->usart, DISABLE);
-//
-//  return E_OK;
+  ADC_TypeDef* adc = (ADC_TypeDef*)device->custom;
+
+  __BR_ASSERT(NULL != device);
+
+  ADC_Cmd(adc, DISABLE);
+
+  return E_OK;
 }
 
 static uint32_t __AdcRead(BR_Device_t* device, uint32_t address, uint8_t* buffer, uint32_t nBytes)
 {
-#warning "TODO"
-//  UsartCtrl* usartCtrl = (UsartCtrl*)device->custom;
-//  uint32_t bytesRead = 0U;
-//
-//  /* Check the parameters. */
-//  __BR_ASSERT(NULL != device);
-//  __BR_ASSERT(NULL != buffer);
-//
-//  while ((usartCtrl->rxBufferIni != usartCtrl->rxBufferEnd) &&
-//         (bytesRead < nBytes))
-//  {
-//    buffer[bytesRead] = usartCtrl->rxBuffer[usartCtrl->rxBufferIni];
-//    usartCtrl->rxBufferIni = ((usartCtrl->rxBufferIni + 1U) % usartCtrl->rxBufferSize);
-//    bytesRead++;
-//  }
-//
-//  return bytesRead;
+  ADC_TypeDef* adc = (ADC_TypeDef*)device->custom;
+  volatile uint16_t conversionValue = 0U;
+
+
+  __BR_ASSERT(NULL != device);
+  __BR_ASSERT(NULL != buffer);
+
+  /* Convert the address to channel number. */
+  address /= 2U;
+  /* Configure the channel to convert. */
+  ADC_RegularChannelConfig(adc, address, 1U, ADC_SampleTime_1Cycles5);
+  /* Clear the EOC flag. */
+  ADC_ClearFlag(adc, ADC_FLAG_EOC);
+  /* Start the conversion. */
+  ADC_SoftwareStartConvCmd(adc, ENABLE);
+  /* Wait for the end of conversion. */
+  while (SET == ADC_GetFlagStatus(adc, ADC_FLAG_EOC)) { }
+  /* Get the conversion value. */
+  conversionValue = ADC_GetConversionValue(adc);
+  buffer[0U] = U16_LSB(conversionValue);
+  buffer[1U] = U16_MSB(conversionValue);
+
+  return 2U;
 }
 
 static BR_Err_t __AdcControl(BR_Device_t* device, uint8_t cmd, void* param)
 {
-#warning "TODO"
+  BR_Err_t ret = E_OK;
+  ADC_TypeDef* adc = (ADC_TypeDef*)device->custom;
 
-  return E_ENOSYS;
+  __BR_ASSERT(NULL != device);
+
+  switch (cmd)
+  {
+    case ADC_CTRL_SET_DATA_ALIGN:
+    {
+      uint8_t aux = *((uint8_t*)param);
+      if (ADC_DATA_ALIGN_RIGHT == aux)
+      {
+        BITS_CLEAR(adc->CR2, ADC_CR2_ALIGN);
+      }
+      else
+      {
+        BITS_SET(adc->CR2, ADC_CR2_ALIGN);
+      }
+    }
+    break;
+
+    case ADC_CTRL_SET_CH_SAMPLE_TIME:
+    {
+      BR_AdcChannelSampleTime_t* aux = ((BR_AdcChannelSampleTime_t*)param);
+      uint32_t bitMask = (0x07U << (3U * (aux->channel % 10U)));
+
+      aux->sampleTime &= 0x07U;
+      if (aux->channel < 10U)
+      {
+        BITS_CLEAR(adc->SMPR2, bitMask);
+        adc->SMPR2 |= (aux->sampleTime << (3U * (aux->channel % 10U)));
+      }
+      else if (aux->channel < 16U)
+      {
+        BITS_CLEAR(adc->SMPR1, bitMask);
+        adc->SMPR1 |= (aux->sampleTime << (3U * (aux->channel % 10U)));
+      }
+    }
+    break;
+
+    default:
+    {
+      ret = E_ERROR;
+    }
+    break;
+  }
+
+  return ret;
 }
 
 static void __AdcRccConfig(void)
@@ -271,7 +323,7 @@ static void __AdcGpioConfig(void)
   gpioInitSt.GPIO_Mode = GPIO_Mode_AIN;
   gpioInitSt.GPIO_Speed = GPIO_Speed_2MHz;
 
-  for (index = 0U; index < sizeof(adcGpioMap); index++)
+  for (index = 0U; index < 45U; index++)
   {
     if (adcGpioMap[index].use)
     {
@@ -302,11 +354,10 @@ static void __AdcNvicConfig(void)
 
 static void __AdcDmaConfig(void)
 {
-#warning "TODO"
-  // TODO
+  /* DMA is not used by this device driver. */
 }
 
-static void __AdcIsr(UsartCtrl* usartCtrl)
+static void __AdcIsr(ADC_TypeDef* adc)
 {
 #warning "TODO"
   // TODO
@@ -314,7 +365,8 @@ static void __AdcIsr(UsartCtrl* usartCtrl)
 
 void __BR_AdcInit(void)
 {
-#warning "TODO"
+  ADC_InitTypeDef adcInit;
+
   /* RCC configuration. */
   __AdcRccConfig();
 
@@ -327,17 +379,39 @@ void __BR_AdcInit(void)
   /* DMA configuration. */
   __AdcDmaConfig();
 
+  adcInit.ADC_Mode = ADC_Mode_Independent;
+  adcInit.ADC_ScanConvMode = DISABLE;
+  adcInit.ADC_ContinuousConvMode = DISABLE;
+  adcInit.ADC_ExternalTrigConv = ADC_ExternalTrigConv_None;
+  adcInit.ADC_DataAlign = ADC_DataAlign_Right;
+  adcInit.ADC_NbrOfChannel = 1U;
+
   /* ------------------------------------------------------------------------ */
   /* ADC1                                                                     */
   /* ------------------------------------------------------------------------ */
-#warning "TODO"
-//  USART_DeInit(USART1);
-//  USART_Init(USART1, &usartInitSt);
-//  USART_ClockInit(USART1, &usartClockInitSt);
-//  /* Register the usart1 device driver. */
-//  BR_DeviceRegister(USART1_DEV_NAME, &usart1);
-//  /* Enable interrupts. */
-//  USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
+#if (__BR_BSP_STM32F10X_USE_ADC1)
+  ADC_DeInit(ADC1);
+  ADC_Init(ADC1, &adcInit);
+  BR_DeviceRegister(ADC1_DEV_NAME, (BR_Device_t*)&adc1);
+#endif
+
+  /* ------------------------------------------------------------------------ */
+  /* ADC2                                                                     */
+  /* ------------------------------------------------------------------------ */
+#if (__BR_BSP_STM32F10X_USE_ADC2)
+  ADC_DeInit(ADC2);
+  ADC_Init(ADC2, &adcInit);
+  BR_DeviceRegister(ADC2_DEV_NAME, (BR_Device_t*)&adc2);
+#endif
+
+  /* ------------------------------------------------------------------------ */
+  /* ADC3                                                                     */
+  /* ------------------------------------------------------------------------ */
+#if (__BR_BSP_STM32F10X_USE_ADC3)
+  ADC_DeInit(ADC3);
+  ADC_Init(ADC3, &adcInit);
+  BR_DeviceRegister(ADC3_DEV_NAME, (BR_Device_t*)&adc3);
+#endif
 }
 
 /**
@@ -346,7 +420,6 @@ void __BR_AdcInit(void)
 void __BR_AdcIsr1_2(void)
 {
 #warning "TODO"
-  //__AdcIsr(&adc1_2Ctrl);
 }
 
 /**
@@ -355,7 +428,6 @@ void __BR_AdcIsr1_2(void)
 void __BR_AdcIsr3(void)
 {
 #warning "TODO"
-  //__AdcIsr(&adc3Ctrl);
 }
 
 

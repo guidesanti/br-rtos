@@ -27,6 +27,7 @@
 #include "usart.h"
 #include "device.h"
 #include "port.h"
+#include "board_config.h"
 #include "misc.h"
 #include "stm32f10x_gpio.h"
 #include "stm32f10x_rcc.h"
@@ -53,6 +54,16 @@
 #warning "USART3_DEV_NAME is not defined, assuming default value 'usart3'"
 #endif
 
+#ifndef UART4_DEV_NAME
+#define UART4_DEV_NAME "uart4"
+#warning "UART4_DEV_NAME is not defined, assuming default value 'uart4'"
+#endif
+
+#ifndef UART5_DEV_NAME
+#define UART5_DEV_NAME "uart5"
+#warning "UART5_DEV_NAME is not defined, assuming default value 'uart5'"
+#endif
+
 #ifndef USART1_RX_BUFFER_SIZE
 #define USART1_RX_BUFFER_SIZE USART_DEFAULT_RX_BUFFER_SIZE
 #warning "USART1_RX_BUFFER_SIZE is not defined, assuming default USART_DEFAULT_RX_BUFFER_SIZE"
@@ -66,6 +77,16 @@
 #ifndef USART3_RX_BUFFER_SIZE
 #define USART3_RX_BUFFER_SIZE USART_DEFAULT_RX_BUFFER_SIZE
 #warning "USART3_RX_BUFFER_SIZE is not defined, assuming default USART_DEFAULT_RX_BUFFER_SIZE"
+#endif
+
+#ifndef UART4_RX_BUFFER_SIZE
+#define UART4_RX_BUFFER_SIZE USART_DEFAULT_RX_BUFFER_SIZE
+#warning "UART4_RX_BUFFER_SIZE is not defined, assuming default USART_DEFAULT_RX_BUFFER_SIZE"
+#endif
+
+#ifndef UART5_RX_BUFFER_SIZE
+#define UART5_RX_BUFFER_SIZE USART_DEFAULT_RX_BUFFER_SIZE
+#warning "UART5_RX_BUFFER_SIZE is not defined, assuming default USART_DEFAULT_RX_BUFFER_SIZE"
 #endif
 
 typedef struct
@@ -97,6 +118,8 @@ static void __UsartIsr(UsartCtrl* usartCtrl);
 /* V A R I A B L E S                                                          */
 /******************************************************************************/
 
+#if (__BR_BSP_STM32F10X_USE_USART1)
+
 static uint8_t usart1RxBuffer[USART1_RX_BUFFER_SIZE];
 
 static UsartCtrl usart1Ctrl =
@@ -119,6 +142,10 @@ static BR_Device_t usart1 =
     .control  = __UsartControl,
     .custom   = (void*)&usart1Ctrl,
 };
+
+#endif
+
+#if (__BR_BSP_STM32F10X_USE_USART2)
 
 static uint8_t usart2RxBuffer[USART2_RX_BUFFER_SIZE];
 
@@ -143,6 +170,10 @@ static BR_Device_t usart2 =
     .custom   = (void*)&usart2Ctrl,
 };
 
+#endif
+
+#if (__BR_BSP_STM32F10X_USE_USART3)
+
 static uint8_t usart3RxBuffer[USART3_RX_BUFFER_SIZE];
 
 static UsartCtrl usart3Ctrl =
@@ -165,6 +196,62 @@ static BR_Device_t usart3 =
     .control  = __UsartControl,
     .custom   = (void*)&usart3Ctrl,
 };
+
+#endif
+
+#if (__BR_BSP_STM32F10X_USE_UART4)
+
+static uint8_t uart4RxBuffer[UART4_RX_BUFFER_SIZE];
+
+static UsartCtrl uart4Ctrl =
+{
+    .usart = USART4,
+    .rxBuffer = usart4RxBuffer,
+    .rxBufferIni = 0U,
+    .rxBufferEnd = 0U,
+    .rxBufferSize = USART4_RX_BUFFER_SIZE,
+};
+
+static BR_Device_t usart4 =
+{
+    .type     = BR_DEVICE_TYPE_CHAR,
+    .init     = NULL,
+    .open     = __UsartOpen,
+    .close    = __UsartClose,
+    .read     = __UsartRead,
+    .write    = __UsartWrite,
+    .control  = __UsartControl,
+    .custom   = (void*)&uart4Ctrl,
+};
+
+#endif
+
+#if (__BR_BSP_STM32F10X_USE_UART5)
+
+static uint8_t uart5RxBuffer[UART5_RX_BUFFER_SIZE];
+
+static UsartCtrl uart5Ctrl =
+{
+    .usart = USART5,
+    .rxBuffer = usart5RxBuffer,
+    .rxBufferIni = 0U,
+    .rxBufferEnd = 0U,
+    .rxBufferSize = USART5_RX_BUFFER_SIZE,
+};
+
+static BR_Device_t usart5 =
+{
+    .type     = BR_DEVICE_TYPE_CHAR,
+    .init     = NULL,
+    .open     = __UsartOpen,
+    .close    = __UsartClose,
+    .read     = __UsartRead,
+    .write    = __UsartWrite,
+    .control  = __UsartControl,
+    .custom   = (void*)&uart5Ctrl,
+};
+
+#endif
 
 
 /******************************************************************************/
@@ -306,6 +393,7 @@ static void __UsartGpioConfig(void)
   /* ------------------------------------------------------------------------ */
   /* USART1                                                                   */
   /* ------------------------------------------------------------------------ */
+#if (__BR_BSP_STM32F10X_USE_USART1)
   /* TX pin. */
   gpioInitSt.GPIO_Pin = GPIO_Pin_9;
   gpioInitSt.GPIO_Mode = GPIO_Mode_AF_PP;
@@ -316,10 +404,12 @@ static void __UsartGpioConfig(void)
   gpioInitSt.GPIO_Mode = GPIO_Mode_IN_FLOATING;
   gpioInitSt.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOA, &gpioInitSt);
+#endif
 
   /* ------------------------------------------------------------------------ */
   /* USART2                                                                   */
   /* ------------------------------------------------------------------------ */
+#if (__BR_BSP_STM32F10X_USE_USART2)
   /* TX pin. */
   gpioInitSt.GPIO_Pin = GPIO_Pin_2;
   gpioInitSt.GPIO_Mode = GPIO_Mode_AF_PP;
@@ -330,10 +420,12 @@ static void __UsartGpioConfig(void)
   gpioInitSt.GPIO_Mode = GPIO_Mode_IN_FLOATING;
   gpioInitSt.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOA, &gpioInitSt);
+#endif
 
   /* ------------------------------------------------------------------------ */
   /* USART3                                                                   */
   /* ------------------------------------------------------------------------ */
+#if (__BR_BSP_STM32F10X_USE_USART3)
   /* TX pin. */
   gpioInitSt.GPIO_Pin = GPIO_Pin_10;
   gpioInitSt.GPIO_Mode = GPIO_Mode_AF_PP;
@@ -344,6 +436,39 @@ static void __UsartGpioConfig(void)
   gpioInitSt.GPIO_Mode = GPIO_Mode_IN_FLOATING;
   gpioInitSt.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOB, &gpioInitSt);
+#endif
+
+  /* ------------------------------------------------------------------------ */
+  /* UART4                                                                    */
+  /* ------------------------------------------------------------------------ */
+#if (__BR_BSP_STM32F10X_USE_UART4)
+  /* TX pin. */
+  gpioInitSt.GPIO_Pin = GPIO_Pin_10;
+  gpioInitSt.GPIO_Mode = GPIO_Mode_AF_PP;
+  gpioInitSt.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_Init(GPIOC, &gpioInitSt);
+  /* RX pin. */
+  gpioInitSt.GPIO_Pin = GPIO_Pin_11;
+  gpioInitSt.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+  gpioInitSt.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_Init(GPIOC, &gpioInitSt);
+#endif
+
+  /* ------------------------------------------------------------------------ */
+  /* UART5                                                                    */
+  /* ------------------------------------------------------------------------ */
+#if (__BR_BSP_STM32F10X_USE_UART5)
+  /* TX pin. */
+  gpioInitSt.GPIO_Pin = GPIO_Pin_12;
+  gpioInitSt.GPIO_Mode = GPIO_Mode_AF_PP;
+  gpioInitSt.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_Init(GPIOC, &gpioInitSt);
+  /* RX pin. */
+  gpioInitSt.GPIO_Pin = GPIO_Pin_2;
+  gpioInitSt.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+  gpioInitSt.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_Init(GPIOD, &gpioInitSt);
+#endif
 }
 
 static void __UsartNvicConfig(void)
@@ -357,20 +482,42 @@ static void __UsartNvicConfig(void)
   /* ------------------------------------------------------------------------ */
   /* USART1                                                                   */
   /* ------------------------------------------------------------------------ */
+#if (__BR_BSP_STM32F10X_USE_USART1)
   nvicInitSt.NVIC_IRQChannel = USART1_IRQn;
   NVIC_Init(&nvicInitSt);
+#endif
 
   /* ------------------------------------------------------------------------ */
   /* USART2                                                                   */
   /* ------------------------------------------------------------------------ */
+#if (__BR_BSP_STM32F10X_USE_USART2)
   nvicInitSt.NVIC_IRQChannel = USART2_IRQn;
   NVIC_Init(&nvicInitSt);
+#endif
 
   /* ------------------------------------------------------------------------ */
   /* USART3                                                                   */
   /* ------------------------------------------------------------------------ */
+#if (__BR_BSP_STM32F10X_USE_USART3)
   nvicInitSt.NVIC_IRQChannel = USART3_IRQn;
   NVIC_Init(&nvicInitSt);
+#endif
+
+  /* ------------------------------------------------------------------------ */
+  /* UART4                                                                    */
+  /* ------------------------------------------------------------------------ */
+#if (__BR_BSP_STM32F10X_USE_UART4)
+  nvicInitSt.NVIC_IRQChannel = UART4_IRQn;
+  NVIC_Init(&nvicInitSt);
+#endif
+
+  /* ------------------------------------------------------------------------ */
+  /* UART5                                                                    */
+  /* ------------------------------------------------------------------------ */
+#if (__BR_BSP_STM32F10X_USE_UART5)
+  nvicInitSt.NVIC_IRQChannel = UART5_IRQn;
+  NVIC_Init(&nvicInitSt);
+#endif
 }
 
 static void __UsartDmaConfig(void)
@@ -428,6 +575,7 @@ void __BR_UsartInit(void)
   /* ------------------------------------------------------------------------ */
   /* USART1                                                                   */
   /* ------------------------------------------------------------------------ */
+#if (__BR_BSP_STM32F10X_USE_USART1)
   USART_DeInit(USART1);
   USART_Init(USART1, &usartInitSt);
   USART_ClockInit(USART1, &usartClockInitSt);
@@ -435,28 +583,57 @@ void __BR_UsartInit(void)
   BR_DeviceRegister(USART1_DEV_NAME, &usart1);
   /* Enable interrupts. */
   USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
+#endif
 
   /* ------------------------------------------------------------------------ */
   /* USART2                                                                   */
   /* ------------------------------------------------------------------------ */
+#if (__BR_BSP_STM32F10X_USE_USART2)
   USART_DeInit(USART2);
   USART_Init(USART2, &usartInitSt);
   USART_ClockInit(USART2, &usartClockInitSt);
-  /* Register the usart1 device driver. */
+  /* Register the usart2 device driver. */
   BR_DeviceRegister(USART2_DEV_NAME, &usart2);
   /* Enable interrupts. */
   USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
+#endif
 
   /* ------------------------------------------------------------------------ */
-  /* USART2                                                                   */
+  /* USART3                                                                   */
   /* ------------------------------------------------------------------------ */
+#if (__BR_BSP_STM32F10X_USE_USART3)
   USART_DeInit(USART3);
   USART_Init(USART3, &usartInitSt);
   USART_ClockInit(USART3, &usartClockInitSt);
-  /* Register the usart1 device driver. */
+  /* Register the usart3 device driver. */
   BR_DeviceRegister(USART3_DEV_NAME, &usart3);
   /* Enable interrupts. */
   USART_ITConfig(USART3, USART_IT_RXNE, ENABLE);
+#endif
+
+  /* ------------------------------------------------------------------------ */
+  /* USART4                                                                   */
+  /* ------------------------------------------------------------------------ */
+#if (__BR_BSP_STM32F10X_USE_UART4)
+  USART_DeInit(USART4);
+  USART_Init(USART4, &usartInitSt);
+  /* Register the usart4 device driver. */
+  BR_DeviceRegister(USART4_DEV_NAME, &usart4);
+  /* Enable interrupts. */
+  USART_ITConfig(USART4, USART_IT_RXNE, ENABLE);
+#endif
+
+  /* ------------------------------------------------------------------------ */
+  /* USART5                                                                   */
+  /* ------------------------------------------------------------------------ */
+#if (__BR_BSP_STM32F10X_USE_UART5)
+  USART_DeInit(USART5);
+  USART_Init(USART5, &usartInitSt);
+  /* Register the usart5 device driver. */
+  BR_DeviceRegister(USART5_DEV_NAME, &usart5);
+  /* Enable interrupts. */
+  USART_ITConfig(USART5, USART_IT_RXNE, ENABLE);
+#endif
 }
 
 /**
@@ -464,7 +641,9 @@ void __BR_UsartInit(void)
  */
 void __BR_UsartIsr1(void)
 {
+#if (__BR_BSP_STM32F10X_USE_USART1)
   __UsartIsr(&usart1Ctrl);
+#endif
 }
 
 /**
@@ -472,7 +651,9 @@ void __BR_UsartIsr1(void)
  */
 void __BR_UsartIsr2(void)
 {
+#if (__BR_BSP_STM32F10X_USE_USART2)
   __UsartIsr(&usart2Ctrl);
+#endif
 }
 
 /**
@@ -480,7 +661,29 @@ void __BR_UsartIsr2(void)
  */
 void __BR_UsartIsr3(void)
 {
+#if (__BR_BSP_STM32F10X_USE_USART3)
   __UsartIsr(&usart3Ctrl);
+#endif
+}
+
+/**
+ * @brief UART4 interrupt service routine.
+ */
+void __BR_UartIsr4(void)
+{
+#if (__BR_BSP_STM32F10X_USE_UART4)
+  __UsartIsr(&usart4Ctrl);
+#endif
+}
+
+/**
+ * @brief UART5 interrupt service routine.
+ */
+void __BR_UartIsr5(void)
+{
+#if (__BR_BSP_STM32F10X_USE_UART5)
+  __UsartIsr(&usart5Ctrl);
+#endif
 }
 
 

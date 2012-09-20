@@ -169,6 +169,10 @@ BR_Device_t* BR_DeviceFind(const char* name)
     {
       break;
     }
+    else
+    {
+      dev = NULL;
+    }
   }
 
   __BR_EXIT_CRITICAL();

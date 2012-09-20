@@ -72,8 +72,8 @@ void SysTick_Handler(void);
 #define SDIO_IRQHandler             (0U)
 #define TIM5_IRQHandler             (0U)
 #define SPI3_IRQHandler             __BR_Spi3Isr
-#define UART4_IRQHandler            (0U)
-#define UART5_IRQHandler            (0U)
+#define UART4_IRQHandler            __BR_UartIsr4
+#define UART5_IRQHandler            __BR_UartIsr5
 #define TIM6_IRQHandler             (0U)
 #define TIM7_IRQHandler             (0U)
 #define DMA2_Channel1_IRQHandler    (0U)

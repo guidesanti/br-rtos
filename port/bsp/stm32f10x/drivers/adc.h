@@ -24,22 +24,12 @@
  * @{
  *
  * This is a generic device driver for STM32F10x BSP.
- * It supports single and continuous conversions over a group of 16 channels
- * for each ADC device.
- * The supported device operations for an ADC device are:
- * - open (must be executed on every ADC device before using it)
- * - close (may be called when there is no need to use the ADC device)
- * - control (set/get configuration parameters)
- * - read (read last converted channel values
- * - write (unsupported, has no effect over ADC devices)
- *
- * This driver will always covert a sequence of channels defined by a group.
- * The group may have 1 to 16 channels and may be converted in single mode or
- * in continuous mode.
- * The ADC device driver has an internal buffer to store the last converted
- * value for each ADC channel of the selected group.
- * These values may be read using the BR_DeviceRead() operation passing a valid
- * ADC device pointer.
+ * It supports just single conversion over a single ADC channel through the
+ * BR_DeviceRead() operation.
+ * Every call to BR_DeviceRead() will start the ADC channel conversion and return
+ * just after the end of conversion. The time to complete a conversion will depends
+ * on the channel sample time that may be configured through BR_DeviceControl()
+ * operation using ADC_CTRL_SET_CH_SAMPLE_TIME control command.
  *
  * The address available for read operation are:
  * 0x00: Channel 0
@@ -58,14 +48,6 @@
  * 0x1A: Channel 13
  * 0x1C: Channel 14
  * 0x1E: Channel 15
- *
- * Conversion Modes
- * The generic ADC driver supports the following conversion modes:
- * a) Single: the selected group of channels will be converted once, after a
- *    control command ADC_CTRL_START_CONV has been issued.
- * b) Continuous: the selected group of channels will be converted continuously,
- *    after a control command ADC_CTRL_START_CONV has been issued and will stop
- *    the conversion just after a ADC_CTRL_STOP_CONV control command.
  *
  * Data Alignment
  * Each converted value is 16 bits long. The value alignment may be chosen to
@@ -86,23 +68,21 @@
  * - ADC_CH_SAMPLE_TIME_71_5  -> 71,5 cycles
  * - ADC_CH_SAMPLE_TIME_239_5 -> 239,5 cycles
  *
+ * Device Operations
+ * The supported device operations for an ADC device are:
+ * - open (must be executed on every ADC device before using it)
+ * - close (may be called when there is no need to use the ADC device)
+ * - control (set/get configuration parameters)
+ * - read (read a channel converted value)
+ * - write (unsupported, has no effect over ADC devices)
+ *
  * Control Commands and Parameter Format:
  * =============================================================================
  * Control Command              | Parameter Format
  * =============================================================================
- * ADC_CTRL_SET_CONV_MODE       | uint8_t
+ * ADC_CTRL_SET_DATA_ALIGN      | uint8_t*
  * -----------------------------------------------------------------------------
- * ADC_CTRL_SET_DATA_ALIGN      | uint8_t
- * -----------------------------------------------------------------------------
- * ADC_CTRL_SET_CH_SAMPLE_TIME  | uint8_t
- * -----------------------------------------------------------------------------
- * ADC_CTRL_SET_CONV_GROUP      | uint8_t[16]
- * -----------------------------------------------------------------------------
- * ADC_CTRL_SET_CONV_GROUP_LEN  | uint8_t
- * -----------------------------------------------------------------------------
- * ADC_CTRL_START_CONV          | NULL
- * -----------------------------------------------------------------------------
- * ADC_CTRL_STOP_CONV           | NULL
+ * ADC_CTRL_SET_CH_SAMPLE_TIME  | BR_AdcChannelSampleTime_t*
  * =============================================================================
  */
 
@@ -116,17 +96,8 @@
 /******************************************************************************/
 
 /* ADC control commands. */
-#define ADC_CTRL_SET_CONV_MODE      (0U)  /**< Set the conversion mode. */
-#define ADC_CTRL_SET_DATA_ALIGN     (1U)  /**< Set the data alignment. */
-#define ADC_CTRL_SET_CH_SAMPLE_TIME (2U)  /**< Set the channel sample time. */
-#define ADC_CTRL_SET_CONV_GROUP     (3U)  /**< Set the conversion group sequence. */
-#define ADC_CTRL_SET_CONV_GROUP_LEN (4U)  /**< Set the conversion group length. */
-#define ADC_CTRL_START_CONV         (5U)  /**< Start conversion. */
-#define ADC_CTRL_STOP_CONV          (6U)  /**< Stop conversion. */
-
-/* Conversion modes. */
-#define ADC_CONV_MODE_SINGLE        (0U)  /**< Single conversion mode. */
-#define ADC_CONV_MODE_CONT          (1U)  /**< Continuous conversion mode. */
+#define ADC_CTRL_SET_DATA_ALIGN     (0U)  /**< Set the data alignment. */
+#define ADC_CTRL_SET_CH_SAMPLE_TIME (1U)  /**< Set the channel sample time. */
 
 /* Data alignment. */
 #define ADC_DATA_ALIGN_RIGHT        (0U)  /**< Data is right aligned. */
@@ -143,22 +114,46 @@
 #define ADC_CH_SAMPLE_TIME_239_5    (7U)  /**< 239,5 cycles. */
 
 /* Read operation addresses. */
-#define ADC_ADDR_CH_0   (0x00U) /* adc Channel 0  */
-#define ADC_ADDR_CH_1   (0x02U) /* adc Channel 1  */
-#define ADC_ADDR_CH_2   (0x04U) /* adc Channel 2  */
-#define ADC_ADDR_CH_3   (0x06U) /* adc Channel 3  */
-#define ADC_ADDR_CH_4   (0x08U) /* adc Channel 4  */
-#define ADC_ADDR_CH_5   (0x0AU) /* adc Channel 5  */
-#define ADC_ADDR_CH_6   (0x0CU) /* adc Channel 6  */
-#define ADC_ADDR_CH_7   (0x0EU) /* adc Channel 7  */
-#define ADC_ADDR_CH_8   (0x10U) /* adc Channel 8  */
-#define ADC_ADDR_CH_9   (0x12U) /* adc Channel 9  */
-#define ADC_ADDR_CH_10  (0x14U) /* adc Channel 10 */
-#define ADC_ADDR_CH_11  (0x16U) /* adc Channel 11 */
-#define ADC_ADDR_CH_12  (0x18U) /* adc Channel 12 */
-#define ADC_ADDR_CH_13  (0x1AU) /* adc Channel 13 */
-#define ADC_ADDR_CH_14  (0x1CU) /* adc Channel 14 */
-#define ADC_ADDR_CH_15  (0x1EU) /* adc Channel 15 */
+#define ADC_ADDR_CH_0   (0x00U) /* ADC Channel 0  */
+#define ADC_ADDR_CH_1   (0x02U) /* ADC Channel 1  */
+#define ADC_ADDR_CH_2   (0x04U) /* ADC Channel 2  */
+#define ADC_ADDR_CH_3   (0x06U) /* ADC Channel 3  */
+#define ADC_ADDR_CH_4   (0x08U) /* ADC Channel 4  */
+#define ADC_ADDR_CH_5   (0x0AU) /* ADC Channel 5  */
+#define ADC_ADDR_CH_6   (0x0CU) /* ADC Channel 6  */
+#define ADC_ADDR_CH_7   (0x0EU) /* ADC Channel 7  */
+#define ADC_ADDR_CH_8   (0x10U) /* ADC Channel 8  */
+#define ADC_ADDR_CH_9   (0x12U) /* ADC Channel 9  */
+#define ADC_ADDR_CH_10  (0x14U) /* ADC Channel 10 */
+#define ADC_ADDR_CH_11  (0x16U) /* ADC Channel 11 */
+#define ADC_ADDR_CH_12  (0x18U) /* ADC Channel 12 */
+#define ADC_ADDR_CH_13  (0x1AU) /* ADC Channel 13 */
+#define ADC_ADDR_CH_14  (0x1CU) /* ADC Channel 14 */
+#define ADC_ADDR_CH_15  (0x1EU) /* ADC Channel 15 */
+
+/* List of ADC channels. */
+#define ADC_CHANNEL_0   (0U)  /* ADC Channel 0  */
+#define ADC_CHANNEL_1   (1U)  /* ADC Channel 1  */
+#define ADC_CHANNEL_2   (2U)  /* ADC Channel 2  */
+#define ADC_CHANNEL_3   (3U)  /* ADC Channel 3  */
+#define ADC_CHANNEL_4   (4U)  /* ADC Channel 4  */
+#define ADC_CHANNEL_5   (5U)  /* ADC Channel 5  */
+#define ADC_CHANNEL_6   (6U)  /* ADC Channel 6  */
+#define ADC_CHANNEL_7   (7U)  /* ADC Channel 7  */
+#define ADC_CHANNEL_8   (8U)  /* ADC Channel 8  */
+#define ADC_CHANNEL_9   (9U)  /* ADC Channel 9  */
+#define ADC_CHANNEL_10  (10U) /* ADC Channel 10 */
+#define ADC_CHANNEL_11  (11U) /* ADC Channel 11 */
+#define ADC_CHANNEL_12  (12U) /* ADC Channel 12 */
+#define ADC_CHANNEL_13  (13U) /* ADC Channel 13 */
+#define ADC_CHANNEL_14  (14U) /* ADC Channel 14 */
+#define ADC_CHANNEL_15  (15U) /* ADC Channel 15 */
+
+typedef struct
+{
+    uint8_t channel;    /**< The channel number. */
+    uint8_t sampleTime; /**< The channel sample time. */
+} BR_AdcChannelSampleTime_t;
 
 
 /******************************************************************************/

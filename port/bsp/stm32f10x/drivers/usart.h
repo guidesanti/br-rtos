@@ -69,6 +69,8 @@ void __BR_UsartInit(void);
 void __BR_UsartIsr1(void);
 void __BR_UsartIsr2(void);
 void __BR_UsartIsr3(void);
+void __BR_UartIsr4(void);
+void __BR_UartIsr5(void);
 
 
 /** @} */

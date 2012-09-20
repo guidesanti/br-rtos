@@ -53,12 +53,21 @@
 #define __BR_BSP_STM32F10X_USE_SPI3 (0U)
 
 /* --------------------------------------------------------------------------- */
+/* USART                                                                       */
+/* --------------------------------------------------------------------------- */
+#define __BR_BSP_STM32F10X_USE_USART1 (1U)
+#define __BR_BSP_STM32F10X_USE_USART2 (0U)
+#define __BR_BSP_STM32F10X_USE_USART3 (0U)
+#define __BR_BSP_STM32F10X_USE_UART4  (0U)
+#define __BR_BSP_STM32F10X_USE_UART5  (0U)
+
+/* --------------------------------------------------------------------------- */
 /* ADC                                                                         */
 /* --------------------------------------------------------------------------- */
 #define __BR_BSP_STM32F10X_USE_ADC1       (1U)
 #define __BR_BSP_STM32F10X_USE_ADC1_CH_0  (0U)
 #define __BR_BSP_STM32F10X_USE_ADC1_CH_1  (0U)
-#define __BR_BSP_STM32F10X_USE_ADC1_CH_2  (0U)
+#define __BR_BSP_STM32F10X_USE_ADC1_CH_2  (1U)
 #define __BR_BSP_STM32F10X_USE_ADC1_CH_3  (0U)
 #define __BR_BSP_STM32F10X_USE_ADC1_CH_4  (0U)
 #define __BR_BSP_STM32F10X_USE_ADC1_CH_5  (0U)
@@ -101,13 +110,13 @@
 #define __BR_BSP_STM32F10X_USE_ADC3_CH_6  (0U)
 #define __BR_BSP_STM32F10X_USE_ADC3_CH_7  (0U)
 #define __BR_BSP_STM32F10X_USE_ADC3_CH_8  (0U)
-#define __BR_BSP_STM32F10X_USE_ADC3_CH_9  (0U)
+//#define __BR_BSP_STM32F10X_USE_ADC3_CH_9  (0U)
 #define __BR_BSP_STM32F10X_USE_ADC3_CH_10 (0U)
 #define __BR_BSP_STM32F10X_USE_ADC3_CH_11 (0U)
 #define __BR_BSP_STM32F10X_USE_ADC3_CH_12 (0U)
 #define __BR_BSP_STM32F10X_USE_ADC3_CH_13 (0U)
-#define __BR_BSP_STM32F10X_USE_ADC3_CH_14 (0U)
-#define __BR_BSP_STM32F10X_USE_ADC3_CH_15 (0U)
+//#define __BR_BSP_STM32F10X_USE_ADC3_CH_14 (0U)
+//#define __BR_BSP_STM32F10X_USE_ADC3_CH_15 (0U)
 
 
 /******************************************************************************/

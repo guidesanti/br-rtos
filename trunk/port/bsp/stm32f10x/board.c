@@ -22,6 +22,7 @@
 #include "rtc.h"
 #include "spi.h"
 #include "usart.h"
+#include "adc.h"
 #include "stm32f10x.h"
 
 /******************************************************************************/
@@ -117,6 +118,7 @@ void __BR_BoardInit(void)
   __BR_RtcInit();
   __BR_SpiStartUpInit();
   __BR_UsartInit();
+  __BR_AdcInit();
 }
 
 /** @} */
